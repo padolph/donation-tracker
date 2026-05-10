@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  items Item[]
+}
+
+model Item {
+  id             Int      @id @default(autoincrement())
+  categoryId     Int
+  description    String
+  defaultHigh    Float?   
+  defaultMedium  Float?   
+  userHigh       Float?   
+  userMedium     Float?   
+  isCustomItem   Boolean  @default(false)
+  
+  category       Category @relation(fields: [categoryId], references: [id])
+  donatedItems   DonatedItem[]
+}
+
+model DonationEvent {
+  id           Int      @id @default(autoincrement())
+  date         DateTime
+  organization String   
+  notes        String?
+  items        DonatedItem[]
+  photos       EventPhoto[]
+}
+
+model EventPhoto {
+  id        Int           @id @default(autoincrement())
+  eventId   Int
+  filePath  String        
+  
+  event     DonationEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model DonatedItem {
+  id            Int           @id @default(autoincrement())
+  eventId       Int
+  itemId        Int
+  quantity      Int           @default(1)
+  condition     String        
+  lockedValue   Float         
+  
+  event         DonationEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  item          Item          @relation(fields: [itemId], references: [id])
+}
+
