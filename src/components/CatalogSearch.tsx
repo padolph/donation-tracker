@@ -71,6 +71,8 @@ export default function CatalogSearch({ onSelectItem, className }: Props) {
     setHighlightedIndex(-1);
   };
 
+  const hasNoResults = query.length >= 2 && results.length === 0 && !isPending;
+
   return (
     <div className={`relative ${className}`}>
       <div className="relative">
@@ -94,7 +96,7 @@ export default function CatalogSearch({ onSelectItem, className }: Props) {
       {results.length > 0 && (
         <ul
           ref={dropdownRef}
-          className="absolute z-10 w-full mt-2 bg-[#1e1e21] border border-[#2d2d30] rounded-lg shadow-2xl max-h-60 overflow-auto divide-y divide-white/5"
+          className="absolute z-50 w-full mt-2 bg-[#1e1e21] border border-[#2d2d30] rounded-lg shadow-2xl max-h-60 overflow-auto divide-y divide-white/5"
         >
           {results.map((item, index) => (
             <li
@@ -105,18 +107,26 @@ export default function CatalogSearch({ onSelectItem, className }: Props) {
               onClick={() => selectItem(item)}
               onMouseEnter={() => setHighlightedIndex(index)}
             >
-              <div>
-                <span className={`font-medium text-sm block ${index === highlightedIndex ? 'text-accent' : ''}`}>
+              <div className="flex-1 min-w-0 pr-4">
+                <span className={`font-medium text-sm block truncate ${index === highlightedIndex ? 'text-accent' : ''}`}>
                   {item.description}
                 </span>
-                <span className="text-[10px] text-white/40 uppercase tracking-wider">{item.category.name}</span>
+                <span className="text-[10px] text-white/40 uppercase tracking-wider truncate block">
+                  {item.category?.name || 'General'}
+                </span>
               </div>
-              <div className="text-xs text-accent font-bold">
-                ${item.defaultHigh?.toFixed(2)} / ${item.defaultMedium?.toFixed(2)}
+              <div className="text-xs text-accent font-bold whitespace-nowrap">
+                ${(item.defaultHigh || 0).toFixed(2)} / ${(item.defaultMedium || 0).toFixed(2)}
               </div>
             </li>
           ))}
         </ul>
+      )}
+
+      {hasNoResults && (
+        <div className="absolute z-50 w-full mt-2 bg-[#1e1e21] border border-[#2d2d30] rounded-lg shadow-2xl p-4 text-center">
+          <p className="text-sm text-white/40 italic">No matching items found.</p>
+        </div>
       )}
     </div>
   );

@@ -27,17 +27,28 @@ model Item {
   donatedItems   DonatedItem[]
 }
 
+model Organization {
+  id              Int             @id @default(autoincrement())
+  name            String          @unique
+  address         String?
+  taxId           String?
+  
+  donations       DonationEvent[]
+}
+
 model DonationEvent {
-  id           Int      @id @default(autoincrement())
-  date         DateTime
-  organization String   
-  type         String   @default("ITEMS") // "ITEMS", "CASH", "ASSETS"
-  cashAmount   Float?
-  assetTicker  String?
-  assetShares  Float?
-  notes        String?
-  items        DonatedItem[]
-  photos       EventPhoto[]
+  id             Int      @id @default(autoincrement())
+  date           DateTime
+  organizationId Int   
+  type           String   @default("ITEMS") // "ITEMS", "CASH", "ASSETS"
+  cashAmount     Float?
+  assetTicker    String?
+  assetShares    Float?
+  notes          String?
+  
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  items          DonatedItem[]
+  photos         EventPhoto[]
 }
 
 model EventPhoto {
