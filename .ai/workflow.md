@@ -1,0 +1,17 @@
+# AI Agent Workflow & Methodology
+
+## 1. The Planning Phase
+* **Think Before Acting:** For any feature request, you must first generate a numbered, step-by-step Markdown plan. 
+* **Pause for Review:** Do not write implementation code during the planning phase. Present the plan and wait for confirmation to proceed.
+
+## 2. Test-Driven Development (TDD)
+* **Strict TDD:** This project strictly follows Test-Driven Development. You must write tests *before* writing the implementation code.
+* **Testing Stack:** Use Jest and React Testing Library for frontend components. Use standard Jest for backend/action logic.
+* **The Cycle:** For each step in the plan:
+    1. Write the unit/integration tests for the specific component or function.
+    2. Write the implementation code to satisfy the tests.
+    3. Run the tests (or instruct the user to run them) to verify the step is complete before moving to the next step.
+
+## 3. Step-by-Step Execution
+* **Iterative Building:** Execute the approved plan strictly one step at a time. Do not attempt to build the entire feature in a single output.
+* **Validation:** If a test fails or an error occurs, halt the plan and fix the immediate issue before proceeding to the next step in the checklist.

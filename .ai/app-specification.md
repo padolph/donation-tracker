@@ -4,12 +4,12 @@
 1. **Authentication:** A single-user local app protected by Next.js Middleware. Requires a single password matching `APP_PASSWORD` in `.env.local` to access the application.
 2. **Item Catalog:** A searchable directory of items seeded with default High and Medium Fair Market Values. Users can override these values or create net-new custom items.
 3. **Donation Ledger:** Users create Donation Events (Date, Organization). They can add quantities of items to an event, which permanently locks in the *current* FMV of those items at the time of donation.
-4. **Receipt Storage:** Users can attach local image files (receipts/photos) to a Donation Event. The app must copy these files to a secure local application directory and store the path reference in the database.
+4. **Receipt Storage:** Users can attach local image files (receipts/photos) to a Donation Event. The app must copy these files to a secure local application directory and store the path reference in the database using standard Node.js file system APIs.
 
 ## Prisma Database Schema
 Use the following relational structure:
 
-\`\`\`prisma
+```prisma
 model Category {
   id    Int    @id @default(autoincrement())
   name  String @unique
@@ -42,7 +42,7 @@ model DonationEvent {
 model EventPhoto {
   id        Int           @id @default(autoincrement())
   eventId   Int
-  filePath  String        // The local path where Tauri saved the image copy
+  filePath  String        // The local path where the Node backend saved the image copy
   
   event     DonationEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
 }
@@ -58,5 +58,3 @@ model DonatedItem {
   event         DonationEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
   item          Item          @relation(fields: [itemId], references: [id])
 }
-\`\`\`
-
