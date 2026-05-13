@@ -1,16 +1,19 @@
 import { searchItems } from '../itemActions';
 import { prisma } from '@/lib/prisma';
-import { DeepMockProxy } from 'jest-mock-extended';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 
-jest.mock('@/lib/prisma', () => ({
-  __esModule: true,
-  prisma: require('jest-mock-extended').mockDeep(),
-}));
+jest.mock('@/lib/prisma', () => {
+  const { mockDeep } = jest.requireActual('jest-mock-extended');
+  return {
+    __esModule: true,
+    prisma: mockDeep(),
+  };
+});
 
-const prismaMock = prisma as unknown as DeepMockProxy<any>;
+const prismaMock = prisma as unknown as DeepMockProxy<typeof prisma>;
 
 beforeEach(() => {
-  require('jest-mock-extended').mockReset(prismaMock);
+  prismaMock.item.findMany.mockReset();
 });
 
 describe('itemActions', () => {
@@ -30,7 +33,7 @@ describe('itemActions', () => {
         },
       ];
 
-      prismaMock.item.findMany.mockResolvedValue(mockItems as any);
+      prismaMock.item.findMany.mockResolvedValue(mockItems as never[]);
 
       const result = await searchItems('Winter');
 
@@ -60,7 +63,7 @@ describe('itemActions', () => {
         },
       ];
 
-      prismaMock.item.findMany.mockResolvedValue(mockItems as any);
+      prismaMock.item.findMany.mockResolvedValue(mockItems as never[]);
 
       const result = await searchItems("Men's");
 

@@ -27,6 +27,7 @@ export default function CatalogSearch({ onSelectItem, className }: Props) {
 
   useEffect(() => {
     if (query.length < 2) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResults([]);
       setHighlightedIndex(-1);
       return;
@@ -35,7 +36,7 @@ export default function CatalogSearch({ onSelectItem, className }: Props) {
     const timer = setTimeout(() => {
       startTransition(async () => {
         const items = await searchItems(query);
-        setResults(items as any);
+        setResults(items as unknown as Item[]);
         setHighlightedIndex(-1);
       });
     }, 300);

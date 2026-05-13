@@ -3,8 +3,18 @@
 import { useState } from 'react';
 import { createCustomItem } from '@/app/actions/itemActions';
 
+interface Item {
+  id: number;
+  description: string;
+  category: {
+    name: string;
+  };
+  defaultHigh: number | null;
+  defaultMedium: number | null;
+}
+
 interface Props {
-  onItemCreated: (item: any) => void;
+  onItemCreated: (item: Item) => void;
   onCancel: () => void;
 }
 
@@ -25,7 +35,7 @@ export default function CustomItemForm({ onItemCreated, onCancel }: Props) {
         defaultHigh: parseFloat(highValue) || 0,
         defaultMedium: parseFloat(mediumValue) || 0,
       });
-      onItemCreated(newItem);
+      onItemCreated(newItem as unknown as Item);
     } catch (error) {
       console.error('Failed to create custom item', error);
     } finally {

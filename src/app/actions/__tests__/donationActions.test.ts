@@ -18,10 +18,11 @@ describe('donationActions', () => {
       jest.clearAllMocks();
     });
 
-    it('should return a success object when donation is saved', async () => {
+    it('should return a success object when item donation is saved', async () => {
       const mockData = {
         organization: 'Goodwill',
         date: new Date('2026-05-12'),
+        type: 'ITEMS',
         items: [],
         photos: [],
       };
@@ -34,12 +35,68 @@ describe('donationActions', () => {
         success: true,
         donation: { id: 100 },
       });
+      expect(prisma.donationEvent.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ type: 'ITEMS' })
+        })
+      );
+    });
+
+    it('should correctly save a CASH donation', async () => {
+      const mockData = {
+        organization: 'Red Cross',
+        date: new Date('2026-05-12'),
+        type: 'CASH',
+        cashAmount: 1500,
+        items: [],
+        photos: [],
+      };
+
+      (prisma.donationEvent.create as jest.Mock).mockResolvedValue({ id: 101 });
+
+      await saveDonation(mockData);
+
+      expect(prisma.donationEvent.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            type: 'CASH',
+            cashAmount: 1500,
+          })
+        })
+      );
+    });
+
+    it('should correctly save an ASSETS donation', async () => {
+      const mockData = {
+        organization: 'University',
+        date: new Date('2026-05-12'),
+        type: 'ASSETS',
+        assetTicker: 'AAPL',
+        assetShares: 10.5,
+        items: [],
+        photos: [],
+      };
+
+      (prisma.donationEvent.create as jest.Mock).mockResolvedValue({ id: 102 });
+
+      await saveDonation(mockData);
+
+      expect(prisma.donationEvent.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            type: 'ASSETS',
+            assetTicker: 'AAPL',
+            assetShares: 10.5,
+          })
+        })
+      );
     });
 
     it('should return a failure object with error message when prisma fails', async () => {
       const mockData = {
         organization: 'Goodwill',
         date: new Date('2026-05-12'),
+        type: 'ITEMS',
         items: [],
         photos: [],
       };

@@ -39,6 +39,7 @@ This document defines the functional requirements for the Donation Tracker. When
 * **Read:** I can view a table of all organizations, showing their name, location, and the aggregate total I have donated to them.
 * **Create/Update:** I can add a new organization or edit an existing one (Name, Address, Tax ID/EIN, Default Category).
 * **Delete:** I can remove an organization (with a warning if it has associated donations).
+* When creating a new Donation, a pulldown is presented offering a choice of existing Organizations to select, with an option to create a new one (see Create/Update) to be used with the current donation and saved for later use as well.
 
 ---
 

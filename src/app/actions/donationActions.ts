@@ -5,6 +5,10 @@ import { prisma } from '@/lib/prisma';
 interface DonationData {
   organization: string;
   date: Date;
+  type?: string;
+  cashAmount?: number;
+  assetTicker?: string;
+  assetShares?: number;
   notes?: string;
   items: Array<{
     itemId: number;
@@ -21,6 +25,10 @@ export async function saveDonation(data: DonationData) {
       data: {
         organization: data.organization,
         date: data.date,
+        type: data.type || 'ITEMS',
+        cashAmount: data.cashAmount,
+        assetTicker: data.assetTicker,
+        assetShares: data.assetShares,
         notes: data.notes,
         items: {
           create: data.items.map((item) => ({

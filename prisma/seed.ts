@@ -17,7 +17,8 @@ async function main() {
 
   console.log(`Found ${records.length} items. Seeding...`);
 
-  for (const record of records) {
+  for (const rawRecord of records) {
+    const record = rawRecord as Record<string, string>;
     const rawDescription = record['Item Description'] || '';
     const rawHigh = record['High Quality Value'] || '';
     const rawMedium = record['Medium Quality Value'] || '';

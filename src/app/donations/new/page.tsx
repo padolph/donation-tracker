@@ -38,6 +38,7 @@ function AttachmentPreview({ file, onRemove }: { file: File; onRemove: () => voi
   useEffect(() => {
     if (file.type.startsWith('image/')) {
       const url = URL.createObjectURL(file);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPreview(url);
       return () => URL.revokeObjectURL(url);
     }
@@ -48,6 +49,7 @@ function AttachmentPreview({ file, onRemove }: { file: File; onRemove: () => voi
   return (
     <div className="group relative w-24 h-24 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden hover:border-white/20 transition-all shadow-lg">
       {preview ? (
+        // eslint-disable-next-line @next/next/no-img-element
         <img src={preview} alt={file.name} className="w-full h-full object-cover" />
       ) : isPDF ? (
         <div className="flex flex-col items-center gap-1">
@@ -80,6 +82,10 @@ export default function DonationBuilder() {
   const [quantity, setQuantity] = useState(1);
   const [condition, setCondition] = useState<'High' | 'Medium' | 'Good'>('Good');
   const [stagedItems, setStagedItems] = useState<StagedItem[]>([]);
+  const [cashAmount, setCashAmount] = useState<string>('');
+  const [assetTicker, setAssetTicker] = useState<string>('');
+  const [assetShares, setAssetShares] = useState<string>('');
+  const [assetValue, setAssetValue] = useState<string>('');
   const [photos, setPhotos] = useState<File[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -130,17 +136,27 @@ export default function DonationBuilder() {
       // 1. Save photos first (will throw if any fails)
       const photoPaths = await Promise.all(photos.map(savePhoto));
 
+      const typeMap: Record<string, string> = {
+        items: 'ITEMS',
+        cash: 'CASH',
+        assets: 'ASSETS'
+      };
+
       // 2. Save donation
       const result = await saveDonation({
         organization,
         date: new Date(date),
+        type: typeMap[activeType] || 'ITEMS',
         notes: notes + (address ? `\nAddress: ${address}` : ''),
-        items: stagedItems.map(item => ({
+        items: activeType === 'items' ? stagedItems.map(item => ({
           itemId: item.itemId,
           quantity: item.quantity,
           condition: item.condition === 'Good' ? 'Medium' : item.condition,
           lockedValue: item.value,
-        })),
+        })) : [],
+        cashAmount: activeType === 'cash' ? parseFloat(cashAmount) || undefined : activeType === 'assets' ? parseFloat(assetValue) || undefined : undefined,
+        assetTicker: activeType === 'assets' ? assetTicker : undefined,
+        assetShares: activeType === 'assets' ? parseFloat(assetShares) || undefined : undefined,
         photos: photoPaths,
       });
 
@@ -157,7 +173,17 @@ export default function DonationBuilder() {
     }
   };
 
-  const totalDonationValue = stagedItems.reduce((acc, item) => acc + item.totalValue, 0);
+  const totalDonationValue = activeType === 'items' 
+    ? stagedItems.reduce((acc, item) => acc + item.totalValue, 0)
+    : activeType === 'cash' 
+      ? parseFloat(cashAmount) || 0
+      : parseFloat(assetValue) || 0;
+
+  const isSaveDisabled = isSaving || !organization || (
+    activeType === 'items' ? stagedItems.length === 0 :
+    activeType === 'cash' ? (parseFloat(cashAmount) || 0) <= 0 :
+    activeType === 'assets' ? (!assetTicker || (parseFloat(assetShares) || 0) <= 0 || (parseFloat(assetValue) || 0) <= 0) : true
+  );
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
@@ -229,118 +255,198 @@ export default function DonationBuilder() {
           />
         </section>
 
-        {/* Donated Items Section */}
-        <section className="space-y-6">
-          <div className="flex justify-between items-center border-b border-white/10 pb-4">
-            <h2 className="text-lg font-bold">Donated Items</h2>
-            <button
-              onClick={() => setIsAddingCustom(true)}
-              data-testid="add-item-button"
-              className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-colors"
-            >
-              <span>➕</span> Add Item
-            </button>
-          </div>
-
-          {isAddingCustom && (
-            <div className="mb-6">
-              <CustomItemForm
-                onItemCreated={(item) => {
-                  handleSelectItem(item);
-                  setIsAddingCustom(false);
-                }}
-                onCancel={() => setIsAddingCustom(false)}
-              />
+        {activeType === 'items' && (
+          /* Donated Items Section */
+          <section className="space-y-6">
+            <div className="flex justify-between items-center border-b border-white/10 pb-4">
+              <h2 className="text-lg font-bold">Donated Items</h2>
+              <button
+                onClick={() => setIsAddingCustom(true)}
+                data-testid="add-item-button"
+                className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium transition-colors"
+              >
+                <span>➕</span> Add Item
+              </button>
             </div>
-          )}
 
-          {/* Staged Items List */}
-          <div className="space-y-4">
-            {stagedItems.map((item, index) => (
-              <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 flex justify-between items-center animate-in fade-in slide-in-from-top-2">
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-1">Item {index + 1}</h4>
-                  <div className="flex items-baseline gap-4">
-                    <span className="text-lg font-bold">{item.description}</span>
-                    <span className="text-sm text-white/50">{item.condition} · Qty: {item.quantity}</span>
+            {isAddingCustom && (
+              <div className="mb-6">
+                <CustomItemForm
+                  onItemCreated={(item) => {
+                    handleSelectItem(item);
+                    setIsAddingCustom(false);
+                  }}
+                  onCancel={() => setIsAddingCustom(false)}
+                />
+              </div>
+            )}
+
+            {/* Staged Items List */}
+            <div className="space-y-4">
+              {stagedItems.map((item, index) => (
+                <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 flex justify-between items-center animate-in fade-in slide-in-from-top-2">
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-1">Item {index + 1}</h4>
+                    <div className="flex items-baseline gap-4">
+                      <span className="text-lg font-bold">{item.description}</span>
+                      <span className="text-sm text-white/50">{item.condition} · Qty: {item.quantity}</span>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-black text-accent">
+                    ${item.totalValue.toFixed(2)}
                   </div>
                 </div>
-                <div className="text-2xl font-black text-accent">
-                  ${item.totalValue.toFixed(2)}
-                </div>
-              </div>
-            ))}
+              ))}
 
-            {/* Current Item Entry (if selected) */}
-            {selectedItem && (
-              <div className="bg-white/5 border border-accent rounded-xl p-8 space-y-6 animate-in zoom-in-95 duration-200">
-                <div className="flex justify-between items-start">
-                  <h3 className="text-xl font-bold">Add Item to Donation</h3>
-                  <button onClick={() => setSelectedItem(null)} className="text-white/40 hover:text-white">✕</button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Item Name</label>
-                    <div className="px-4 py-2 bg-[#1e1e21] border border-[#2d2d30] rounded-lg text-sm text-white font-medium">
-                      {selectedItem.description}
+              {/* Current Item Entry (if selected) */}
+              {selectedItem && (
+                <div className="bg-white/5 border border-accent rounded-xl p-8 space-y-6 animate-in zoom-in-95 duration-200">
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-xl font-bold">Add Item to Donation</h3>
+                    <button onClick={() => setSelectedItem(null)} className="text-white/40 hover:text-white">✕</button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Item Name</label>
+                      <div className="px-4 py-2 bg-[#1e1e21] border border-[#2d2d30] rounded-lg text-sm text-white font-medium">
+                        {selectedItem.description}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label htmlFor="item-condition" className="text-[10px] font-black uppercase tracking-widest text-white/40">Condition</label>
+                      <select
+                        id="item-condition"
+                        className="w-full px-4 py-2 rounded-lg"
+                        value={condition}
+                        onChange={(e) => setCondition(e.target.value as 'High' | 'Medium' | 'Good')}
+                      >
+                        <option value="Good">Good</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label htmlFor="item-quantity" className="text-[10px] font-black uppercase tracking-widest text-white/40">Quantity</label>
+                      <input
+                        id="item-quantity"
+                        type="number"
+                        min="1"
+                        className="w-full px-4 py-2 rounded-lg"
+                        value={quantity}
+                        onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Fair Market Value ($)</label>
+                      <div className="w-full px-4 py-2 bg-[#121214] border border-[#2d2d30] rounded-lg text-white font-bold">
+                        ${((condition === 'High' ? selectedItem.defaultHigh || 0 : selectedItem.defaultMedium || 0)).toFixed(2)}
+                      </div>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label htmlFor="item-condition" className="text-[10px] font-black uppercase tracking-widest text-white/40">Condition</label>
-                    <select
-                      id="item-condition"
-                      className="w-full px-4 py-2 rounded-lg"
-                      value={condition}
-                      onChange={(e) => setCondition(e.target.value as any)}
-                    >
-                      <option value="Good">Good</option>
-                      <option value="High">High</option>
-                      <option value="Medium">Medium</option>
-                    </select>
-                  </div>
+                  <button
+                    onClick={handleAddToDonation}
+                    className="w-full bg-accent text-black font-black py-4 rounded-xl hover:bg-yellow-500 transition-colors uppercase tracking-widest text-sm"
+                  >
+                    Confirm Item
+                  </button>
+                </div>
+              )}
 
-                  <div className="space-y-2">
-                    <label htmlFor="item-quantity" className="text-[10px] font-black uppercase tracking-widest text-white/40">Quantity</label>
+              {/* Empty State / Initial Search Trigger */}
+              {!selectedItem && stagedItems.length === 0 && !isAddingCustom && (
+                <div className="p-12 border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center text-center">
+                  <div className="text-4xl mb-4 text-white/20">📦</div>
+                  <h3 className="font-bold text-white/80 mb-2">No items added yet</h3>
+                  <p className="text-sm text-white/40 mb-6">Search for an item or add a custom one to begin.</p>
+                  <CatalogSearch onSelectItem={handleSelectItem} className="w-full max-w-sm" />
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {activeType === 'cash' && (
+          <section className="space-y-6">
+             <div className="flex justify-between items-center border-b border-white/10 pb-4">
+              <h2 className="text-lg font-bold">Cash Details</h2>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-8 space-y-6 animate-in fade-in slide-in-from-top-2">
+               <div className="space-y-2 max-w-sm">
+                <label htmlFor="cashAmount" className="text-[10px] font-black uppercase tracking-widest text-white/40">Cash Amount ($)</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-3 text-white/50">$</span>
+                  <input
+                    id="cashAmount"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    placeholder="0.00"
+                    className="w-full pl-8 pr-4 py-3 rounded-xl text-lg font-bold"
+                    value={cashAmount}
+                    onChange={(e) => setCashAmount(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activeType === 'assets' && (
+           <section className="space-y-6">
+             <div className="flex justify-between items-center border-b border-white/10 pb-4">
+              <h2 className="text-lg font-bold">Asset Details</h2>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-8 space-y-6 animate-in fade-in slide-in-from-top-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <label htmlFor="assetTicker" className="text-[10px] font-black uppercase tracking-widest text-white/40">Asset Ticker/Symbol</label>
+                  <input
+                    id="assetTicker"
+                    type="text"
+                    placeholder="e.g. AAPL"
+                    className="w-full px-4 py-3 rounded-xl"
+                    value={assetTicker}
+                    onChange={(e) => setAssetTicker(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="assetShares" className="text-[10px] font-black uppercase tracking-widest text-white/40">Number of Shares</label>
+                  <input
+                    id="assetShares"
+                    type="number"
+                    min="0.0001"
+                    step="any"
+                    placeholder="e.g. 10.5"
+                    className="w-full px-4 py-3 rounded-xl"
+                    value={assetShares}
+                    onChange={(e) => setAssetShares(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="assetValue" className="text-[10px] font-black uppercase tracking-widest text-white/40">Total Value on Date ($)</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-3 text-white/50">$</span>
                     <input
-                      id="item-quantity"
+                      id="assetValue"
                       type="number"
-                      min="1"
-                      className="w-full px-4 py-2 rounded-lg"
-                      value={quantity}
-                      onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+                      min="0.01"
+                      step="0.01"
+                      placeholder="0.00"
+                      className="w-full pl-8 pr-4 py-3 rounded-xl font-bold"
+                      value={assetValue}
+                      onChange={(e) => setAssetValue(e.target.value)}
                     />
                   </div>
-
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Fair Market Value ($)</label>
-                    <div className="w-full px-4 py-2 bg-[#121214] border border-[#2d2d30] rounded-lg text-white font-bold">
-                      ${((condition === 'High' ? selectedItem.defaultHigh || 0 : selectedItem.defaultMedium || 0)).toFixed(2)}
-                    </div>
-                  </div>
                 </div>
-
-                <button
-                  onClick={handleAddToDonation}
-                  className="w-full bg-accent text-black font-black py-4 rounded-xl hover:bg-yellow-500 transition-colors uppercase tracking-widest text-sm"
-                >
-                  Confirm Item
-                </button>
               </div>
-            )}
-
-            {/* Empty State / Initial Search Trigger */}
-            {!selectedItem && stagedItems.length === 0 && !isAddingCustom && (
-              <div className="p-12 border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center text-center">
-                <div className="text-4xl mb-4 text-white/20">📦</div>
-                <h3 className="font-bold text-white/80 mb-2">No items added yet</h3>
-                <p className="text-sm text-white/40 mb-6">Search for an item or add a custom one to begin.</p>
-                <CatalogSearch onSelectItem={handleSelectItem} className="w-full max-w-sm" />
-              </div>
-            )}
-          </div>
-        </section>
+            </div>
+          </section>
+        )}
 
         {/* Total and Save */}
         <section className="pt-10 border-t border-white/10">
@@ -388,10 +494,10 @@ export default function DonationBuilder() {
 
           <button
             onClick={handleSaveDonation}
-            disabled={stagedItems.length === 0 || !organization || isSaving}
+            disabled={isSaveDisabled}
             className="w-full mt-10 bg-accent text-black font-black py-5 rounded-xl hover:bg-yellow-500 transition-all disabled:opacity-30 disabled:cursor-not-allowed uppercase tracking-widest"
           >
-            {isSaving ? 'Processing...' : stagedItems.length === 0 ? 'Add Items to Continue' : !organization ? 'Enter Organization' : 'Add Donation'}
+            {isSaving ? 'Processing...' : activeType === 'items' && stagedItems.length === 0 ? 'Add Items to Continue' : !organization ? 'Enter Organization' : 'Add Donation'}
           </button>
         </section>
       </div>

@@ -1,6 +1,8 @@
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import DonationBuilder from '../page';
-import { searchItems } from '@/app/actions/itemActions';
+import { searchItems, createCustomItem } from '@/app/actions/itemActions';
+import { saveDonation } from '@/app/actions/donationActions';
+import { savePhoto } from '@/app/actions/photoActions';
 
 jest.mock('@/app/actions/itemActions', () => ({
   searchItems: jest.fn(),
@@ -65,7 +67,6 @@ describe('DonationBuilder Page', () => {
   });
 
   it('allows adding a custom item', async () => {
-    const { createCustomItem } = require('@/app/actions/itemActions');
     (createCustomItem as jest.Mock).mockResolvedValue({
       id: 99,
       description: 'Vintage Radio',
@@ -98,15 +99,72 @@ describe('DonationBuilder Page', () => {
     });
   });
 
-  it('submits the full donation session', async () => {
-    const { searchItems } = require('@/app/actions/itemActions');
-    const { saveDonation } = require('@/app/actions/donationActions');
-    const { savePhoto } = require('@/app/actions/photoActions');
+  it('submits a Cash donation', async () => {
+    (saveDonation as jest.Mock).mockResolvedValue({ success: true, donation: { id: 101 } });
 
+    render(<DonationBuilder />);
+
+    // 1. Select Cash type
+    fireEvent.click(screen.getByText(/Cash/i, { selector: 'span' }));
+
+    // 2. Fill General Info
+    fireEvent.change(screen.getByLabelText(/organization name/i), { target: { value: 'Red Cross' } });
+
+    // 3. Enter Cash Amount
+    const cashInput = screen.getByLabelText(/Cash Amount/i);
+    fireEvent.change(cashInput, { target: { value: '500' } });
+
+    // 4. Save Donation
+    const saveButton = screen.getByRole('button', { name: /add donation/i });
+    fireEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(saveDonation).toHaveBeenCalledWith(expect.objectContaining({
+        organization: 'Red Cross',
+        type: 'CASH',
+        cashAmount: 500,
+        items: [],
+      }));
+    });
+  });
+
+  it('submits an Asset donation', async () => {
+    (saveDonation as jest.Mock).mockResolvedValue({ success: true, donation: { id: 102 } });
+
+    render(<DonationBuilder />);
+
+    // 1. Select Asset type
+    fireEvent.click(screen.getByText(/Stock\/Asset/i, { selector: 'span' }));
+
+    // 2. Fill General Info
+    fireEvent.change(screen.getByLabelText(/organization name/i), { target: { value: 'University' } });
+
+    // 3. Enter Asset Details
+    fireEvent.change(screen.getByLabelText(/Asset Ticker/i), { target: { value: 'AAPL' } });
+    fireEvent.change(screen.getByLabelText(/Number of Shares/i), { target: { value: '10' } });
+    fireEvent.change(screen.getByLabelText(/Total Value/i), { target: { value: '1500' } });
+
+    // 4. Save Donation
+    const saveButton = screen.getByRole('button', { name: /add donation/i });
+    fireEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(saveDonation).toHaveBeenCalledWith(expect.objectContaining({
+        organization: 'University',
+        type: 'ASSETS',
+        assetTicker: 'AAPL',
+        assetShares: 10,
+        cashAmount: 1500,
+        items: [],
+      }));
+    });
+  });
+
+  it('submits the full donation session', async () => {
     (searchItems as jest.Mock).mockResolvedValue([
       { id: 1, description: 'Winter Coat', category: { name: 'Clothing' }, defaultHigh: 50, defaultMedium: 25 },
     ]);
-    (saveDonation as jest.Mock).mockResolvedValue({ id: 100 });
+    (saveDonation as jest.Mock).mockResolvedValue({ success: true, donation: { id: 100 } });
     (savePhoto as jest.Mock).mockResolvedValue('/mock/path.jpg');
 
     render(<DonationBuilder />);
@@ -128,6 +186,7 @@ describe('DonationBuilder Page', () => {
     await waitFor(() => {
       expect(saveDonation).toHaveBeenCalledWith(expect.objectContaining({
         organization: 'Goodwill',
+        type: 'ITEMS',
         items: [
           expect.objectContaining({
             itemId: 1,
@@ -141,7 +200,6 @@ describe('DonationBuilder Page', () => {
   });
 
   it('enables the Add Donation button only when organization and items are present', async () => {
-    const { searchItems } = require('@/app/actions/itemActions');
     (searchItems as jest.Mock).mockResolvedValue([
       { id: 1, description: 'Winter Coat', category: { name: 'Clothing' }, defaultHigh: 50, defaultMedium: 25 },
     ]);
@@ -177,7 +235,6 @@ describe('DonationBuilder Page', () => {
     
     render(<DonationBuilder />);
 
-    const fileInput = screen.getByLabelText(/\+/i); // The '+' span is inside a label that triggers the hidden input
     // In RTL, we find the hidden input by its presence or the label
     const input = document.querySelector('input[type="file"]') as HTMLInputElement;
 
