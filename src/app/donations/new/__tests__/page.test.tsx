@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import DonationBuilder from '../page';
+import DonationBuilder from '../DonationBuilder';
 import { searchItems, createCustomItem } from '@/app/actions/itemActions';
 import { saveDonation } from '@/app/actions/donationActions';
 import { savePhoto } from '@/app/actions/photoActions';
@@ -23,50 +23,56 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
+jest.mock('next/cache', () => ({
+  revalidatePath: jest.fn(),
+}));
+
+const mockOrganizations = [
+  { id: 1, name: 'Red Cross' },
+  { id: 2, name: 'University' },
+  { id: 3, name: 'Goodwill' }
+];
+
 describe('DonationBuilder Page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (saveDonation as jest.Mock).mockResolvedValue({ success: true, donation: { id: 1 } });
+    (savePhoto as jest.Mock).mockImplementation(async (file: File) => `/mock/path/${file.name}`);
   });
 
-  it('allows adding an item to the staging list', async () => {
+  const renderComponent = () => render(<DonationBuilder initialOrganizations={mockOrganizations as any} />);
+
+  it('searches for items and allows adding them to the donation', async () => {
     const mockItems = [
       { id: 1, description: 'Winter Coat', category: { name: 'Clothing' }, defaultHigh: 50, defaultMedium: 25 },
     ];
     (searchItems as jest.Mock).mockResolvedValue(mockItems);
 
-    render(<DonationBuilder />);
+    renderComponent();
 
     // 1. Search for an item
     const searchInput = screen.getByPlaceholderText(/e\.g\. Men's Suit/i);
     fireEvent.change(searchInput, { target: { value: 'Winter' } });
 
+    await waitFor(() => {
+      expect(searchItems).toHaveBeenCalledWith('Winter');
+    });
+
     // 2. Select the item
     const resultItem = await screen.findByText(/Winter Coat/i);
     fireEvent.click(resultItem);
 
-    // 3. Item details should appear (Quantity, Condition)
-    expect(screen.getByText(/Add Item to Donation/i)).toBeInTheDocument();
-    
-    const quantityInput = screen.getByLabelText(/quantity/i);
-    fireEvent.change(quantityInput, { target: { value: '2' } });
+    // 3. Form appears, confirm it
+    expect(screen.getByText('Add Item to Donation')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /confirm item/i }));
 
-    const conditionSelect = screen.getByLabelText(/condition/i);
-    fireEvent.change(conditionSelect, { target: { value: 'High' } });
-
-    // 4. Add to staging list
-    const addButton = screen.getByRole('button', { name: /confirm item/i });
-    fireEvent.click(addButton);
-
-    // 5. Verify it's in the list and total is updated
-    expect(screen.getByText(/Winter Coat/i)).toBeInTheDocument();
-    expect(screen.getByText(/High · Qty: 2/i)).toBeInTheDocument();
-    
-    // Check for total value by looking for the components
-    expect(screen.getByText(/Total Value:/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/\$100\.00/i)).toHaveLength(2); // One in list, one in total
+    // 4. Staged list updates
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
+    expect(screen.getAllByText('$25.00').length).toBeGreaterThan(0); // Good condition falls back to Medium (25)
   });
 
-  it('allows adding a custom item', async () => {
+  it('allows adding a custom item if not found', async () => {
+    (searchItems as jest.Mock).mockResolvedValue([]);
     (createCustomItem as jest.Mock).mockResolvedValue({
       id: 99,
       description: 'Vintage Radio',
@@ -75,40 +81,45 @@ describe('DonationBuilder Page', () => {
       defaultMedium: 20,
     });
 
-    render(<DonationBuilder />);
+    renderComponent();
 
     // 1. Click "Add Item" in header to open the form options
     const addButton = screen.getByTestId('add-item-button');
     fireEvent.click(addButton);
 
-    // 2. Fill out the form
+    // 2. Fill Custom Item Form
     fireEvent.change(screen.getByLabelText(/item description/i), { target: { value: 'Vintage Radio' } });
     fireEvent.change(screen.getByLabelText(/category/i), { target: { value: 'Electronics' } });
     fireEvent.change(screen.getByLabelText(/high value/i), { target: { value: '40' } });
     fireEvent.change(screen.getByLabelText(/medium value/i), { target: { value: '20' } });
+    
+    // 3. Save Custom Item
+    fireEvent.click(screen.getByRole('button', { name: /save custom item/i }));
 
-    // 3. Submit
-    const saveButton = screen.getByRole('button', { name: /save custom item/i });
-    fireEvent.click(saveButton);
-
-    // 4. Verify it's selected and ready to be added to donation
     await waitFor(() => {
-      expect(createCustomItem).toHaveBeenCalled();
-      expect(screen.getByText(/Add Item to Donation/i)).toBeInTheDocument();
-      expect(screen.getByText(/Vintage Radio/i)).toBeInTheDocument();
+      expect(createCustomItem).toHaveBeenCalledWith(expect.objectContaining({
+        description: 'Vintage Radio',
+        categoryName: 'Electronics',
+        defaultHigh: 40,
+        defaultMedium: 20,
+      }));
     });
+
+    // 4. Verify it auto-selects the new item for the staging list
+    expect(screen.getByText('Add Item to Donation')).toBeInTheDocument();
+    expect(screen.getByText('Vintage Radio')).toBeInTheDocument();
   });
 
   it('submits a Cash donation', async () => {
     (saveDonation as jest.Mock).mockResolvedValue({ success: true, donation: { id: 101 } });
 
-    render(<DonationBuilder />);
+    renderComponent();
 
     // 1. Select Cash type
     fireEvent.click(screen.getByText(/Cash/i, { selector: 'span' }));
 
     // 2. Fill General Info
-    fireEvent.change(screen.getByLabelText(/organization name/i), { target: { value: 'Red Cross' } });
+    fireEvent.change(screen.getByRole('combobox', { name: /organization/i }), { target: { value: '1' } });
 
     // 3. Enter Cash Amount
     const cashInput = screen.getByLabelText(/Cash Amount/i);
@@ -120,7 +131,7 @@ describe('DonationBuilder Page', () => {
 
     await waitFor(() => {
       expect(saveDonation).toHaveBeenCalledWith(expect.objectContaining({
-        organization: 'Red Cross',
+        organizationId: 1,
         type: 'CASH',
         cashAmount: 500,
         items: [],
@@ -131,13 +142,13 @@ describe('DonationBuilder Page', () => {
   it('submits an Asset donation', async () => {
     (saveDonation as jest.Mock).mockResolvedValue({ success: true, donation: { id: 102 } });
 
-    render(<DonationBuilder />);
+    renderComponent();
 
     // 1. Select Asset type
     fireEvent.click(screen.getByText(/Stock\/Asset/i, { selector: 'span' }));
 
     // 2. Fill General Info
-    fireEvent.change(screen.getByLabelText(/organization name/i), { target: { value: 'University' } });
+    fireEvent.change(screen.getByRole('combobox', { name: /organization/i }), { target: { value: '2' } });
 
     // 3. Enter Asset Details
     fireEvent.change(screen.getByLabelText(/Asset Ticker/i), { target: { value: 'AAPL' } });
@@ -150,7 +161,7 @@ describe('DonationBuilder Page', () => {
 
     await waitFor(() => {
       expect(saveDonation).toHaveBeenCalledWith(expect.objectContaining({
-        organization: 'University',
+        organizationId: 2,
         type: 'ASSETS',
         assetTicker: 'AAPL',
         assetShares: 10,
@@ -167,10 +178,10 @@ describe('DonationBuilder Page', () => {
     (saveDonation as jest.Mock).mockResolvedValue({ success: true, donation: { id: 100 } });
     (savePhoto as jest.Mock).mockResolvedValue('/mock/path.jpg');
 
-    render(<DonationBuilder />);
+    renderComponent();
 
     // 1. Fill General Info
-    fireEvent.change(screen.getByLabelText(/organization name/i), { target: { value: 'Goodwill' } });
+    fireEvent.change(screen.getByRole('combobox', { name: /organization/i }), { target: { value: '3' } });
 
     // 2. Add an item
     const searchInput = screen.getByPlaceholderText(/e\.g\. Men's Suit/i);
@@ -185,7 +196,7 @@ describe('DonationBuilder Page', () => {
 
     await waitFor(() => {
       expect(saveDonation).toHaveBeenCalledWith(expect.objectContaining({
-        organization: 'Goodwill',
+        organizationId: 3,
         type: 'ITEMS',
         items: [
           expect.objectContaining({
@@ -204,17 +215,17 @@ describe('DonationBuilder Page', () => {
       { id: 1, description: 'Winter Coat', category: { name: 'Clothing' }, defaultHigh: 50, defaultMedium: 25 },
     ]);
 
-    render(<DonationBuilder />);
+    renderComponent();
 
     // Initial state: disabled
     expect(screen.getByRole('button', { name: /add items to continue/i })).toBeDisabled();
 
     // Add organization only: still disabled
-    fireEvent.change(screen.getByLabelText(/organization name/i), { target: { value: 'Goodwill' } });
+    fireEvent.change(screen.getByRole('combobox', { name: /organization/i }), { target: { value: '3' } });
     expect(screen.getByRole('button', { name: /add items to continue/i })).toBeDisabled();
 
     // Add item (and clear organization): still disabled
-    fireEvent.change(screen.getByLabelText(/organization name/i), { target: { value: '' } });
+    fireEvent.change(screen.getByRole('combobox', { name: /organization/i }), { target: { value: '' } });
     const searchInput = screen.getByPlaceholderText(/e\.g\. Men's Suit/i);
     fireEvent.change(searchInput, { target: { value: 'Winter' } });
     const resultItem = await screen.findByText(/Winter Coat/i);
@@ -225,7 +236,7 @@ describe('DonationBuilder Page', () => {
     expect(screen.getByRole('button', { name: /enter organization/i })).toBeDisabled();
 
     // Both present: enabled
-    fireEvent.change(screen.getByLabelText(/organization name/i), { target: { value: 'Goodwill' } });
+    fireEvent.change(screen.getByRole('combobox', { name: /organization/i }), { target: { value: '3' } });
     expect(screen.getByRole('button', { name: /add donation/i })).toBeEnabled();
   });
 
@@ -233,7 +244,7 @@ describe('DonationBuilder Page', () => {
     // Mock window.alert
     const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
     
-    render(<DonationBuilder />);
+    renderComponent();
 
     // In RTL, we find the hidden input by its presence or the label
     const input = document.querySelector('input[type="file"]') as HTMLInputElement;

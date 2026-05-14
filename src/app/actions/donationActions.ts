@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma';
 
 interface DonationData {
-  organization: string;
+  organizationId: number;
   date: Date;
   type?: string;
   cashAmount?: number;
@@ -23,7 +23,7 @@ export async function saveDonation(data: DonationData) {
   try {
     const donation = await prisma.donationEvent.create({
       data: {
-        organization: data.organization,
+        organizationId: data.organizationId,
         date: data.date,
         type: data.type || 'ITEMS',
         cashAmount: data.cashAmount,

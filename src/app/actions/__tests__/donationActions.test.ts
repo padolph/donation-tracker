@@ -20,7 +20,7 @@ describe('donationActions', () => {
 
     it('should return a success object when item donation is saved', async () => {
       const mockData = {
-        organization: 'Goodwill',
+        organizationId: 1,
         date: new Date('2026-05-12'),
         type: 'ITEMS',
         items: [],
@@ -44,7 +44,7 @@ describe('donationActions', () => {
 
     it('should correctly save a CASH donation', async () => {
       const mockData = {
-        organization: 'Red Cross',
+        organizationId: 2,
         date: new Date('2026-05-12'),
         type: 'CASH',
         cashAmount: 1500,
@@ -68,7 +68,7 @@ describe('donationActions', () => {
 
     it('should correctly save an ASSETS donation', async () => {
       const mockData = {
-        organization: 'University',
+        organizationId: 3,
         date: new Date('2026-05-12'),
         type: 'ASSETS',
         assetTicker: 'AAPL',
@@ -94,7 +94,7 @@ describe('donationActions', () => {
 
     it('should return a failure object with error message when prisma fails', async () => {
       const mockData = {
-        organization: 'Goodwill',
+        organizationId: 1,
         date: new Date('2026-05-12'),
         type: 'ITEMS',
         items: [],

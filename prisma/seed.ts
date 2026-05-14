@@ -6,7 +6,7 @@ import { parse } from 'csv-parse/sync';
 const prisma = new PrismaClient();
 
 async function main() {
-  const csvFilePath = path.join(__dirname, 'seed-data.csv');
+  const csvFilePath = path.join(process.cwd(), 'prisma', 'seed-data.csv');
   const fileContent = fs.readFileSync(csvFilePath, 'utf-8');
   
   const records = parse(fileContent, {
