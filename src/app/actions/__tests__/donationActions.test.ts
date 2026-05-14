@@ -103,12 +103,24 @@ describe('donationActions', () => {
 
       (prisma.donationEvent.create as jest.Mock).mockRejectedValue(new Error('Database unique constraint failed'));
 
+      // Temporarily mute console.error
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
       const result = await saveDonation(mockData);
 
       expect(result).toEqual({
         success: false,
         error: 'Database unique constraint failed',
       });
+
+      // Assert that your app actually logged the error internally
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'CRITICAL: saveDonation failed', 
+        expect.any(Error)
+      );
+
+      // Restore the console back to normal
+      consoleSpy.mockRestore();
     });
   });
 });
