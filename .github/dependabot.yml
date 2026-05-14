@@ -15,8 +15,14 @@ updates:
         versions: [">= 6.0.0"]
       - dependency-name: "@prisma/client"
         versions: [">= 6.0.0"]
+      - dependency-name: "@types/node"
+        versions: [">= 23.0.0"]
+      # Next.js does not yet support ESLint 10
+      - dependency-name: "eslint"
+        versions: [">= 10.0.0"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+
