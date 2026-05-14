@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # Maintain Next.js and npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Keep your GitHub Actions up to date (fixes that Node 20 warning over time!)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      
