@@ -1,15 +1,22 @@
 version: 2
 updates:
-  # Maintain Next.js and npm dependencies
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 5
+    # Group all NPM updates into a single PR
+    groups:
+      npm-dependencies:
+        patterns:
+          - "*"
+    # Force Dependabot to respect our v5 LTS rule
+    ignore:
+      - dependency-name: "prisma"
+        versions: [">= 6.0.0"]
+      - dependency-name: "@prisma/client"
+        versions: [">= 6.0.0"]
 
-  # Keep your GitHub Actions up to date (fixes that Node 20 warning over time!)
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-      
