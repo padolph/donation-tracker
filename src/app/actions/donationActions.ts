@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 interface DonationData {
   organizationId: number;
@@ -60,5 +61,154 @@ export async function saveDonation(data: DonationData) {
       success: false, 
       error: message 
     };
+  }
+}
+
+export interface GetDonationsFilter {
+  organizationId?: number;
+  year?: number;
+}
+
+export async function getDonations(filter: GetDonationsFilter = {}) {
+  try {
+    const where: Prisma.DonationEventWhereInput = {};
+    
+    if (filter.organizationId) {
+      where.organizationId = filter.organizationId;
+    }
+    
+    if (filter.year) {
+      const startDate = new Date(`${filter.year}-01-01T00:00:00.000Z`);
+      const endDate = new Date(`${filter.year}-12-31T23:59:59.999Z`);
+      where.date = {
+        gte: startDate,
+        lte: endDate,
+      };
+    }
+
+    const donations = await prisma.donationEvent.findMany({
+      where,
+      orderBy: {
+        date: 'desc',
+      },
+      include: {
+        organization: true,
+        items: {
+          include: {
+            item: true,
+          },
+        },
+        photos: true,
+      },
+    });
+
+    return { success: true, donations };
+  } catch (error) {
+    console.error('CRITICAL: getDonations failed', error);
+    
+    let message = 'An unexpected error occurred while fetching donations.';
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    
+    return {
+      success: false,
+      error: message,
+    };
+  }
+}
+
+import { revalidatePath } from 'next/cache';
+
+export async function deleteDonation(id: number) {
+  try {
+    await prisma.donationEvent.delete({
+      where: { id },
+    });
+
+    revalidatePath('/donations');
+    return { success: true };
+  } catch (error) {
+    console.error('CRITICAL: deleteDonation failed', error);
+    let message = 'An unexpected error occurred while deleting the donation.';
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    return { success: false, error: message };
+  }
+}
+
+export async function getDonationById(id: number) {
+  try {
+    const donation = await prisma.donationEvent.findUnique({
+      where: { id },
+      include: {
+        organization: true,
+        items: {
+          include: { item: true },
+        },
+        photos: true,
+      },
+    });
+
+    if (!donation) {
+      return { success: false, error: 'Donation not found' };
+    }
+
+    return { success: true, donation };
+  } catch (error) {
+    console.error('CRITICAL: getDonationById failed', error);
+    let message = 'An unexpected error occurred while fetching the donation.';
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    return { success: false, error: message };
+  }
+}
+
+export async function updateDonation(id: number, data: DonationData) {
+  try {
+    const updateData: Prisma.DonationEventUpdateInput = {
+      organization: { connect: { id: data.organizationId } },
+      date: data.date,
+      type: data.type || 'ITEMS',
+      cashAmount: data.cashAmount,
+      assetTicker: data.assetTicker,
+      assetShares: data.assetShares,
+      notes: data.notes,
+      items: {
+        deleteMany: {},
+        create: data.items.map((item) => ({
+          itemId: item.itemId,
+          quantity: item.quantity,
+          condition: item.condition,
+          lockedValue: item.lockedValue,
+        })),
+      },
+    };
+
+    if (data.photos) {
+      updateData.photos = {
+        deleteMany: {},
+        create: data.photos.map((photoPath) => ({
+          filePath: photoPath,
+        })),
+      };
+    }
+
+    const donation = await prisma.donationEvent.update({
+      where: { id },
+      data: updateData,
+    });
+
+    revalidatePath('/donations');
+    return { success: true, donation };
+  } catch (error) {
+    console.error('CRITICAL: updateDonation failed', error);
+    let message = 'An unexpected error occurred while updating the donation.';
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    return { success: false, error: message };
   }
 }
