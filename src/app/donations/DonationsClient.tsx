@@ -237,13 +237,15 @@ export default function DonationsClient({
                                 {donation.photos.map((photo, idx) => {
                                   const url = getPhotoUrl(photo.filePath);
                                   const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(photo.filePath);
+                                  const isPDF = /\.pdf$/i.test(photo.filePath);
+                                  const isViewable = isImage || isPDF;
                                   
                                   return (
                                     <button 
                                       key={idx} 
-                                      onClick={() => isImage && setOverlayImage({ src: url, alt: `Attachment ${idx + 1}` })}
-                                      className={`group relative w-24 h-24 bg-white/5 rounded-xl border border-white/10 overflow-hidden transition-all hover:border-white/20 ${isImage ? 'cursor-zoom-in' : 'cursor-default'}`}
-                                      aria-label={isImage ? "View image" : "Attachment"}
+                                      onClick={() => isViewable && setOverlayImage({ src: url, alt: `Attachment ${idx + 1}` })}
+                                      className={`group relative w-24 h-24 bg-white/5 rounded-xl border border-white/10 overflow-hidden transition-all hover:border-white/20 ${isViewable ? 'cursor-zoom-in' : 'cursor-default'}`}
+                                      aria-label={isViewable ? `View ${isPDF ? 'PDF' : 'image'}` : "Attachment"}
                                     >
                                       {isImage ? (
                                         <>
@@ -253,14 +255,17 @@ export default function DonationsClient({
                                             alt={`Attachment ${idx + 1}`} 
                                             className="w-full h-full object-cover"
                                           />
-                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                            <span className="text-xl">🔍</span>
-                                          </div>
                                         </>
                                       ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center">
-                                          <span className="text-2xl mb-1">📄</span>
+                                          <span className="text-2xl mb-1">{isPDF ? '📄' : '📎'}</span>
                                           <span className="text-[8px] text-white/40 break-all">{photo.filePath.split(/[/\\]/).pop()}</span>
+                                          {isPDF && <span className="text-[10px] font-black text-white/20 uppercase tracking-tighter mt-1">PDF</span>}
+                                        </div>
+                                      )}
+                                      {isViewable && (
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                          <span className="text-xl">🔍</span>
                                         </div>
                                       )}
                                     </button>

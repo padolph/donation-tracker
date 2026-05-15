@@ -37,7 +37,7 @@ const mockDonations = [
     assetShares: null,
     organization: { id: 2, name: 'Salvation Army' },
     items: [],
-    photos: [{ filePath: '/storage/receipt.jpg' }],
+    photos: [{ filePath: '/storage/receipt.jpg' }, { filePath: '/storage/doc.pdf' }],
   },
 ];
 
@@ -158,5 +158,29 @@ describe('DonationsClient', () => {
 
     // Overlay should be gone
     expect(screen.queryByLabelText(/close overlay/i)).not.toBeInTheDocument();
+  });
+
+  it('opens the image overlay with an iframe when a PDF thumbnail is clicked', async () => {
+    (getDonations as jest.Mock).mockResolvedValue({ success: true, donations: mockDonations });
+
+    await act(async () => {
+      render(<DonationsClient initialDonations={mockDonations} organizations={mockOrganizations} />);
+    });
+
+    // Expand second row
+    const expandButtons = screen.getAllByRole('button', { name: /expand/i });
+    await act(async () => {
+      fireEvent.click(expandButtons[1]);
+    });
+
+    // Click PDF thumbnail
+    const pdfButton = screen.getByRole('button', { name: /view pdf/i });
+    await act(async () => {
+      fireEvent.click(pdfButton);
+    });
+
+    // Overlay should show iframe for PDF
+    expect(screen.getByTitle(/Attachment 2/i)).toBeInTheDocument();
+    expect(screen.getByTitle(/Attachment 2/i).tagName).toBe('IFRAME');
   });
 });
