@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { getDonations, deleteDonation } from '@/app/actions/donationActions';
 import Link from 'next/link';
+import ImageOverlay from '@/components/ImageOverlay';
 
 export interface DonationEvent {
   id: number;
@@ -41,6 +42,7 @@ export default function DonationsClient({
   const [orgFilter, setOrgFilter] = useState<string>('');
   const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [overlayImage, setOverlayImage] = useState<{ src: string, alt: string } | null>(null);
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
@@ -93,6 +95,13 @@ export default function DonationsClient({
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+  };
+
+  const getPhotoUrl = (filePath: string) => {
+    // Extract filename from the stored absolute path
+    const parts = filePath.split(/[/\\]/);
+    const filename = parts[parts.length - 1];
+    return `/api/photos/${filename}`;
   };
 
   return (
@@ -224,16 +233,43 @@ export default function DonationsClient({
                           {donation.photos.length > 0 && (
                             <div>
                               <h4 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-3">Attachments</h4>
-                              <div className="flex gap-4">
-                                {donation.photos.map((photo, idx) => (
-                                  <div key={idx} className="w-24 h-24 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center p-2 text-center break-all text-[8px] text-white/40">
-                                    {photo.filePath}
-                                  </div>
-                                ))}
+                              <div className="flex gap-4 flex-wrap">
+                                {donation.photos.map((photo, idx) => {
+                                  const url = getPhotoUrl(photo.filePath);
+                                  const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(photo.filePath);
+                                  
+                                  return (
+                                    <button 
+                                      key={idx} 
+                                      onClick={() => isImage && setOverlayImage({ src: url, alt: `Attachment ${idx + 1}` })}
+                                      className={`group relative w-24 h-24 bg-white/5 rounded-xl border border-white/10 overflow-hidden transition-all hover:border-white/20 ${isImage ? 'cursor-zoom-in' : 'cursor-default'}`}
+                                      aria-label={isImage ? "View image" : "Attachment"}
+                                    >
+                                      {isImage ? (
+                                        <>
+                                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                                          <img 
+                                            src={url} 
+                                            alt={`Attachment ${idx + 1}`} 
+                                            className="w-full h-full object-cover"
+                                          />
+                                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <span className="text-xl">🔍</span>
+                                          </div>
+                                        </>
+                                      ) : (
+                                        <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center">
+                                          <span className="text-2xl mb-1">📄</span>
+                                          <span className="text-[8px] text-white/40 break-all">{photo.filePath.split(/[/\\]/).pop()}</span>
+                                        </div>
+                                      )}
+                                    </button>
+                                  );
+                                })}
                               </div>
                             </div>
                           )}
-                          {donation.type !== 'ITEMS' && donation.photos.length === 0 && (
+                          {(donation.type !== 'ITEMS' || donation.items.length === 0) && donation.photos.length === 0 && (
                             <div className="text-white/40 text-sm italic">No additional details or attachments.</div>
                           )}
                         </td>
@@ -246,6 +282,14 @@ export default function DonationsClient({
           </tbody>
         </table>
       </div>
+
+      {overlayImage && (
+        <ImageOverlay 
+          src={overlayImage.src} 
+          alt={overlayImage.alt} 
+          onClose={() => setOverlayImage(null)} 
+        />
+      )}
     </div>
   );
 }

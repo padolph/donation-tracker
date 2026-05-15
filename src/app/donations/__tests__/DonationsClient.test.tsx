@@ -120,6 +120,43 @@ describe('DonationsClient', () => {
     });
 
     // Should show photo for second donation
-    expect(screen.getByText(/\/storage\/receipt\.jpg/)).toBeInTheDocument();
+    const thumbnail = screen.getByRole('img', { name: /Attachment 1/i });
+    expect(thumbnail).toBeInTheDocument();
+    expect(thumbnail).toHaveAttribute('src', '/api/photos/receipt.jpg');
+  });
+
+  it('opens the image overlay when a thumbnail is clicked', async () => {
+    (getDonations as jest.Mock).mockResolvedValue({ success: true, donations: mockDonations });
+
+    await act(async () => {
+      render(<DonationsClient initialDonations={mockDonations} organizations={mockOrganizations} />);
+    });
+
+    // Expand second row
+    const expandButtons = screen.getAllByRole('button', { name: /expand/i });
+    await act(async () => {
+      fireEvent.click(expandButtons[1]);
+    });
+
+    // Click thumbnail
+    const thumbnailButton = screen.getByRole('button', { name: /view image/i });
+    await act(async () => {
+      fireEvent.click(thumbnailButton);
+    });
+
+    // Overlay should be visible
+    expect(screen.getByLabelText(/close overlay/i)).toBeInTheDocument();
+    const images = screen.getAllByRole('img', { name: /Attachment 1/i });
+    expect(images).toHaveLength(2); // One thumbnail, one overlay
+    expect(images.find(img => img.classList.contains('object-contain'))).toBeInTheDocument();
+
+    // Close overlay
+    const closeButton = screen.getByLabelText(/close overlay/i);
+    await act(async () => {
+      fireEvent.click(closeButton);
+    });
+
+    // Overlay should be gone
+    expect(screen.queryByLabelText(/close overlay/i)).not.toBeInTheDocument();
   });
 });
