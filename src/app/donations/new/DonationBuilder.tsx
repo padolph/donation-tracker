@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import CatalogSearch from '@/components/CatalogSearch';
 import CustomItemForm from '@/components/CustomItemForm';
 import OrganizationForm from '@/components/OrganizationForm';
-import { saveDonation } from '@/app/actions/donationActions';
+import { saveDonation, updateDonation } from '@/app/actions/donationActions';
 import { savePhoto } from '@/app/actions/photoActions';
 import { useRouter } from 'next/navigation';
+import { DonationEvent } from '../DonationsClient';
 
 interface Organization {
   id: number;
@@ -77,25 +78,49 @@ function AttachmentPreview({ file, onRemove }: { file: File; onRemove: () => voi
   );
 }
 
-export default function DonationBuilder({ initialOrganizations = [] }: { initialOrganizations?: Organization[] }) {
+export default function DonationBuilder({ 
+  initialOrganizations = [],
+  initialDonation,
+}: { 
+  initialOrganizations?: Organization[];
+  initialDonation?: DonationEvent;
+}) {
   const router = useRouter();
   const [organizations, setOrganizations] = useState<Organization[]>(initialOrganizations);
-  const [activeType, setActiveType] = useState('items');
-  const [organizationId, setOrganizationId] = useState<number | ''>('');
+  
+  const [activeType, setActiveType] = useState(initialDonation ? initialDonation.type.toLowerCase() : 'items');
+  const [organizationId, setOrganizationId] = useState<number | ''>(initialDonation ? initialDonation.organizationId : '');
   const [isAddingOrg, setIsAddingOrg] = useState(false);
   
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [notes, setNotes] = useState('');
+  const [date, setDate] = useState(
+    initialDonation ? new Date(initialDonation.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
+  );
+  const [notes, setNotes] = useState(initialDonation?.notes || '');
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [isAddingCustom, setIsAddingCustom] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [condition, setCondition] = useState<'High' | 'Medium' | 'Good'>('Good');
-  const [stagedItems, setStagedItems] = useState<StagedItem[]>([]);
-  const [cashAmount, setCashAmount] = useState<string>('');
-  const [assetTicker, setAssetTicker] = useState<string>('');
-  const [assetShares, setAssetShares] = useState<string>('');
-  const [assetValue, setAssetValue] = useState<string>('');
+  
+  const initialStagedItems = initialDonation?.items?.map((i) => ({
+    itemId: i.item ? i.item.id : i.id, // In some contexts item.id might be used, handling carefully, let's just bypass with proper typing
+    description: i.item.description,
+    quantity: i.quantity,
+    condition: i.condition === 'Medium' ? 'Good' : i.condition as 'High' | 'Medium' | 'Good',
+    value: i.lockedValue,
+    totalValue: i.lockedValue * i.quantity,
+  })) || [];
+
+  const [stagedItems, setStagedItems] = useState<StagedItem[]>(initialStagedItems);
+  const [cashAmount, setCashAmount] = useState<string>(initialDonation?.cashAmount?.toString() || '');
+  const [assetTicker, setAssetTicker] = useState<string>(initialDonation?.assetTicker || '');
+  const [assetShares, setAssetShares] = useState<string>(initialDonation?.assetShares?.toString() || '');
+  const [assetValue, setAssetValue] = useState<string>(
+    initialDonation?.type === 'ASSETS' && initialDonation?.items?.length === 0 && !initialDonation?.cashAmount
+      ? '' : ''
+  );
+  
   const [photos, setPhotos] = useState<File[]>([]);
+  const [existingPhotos] = useState<{filePath: string}[]>(initialDonation?.photos || []);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSelectItem = (item: Item) => {
@@ -152,7 +177,7 @@ export default function DonationBuilder({ initialOrganizations = [] }: { initial
       };
 
       // 2. Save donation
-      const result = await saveDonation({
+      const dataPayload = {
         organizationId: typeof organizationId === 'string' ? parseInt(organizationId) : organizationId,
         date: new Date(date),
         type: typeMap[activeType] || 'ITEMS',
@@ -166,8 +191,12 @@ export default function DonationBuilder({ initialOrganizations = [] }: { initial
         cashAmount: activeType === 'cash' ? parseFloat(cashAmount) || undefined : activeType === 'assets' ? parseFloat(assetValue) || undefined : undefined,
         assetTicker: activeType === 'assets' ? assetTicker : undefined,
         assetShares: activeType === 'assets' ? parseFloat(assetShares) || undefined : undefined,
-        photos: photoPaths,
-      });
+        photos: [...existingPhotos.map(p => p.filePath), ...photoPaths],
+      };
+
+      const result = initialDonation 
+        ? await updateDonation(initialDonation.id, dataPayload)
+        : await saveDonation(dataPayload);
 
       if (result.success) {
         router.push('/donations');
@@ -197,8 +226,8 @@ export default function DonationBuilder({ initialOrganizations = [] }: { initial
   return (
     <div className="p-8 max-w-5xl mx-auto">
       <header className="mb-10">
-        <h1 className="text-3xl font-bold mb-1">Add New Donation</h1>
-        <p className="text-white/50 text-sm">Record a new charitable contribution</p>
+        <h1 className="text-3xl font-bold mb-1">{initialDonation ? 'Edit Donation' : 'Add New Donation'}</h1>
+        <p className="text-white/50 text-sm">{initialDonation ? 'Update an existing charitable contribution' : 'Record a new charitable contribution'}</p>
       </header>
 
       <div className="space-y-8">
@@ -524,7 +553,7 @@ export default function DonationBuilder({ initialOrganizations = [] }: { initial
             disabled={isSaveDisabled}
             className="w-full mt-10 bg-accent text-black font-black py-5 rounded-xl hover:bg-yellow-500 transition-all disabled:opacity-30 disabled:cursor-not-allowed uppercase tracking-widest"
           >
-            {isSaving ? 'Processing...' : activeType === 'items' && stagedItems.length === 0 ? 'Add Items to Continue' : !organizationId ? 'Enter Organization' : 'Add Donation'}
+            {isSaving ? 'Processing...' : activeType === 'items' && stagedItems.length === 0 ? 'Add Items to Continue' : !organizationId ? 'Enter Organization' : initialDonation ? 'Update Donation' : 'Add Donation'}
           </button>
         </section>
       </div>
