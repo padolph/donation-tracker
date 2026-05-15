@@ -43,6 +43,9 @@
     "tsx": "^4.22.0",
     "typescript": "^6"
   },
+  "overrides": {
+    "postcss": "^8.5.10"
+  },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
   }

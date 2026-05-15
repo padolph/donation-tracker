@@ -71,3 +71,9 @@ model DonatedItem {
   item          Item          @relation(fields: [itemId], references: [id])
 }
 
+model AppSettings {
+  id               Int      @id @default(1)
+  marginalTaxRate  Float    @default(0.32)
+  updatedAt        DateTime @updatedAt
+}
+
