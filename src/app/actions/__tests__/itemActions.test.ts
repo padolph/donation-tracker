@@ -1,6 +1,6 @@
 import { searchItems } from '../itemActions';
 import { prisma } from '@/lib/prisma';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { DeepMockProxy } from 'jest-mock-extended';
 
 jest.mock('@/lib/prisma', () => {
   const { mockDeep } = jest.requireActual('jest-mock-extended');

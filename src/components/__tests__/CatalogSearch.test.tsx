@@ -70,7 +70,7 @@ describe('CatalogSearch', () => {
 
     fireEvent.change(input, { target: { value: 'Winter' } });
 
-    const firstResult = await screen.findByText(/Winter Coat/i);
+    await screen.findByText(/Winter Coat/i);
     
     // Press ArrowDown to highlight the first item
     fireEvent.keyDown(input, { key: 'ArrowDown' });

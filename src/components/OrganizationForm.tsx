@@ -10,7 +10,7 @@ interface OrganizationFormProps {
     address?: string | null;
     taxId?: string | null;
   };
-  onSave: (organization: any) => void;
+  onSave: (organization: { id: number; name: string; address?: string | null; taxId?: string | null }) => void;
   onCancel: () => void;
 }
 
@@ -39,12 +39,12 @@ export default function OrganizationForm({ initialData, onSave, onCancel }: Orga
         result = await createOrganization(data);
       }
 
-      if (result.success) {
+      if (result.success && result.organization) {
         onSave(result.organization);
       } else {
         alert(result.error || 'An error occurred while saving.');
       }
-    } catch (error) {
+    } catch {
       alert('An unexpected error occurred.');
     } finally {
       setIsSaving(false);
