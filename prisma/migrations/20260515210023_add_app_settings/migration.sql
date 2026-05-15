@@ -1,0 +1,6 @@
+-- CreateTable
+CREATE TABLE "AppSettings" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT DEFAULT 1,
+    "marginalTaxRate" REAL NOT NULL DEFAULT 0.32,
+    "updatedAt" DATETIME NOT NULL
+);
