@@ -30,7 +30,7 @@ describe('OrganizationsClient', () => {
   });
 
   it('renders a list of organizations', () => {
-    render(<OrganizationsClient initialOrganizations={mockOrganizations as any} />);
+    render(<OrganizationsClient initialOrganizations={mockOrganizations as unknown as []} />);
     
     expect(screen.getByText('Goodwill')).toBeInTheDocument();
     expect(screen.getByText('123 Main St')).toBeInTheDocument();
@@ -41,7 +41,7 @@ describe('OrganizationsClient', () => {
   });
 
   it('opens the add organization modal when clicking Add New', () => {
-    render(<OrganizationsClient initialOrganizations={mockOrganizations as any} />);
+    render(<OrganizationsClient initialOrganizations={mockOrganizations as unknown as []} />);
     
     expect(screen.queryByText('Add Organization')).not.toBeInTheDocument();
     
@@ -51,7 +51,7 @@ describe('OrganizationsClient', () => {
   });
 
   it('opens the edit modal with correct data when clicking Edit', () => {
-    render(<OrganizationsClient initialOrganizations={mockOrganizations as any} />);
+    render(<OrganizationsClient initialOrganizations={mockOrganizations as unknown as []} />);
     
     const editButtons = screen.getAllByRole('button', { name: /Edit/i });
     fireEvent.click(editButtons[0]); // Edit Goodwill
@@ -66,7 +66,7 @@ describe('OrganizationsClient', () => {
     // Mock confirm dialog
     const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
     
-    render(<OrganizationsClient initialOrganizations={mockOrganizations as any} />);
+    render(<OrganizationsClient initialOrganizations={mockOrganizations as unknown as []} />);
     
     const deleteButtons = screen.getAllByRole('button', { name: /Delete/i });
     fireEvent.click(deleteButtons[0]); // Delete Goodwill
@@ -83,7 +83,7 @@ describe('OrganizationsClient', () => {
   it('does not call deleteOrganization if user cancels confirmation', () => {
     const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(false);
     
-    render(<OrganizationsClient initialOrganizations={mockOrganizations as any} />);
+    render(<OrganizationsClient initialOrganizations={mockOrganizations as unknown as []} />);
     
     const deleteButtons = screen.getAllByRole('button', { name: /Delete/i });
     fireEvent.click(deleteButtons[0]);

@@ -40,7 +40,7 @@ describe('DonationBuilder Page', () => {
     (savePhoto as jest.Mock).mockImplementation(async (file: File) => `/mock/path/${file.name}`);
   });
 
-  const renderComponent = () => render(<DonationBuilder initialOrganizations={mockOrganizations as any} />);
+  const renderComponent = () => render(<DonationBuilder initialOrganizations={mockOrganizations as unknown as []} />);
 
   it('searches for items and allows adding them to the donation', async () => {
     const mockItems = [
