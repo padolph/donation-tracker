@@ -203,7 +203,7 @@ describe('DonationsClient', () => {
     (getDonations as jest.Mock).mockResolvedValue({ success: true, donations: mockAssetDonations });
 
     await act(async () => {
-      render(<DonationsClient initialDonations={mockAssetDonations as any} organizations={mockOrganizations} />);
+      render(<DonationsClient initialDonations={mockAssetDonations as never} organizations={mockOrganizations} />);
     });
 
     expect(screen.getByRole('cell', { name: '$500.25' })).toBeInTheDocument();

@@ -17,15 +17,17 @@ model Item {
   id             Int      @id @default(autoincrement())
   categoryId     Int
   description    String
+  leafName       String   @default("")
   defaultHigh    Float?   
   defaultMedium  Float?   
   userHigh       Float?   
   userMedium     Float?   
   isCustomItem   Boolean  @default(false)
-  
+
   category       Category @relation(fields: [categoryId], references: [id])
   donatedItems   DonatedItem[]
 }
+
 
 model Organization {
   id              Int             @id @default(autoincrement())
