@@ -32,6 +32,28 @@ export async function searchItems(query: string) {
   });
 }
 
+export async function getCategories() {
+  return await prisma.category.findMany({
+    orderBy: {
+      name: 'asc',
+    },
+  });
+}
+
+export async function getItemsByCategory(categoryId: number) {
+  return await prisma.item.findMany({
+    where: {
+      categoryId,
+    },
+    include: {
+      category: true,
+    },
+    orderBy: {
+      description: 'asc',
+    },
+  });
+}
+
 export async function createCustomItem(data: {
   description: string;
   categoryName: string;

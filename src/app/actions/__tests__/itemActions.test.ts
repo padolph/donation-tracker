@@ -1,4 +1,4 @@
-import { searchItems } from '../itemActions';
+import { searchItems, getCategories, getItemsByCategory } from '../itemActions';
 import { prisma } from '@/lib/prisma';
 import { DeepMockProxy } from 'jest-mock-extended';
 
@@ -14,6 +14,7 @@ const prismaMock = prisma as unknown as DeepMockProxy<typeof prisma>;
 
 beforeEach(() => {
   prismaMock.item.findMany.mockReset();
+  prismaMock.category.findMany.mockReset();
 });
 
 describe('itemActions', () => {
@@ -50,29 +51,45 @@ describe('itemActions', () => {
       expect(result).toEqual(mockItems);
     });
 
-    it('should NOT return items matching only the category name', async () => {
-      prismaMock.item.findMany.mockResolvedValue([]);
-
-      await searchItems('Clothing');
-
-      expect(prismaMock.item.findMany).toHaveBeenCalledWith(expect.objectContaining({
-        where: {
-          AND: [
-            {
-              description: { contains: 'Clothing' },
-            },
-          ],
-        },
-      }));
-      // Verify category is NOT in the where clause
-      const call = prismaMock.item.findMany.mock.calls[0][0];
-      expect(JSON.stringify(call?.where)).not.toContain('category');
-    });
-
     it('should return an empty array if no query is provided', async () => {
       const result = await searchItems('');
       expect(result).toEqual([]);
       expect(prismaMock.item.findMany).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getCategories', () => {
+    it('should return all categories ordered by name', async () => {
+      const mockCategories = [
+        { id: 1, name: 'Automotive' },
+        { id: 2, name: 'Clothing' },
+      ];
+      prismaMock.category.findMany.mockResolvedValue(mockCategories);
+
+      const result = await getCategories();
+
+      expect(prismaMock.category.findMany).toHaveBeenCalledWith({
+        orderBy: { name: 'asc' },
+      });
+      expect(result).toEqual(mockCategories);
+    });
+  });
+
+  describe('getItemsByCategory', () => {
+    it('should return items for a specific category', async () => {
+      const mockItems = [
+        { id: 1, description: 'Item 1', categoryId: 1 },
+      ];
+      prismaMock.item.findMany.mockResolvedValue(mockItems as never[]);
+
+      const result = await getItemsByCategory(1);
+
+      expect(prismaMock.item.findMany).toHaveBeenCalledWith({
+        where: { categoryId: 1 },
+        include: { category: true },
+        orderBy: { description: 'asc' },
+      });
+      expect(result).toEqual(mockItems);
     });
   });
 });

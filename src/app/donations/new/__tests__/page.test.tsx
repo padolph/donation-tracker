@@ -1,12 +1,14 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import DonationBuilder from '../DonationBuilder';
-import { searchItems, createCustomItem } from '@/app/actions/itemActions';
+import { searchItems, createCustomItem, getCategories, getItemsByCategory } from '@/app/actions/itemActions';
 import { saveDonation } from '@/app/actions/donationActions';
 import { savePhoto } from '@/app/actions/photoActions';
 
 jest.mock('@/app/actions/itemActions', () => ({
   searchItems: jest.fn(),
   createCustomItem: jest.fn(),
+  getCategories: jest.fn(),
+  getItemsByCategory: jest.fn(),
 }));
 
 jest.mock('@/app/actions/donationActions', () => ({
@@ -38,9 +40,34 @@ describe('DonationBuilder Page', () => {
     jest.clearAllMocks();
     (saveDonation as jest.Mock).mockResolvedValue({ success: true, donation: { id: 1 } });
     (savePhoto as jest.Mock).mockImplementation(async (file: File) => `/mock/path/${file.name}`);
+    (getCategories as jest.Mock).mockResolvedValue([]);
   });
 
   const renderComponent = () => render(<DonationBuilder initialOrganizations={mockOrganizations as unknown as []} />);
+
+  it('allows switching between Search and Browse modes', async () => {
+    (getCategories as jest.Mock).mockResolvedValue([
+      { id: 1, name: 'Clothing' }
+    ]);
+
+    renderComponent();
+
+    // Default should be Search
+    expect(screen.getByPlaceholderText(/e\.g\. Men's Suit/i)).toBeInTheDocument();
+
+    // Switch to Browse
+    const browseToggle = screen.getByRole('button', { name: /browse/i });
+    fireEvent.click(browseToggle);
+
+    // Should now show browse component (by checking for category text)
+    expect(await screen.findByText('Clothing')).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/e\.g\. Men's Suit/i)).not.toBeInTheDocument();
+
+    // Switch back to Search
+    const searchToggle = screen.getByRole('button', { name: /search/i });
+    fireEvent.click(searchToggle);
+    expect(screen.getByPlaceholderText(/e\.g\. Men's Suit/i)).toBeInTheDocument();
+  });
 
   it('searches for items and allows adding them to the donation', async () => {
     const mockItems = [

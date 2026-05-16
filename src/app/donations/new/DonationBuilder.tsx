@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import CatalogSearch from '@/components/CatalogSearch';
+import CatalogBrowse from '@/components/CatalogBrowse';
 import CustomItemForm from '@/components/CustomItemForm';
 import OrganizationForm from '@/components/OrganizationForm';
 import { saveDonation, updateDonation } from '@/app/actions/donationActions';
@@ -128,6 +129,7 @@ export default function DonationBuilder({
   const [notes, setNotes] = useState(initialDonation?.notes || '');
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [isAddingCustom, setIsAddingCustom] = useState(false);
+  const [itemEntryMode, setItemEntryMode] = useState<'search' | 'browse'>('search');
   const [quantity, setQuantity] = useState(1);
   const [condition, setCondition] = useState<'High' | 'Medium' | 'Good'>('Good');
   
@@ -445,10 +447,30 @@ export default function DonationBuilder({
                     <>
                       <div className="text-4xl mb-4 text-white/20">📦</div>
                       <h3 className="font-bold text-white/80 mb-2">No items added yet</h3>
-                      <p className="text-sm text-white/40 mb-6">Search for an item or add a custom one to begin.</p>
+                      <p className="text-sm text-white/40 mb-6">Search or browse for an item, or add a custom one to begin.</p>
                     </>
                   )}
-                  <CatalogSearch onSelectItem={handleSelectItem} className={stagedItems.length === 0 ? "w-full max-w-sm" : "w-full"} />
+                  
+                  <div className="w-full max-w-sm mb-6 flex bg-white/5 p-1 rounded-lg border border-white/10">
+                    <button 
+                      onClick={() => setItemEntryMode('search')}
+                      className={`flex-1 py-2 text-xs font-bold uppercase tracking-widest rounded-md transition-all ${itemEntryMode === 'search' ? 'bg-accent text-black shadow-lg' : 'text-white/40 hover:text-white'}`}
+                    >
+                      🔍 Search
+                    </button>
+                    <button 
+                      onClick={() => setItemEntryMode('browse')}
+                      className={`flex-1 py-2 text-xs font-bold uppercase tracking-widest rounded-md transition-all ${itemEntryMode === 'browse' ? 'bg-accent text-black shadow-lg' : 'text-white/40 hover:text-white'}`}
+                    >
+                      📂 Browse
+                    </button>
+                  </div>
+
+                  {itemEntryMode === 'search' ? (
+                    <CatalogSearch onSelectItem={handleSelectItem} className={stagedItems.length === 0 ? "w-full max-w-sm" : "w-full"} />
+                  ) : (
+                    <CatalogBrowse onSelectItem={handleSelectItem} className={stagedItems.length === 0 ? "w-full max-w-sm" : "w-full"} />
+                  )}
                 </div>
               )}
             </div>
