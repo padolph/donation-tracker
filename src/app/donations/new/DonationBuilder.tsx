@@ -78,6 +78,36 @@ function AttachmentPreview({ file, onRemove }: { file: File; onRemove: () => voi
   );
 }
 
+function ExistingAttachmentPreview({ filePath, onRemove }: { filePath: string; onRemove: () => void }) {
+  const filename = filePath.split(/[/\\]/).pop() || '';
+  const isPDF = filename.toLowerCase().endsWith('.pdf');
+  const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
+  const url = `/api/photos/${filename}`;
+
+  return (
+    <div className="group relative w-24 h-24 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden hover:border-white/20 transition-all shadow-lg">
+      {isImage ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={url} alt={filename} className="w-full h-full object-cover" />
+      ) : isPDF ? (
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-3xl">📄</span>
+          <span className="text-[10px] font-black text-white/40 uppercase tracking-tighter">PDF</span>
+        </div>
+      ) : (
+        <span className="text-[8px] text-white/40 p-2 text-center break-all">{filename}</span>
+      )}
+      <button 
+        onClick={onRemove}
+        className="absolute inset-0 bg-red-900/90 text-white opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center font-bold text-xs gap-1"
+      >
+        <span className="text-lg">🗑️</span>
+        <span>Remove</span>
+      </button>
+    </div>
+  );
+}
+
 export default function DonationBuilder({ 
   initialOrganizations = [],
   initialDonation,
@@ -120,7 +150,7 @@ export default function DonationBuilder({
   );
   
   const [photos, setPhotos] = useState<File[]>([]);
-  const [existingPhotos] = useState<{filePath: string}[]>(initialDonation?.photos || []);
+  const [existingPhotos, setExistingPhotos] = useState<{filePath: string}[]>(initialDonation?.photos || []);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSelectItem = (item: Item) => {
@@ -527,9 +557,16 @@ export default function DonationBuilder({
           <section className="mt-8 pt-6 border-t border-white/10">
             <h3 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-4">Attachments</h3>
             <div className="flex flex-wrap gap-4">
+              {existingPhotos.map((photo, i) => (
+                <ExistingAttachmentPreview 
+                  key={`existing-${i}`} 
+                  filePath={photo.filePath} 
+                  onRemove={() => setExistingPhotos(existingPhotos.filter((_, index) => index !== i))} 
+                />
+              ))}
               {photos.map((photo, i) => (
                 <AttachmentPreview 
-                  key={i} 
+                  key={`new-${i}`} 
                   file={photo} 
                   onRemove={() => setPhotos(photos.filter((_, index) => index !== i))} 
                 />
