@@ -258,9 +258,9 @@ export default function DonationsClient({
                                         </>
                                       ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center">
-                                          <span className="text-2xl mb-1">{isPDF ? '📄' : '📎'}</span>
-                                          <span className="text-[8px] text-white/40 break-all">{photo.filePath.split(/[/\\]/).pop()}</span>
-                                          {isPDF && <span className="text-[10px] font-black text-white/20 uppercase tracking-tighter mt-1">PDF</span>}
+                                          <span className="text-3xl mb-1">{isPDF ? '📄' : '📎'}</span>
+                                          {isPDF && <span className="text-[10px] font-black text-white/40 uppercase tracking-tighter">PDF</span>}
+                                          {!isPDF && <span className="text-[8px] text-white/40 break-all">{photo.filePath.split(/[/\\]/).pop()}</span>}
                                         </div>
                                       )}
                                       {isViewable && (
