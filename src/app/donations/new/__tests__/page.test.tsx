@@ -271,7 +271,7 @@ describe('DonationBuilder Page', () => {
       photos: [],
     };
 
-    render(<DonationBuilder initialDonation={mockInitialDonation as any} initialOrganizations={mockOrganizations as any} />);
+    render(<DonationBuilder initialDonation={mockInitialDonation as never} initialOrganizations={mockOrganizations as never} />);
 
     // Total Value should be $500.25
     expect(screen.getByText('$500.25')).toBeInTheDocument();

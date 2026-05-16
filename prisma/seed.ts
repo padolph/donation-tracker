@@ -30,10 +30,12 @@ async function main() {
     const cleanHigh = parseFloat(rawHigh.replace(/[^0-9.]/g, '')) || 0;
     const cleanMedium = parseFloat(rawMedium.replace(/[^0-9.]/g, '')) || 0;
 
-    // Logic for "Category: Item" format
-    let itemName = rawDescription;
+    // Logic for leafName vs description
+    const fullDescription = rawDescription;
+    let leafName = rawDescription;
     if (rawDescription.includes(':')) {
-      itemName = rawDescription.split(':').slice(1).join(':').trim();
+      const parts = rawDescription.split(':').map(p => p.trim());
+      leafName = parts[parts.length - 1];
     }
 
     const category = await prisma.category.upsert({
@@ -45,7 +47,8 @@ async function main() {
     await prisma.item.create({
       data: {
         categoryId: category.id,
-        description: itemName,
+        description: fullDescription,
+        leafName: leafName,
         defaultHigh: cleanHigh,
         defaultMedium: cleanMedium,
       },

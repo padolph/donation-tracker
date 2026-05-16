@@ -10,20 +10,9 @@ export async function searchItems(query: string) {
   return await prisma.item.findMany({
     where: {
       AND: terms.map((term) => ({
-        OR: [
-          {
-            description: {
-              contains: term,
-            },
-          },
-          {
-            category: {
-              name: {
-                contains: term,
-              },
-            },
-          },
-        ],
+        description: {
+          contains: term,
+        },
       })),
     },
     include: {
@@ -39,7 +28,7 @@ export async function searchItems(query: string) {
         description: 'asc',
       },
     ],
-    take: 20,
+    take: 50, // Increased limit for broader searches
   });
 }
 
@@ -52,6 +41,7 @@ export async function createCustomItem(data: {
   return await prisma.item.create({
     data: {
       description: data.description,
+      leafName: data.description, // For custom items, description is the leaf
       defaultHigh: data.defaultHigh,
       defaultMedium: data.defaultMedium,
       isCustomItem: true,

@@ -18,11 +18,12 @@ beforeEach(() => {
 
 describe('itemActions', () => {
   describe('searchItems', () => {
-    it('should return items matching the search query', async () => {
+    it('should return items matching the search query in description', async () => {
       const mockItems = [
         {
           id: 1,
           description: 'Winter Coat',
+          leafName: 'Coat',
           categoryId: 1,
           defaultHigh: 50,
           defaultMedium: 25,
@@ -41,45 +42,31 @@ describe('itemActions', () => {
         where: {
           AND: [
             {
-              OR: [
-                { description: { contains: 'Winter' } },
-                { category: { name: { contains: 'Winter' } } },
-              ],
+              description: { contains: 'Winter' },
             },
           ],
         },
-        take: 20,
       }));
       expect(result).toEqual(mockItems);
     });
 
-    it('should return items matching the category name', async () => {
-      const mockItems = [
-        {
-          id: 2,
-          description: 'Running Shoes',
-          categoryId: 2,
-          category: { id: 2, name: "Men's Footwear" },
-        },
-      ];
+    it('should NOT return items matching only the category name', async () => {
+      prismaMock.item.findMany.mockResolvedValue([]);
 
-      prismaMock.item.findMany.mockResolvedValue(mockItems as never[]);
-
-      const result = await searchItems("Men's");
+      await searchItems('Clothing');
 
       expect(prismaMock.item.findMany).toHaveBeenCalledWith(expect.objectContaining({
         where: {
           AND: [
             {
-              OR: [
-                { description: { contains: "Men's" } },
-                { category: { name: { contains: "Men's" } } },
-              ],
+              description: { contains: 'Clothing' },
             },
           ],
         },
       }));
-      expect(result).toEqual(mockItems);
+      // Verify category is NOT in the where clause
+      const call = prismaMock.item.findMany.mock.calls[0][0];
+      expect(JSON.stringify(call?.where)).not.toContain('category');
     });
 
     it('should return an empty array if no query is provided', async () => {
