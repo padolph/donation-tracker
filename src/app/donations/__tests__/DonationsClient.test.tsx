@@ -183,4 +183,29 @@ describe('DonationsClient', () => {
     expect(screen.getByTitle(/Attachment 2/i)).toBeInTheDocument();
     expect(screen.getByTitle(/Attachment 2/i).tagName).toBe('IFRAME');
   });
+
+  it('correctly calculates total value for ASSET donations', async () => {
+    const mockAssetDonations = [
+      {
+        id: 3,
+        date: new Date('2026-05-15T10:00:00Z'),
+        organizationId: 1,
+        type: 'ASSETS',
+        cashAmount: 500.25,
+        assetTicker: 'AAPL',
+        assetShares: 2.5,
+        organization: { id: 1, name: 'Goodwill' },
+        items: [],
+        photos: [],
+      },
+    ];
+
+    (getDonations as jest.Mock).mockResolvedValue({ success: true, donations: mockAssetDonations });
+
+    await act(async () => {
+      render(<DonationsClient initialDonations={mockAssetDonations as any} organizations={mockOrganizations} />);
+    });
+
+    expect(screen.getByRole('cell', { name: '$500.25' })).toBeInTheDocument();
+  });
 });

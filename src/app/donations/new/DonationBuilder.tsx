@@ -145,8 +145,7 @@ export default function DonationBuilder({
   const [assetTicker, setAssetTicker] = useState<string>(initialDonation?.assetTicker || '');
   const [assetShares, setAssetShares] = useState<string>(initialDonation?.assetShares?.toString() || '');
   const [assetValue, setAssetValue] = useState<string>(
-    initialDonation?.type === 'ASSETS' && initialDonation?.items?.length === 0 && !initialDonation?.cashAmount
-      ? '' : ''
+    initialDonation?.type === 'ASSETS' ? initialDonation.cashAmount?.toString() || '' : ''
   );
   
   const [photos, setPhotos] = useState<File[]>([]);

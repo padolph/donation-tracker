@@ -86,7 +86,7 @@ export default function DonationsClient({
   };
 
   const calculateTotalValue = (donation: DonationEvent) => {
-    if (donation.type === 'CASH') return donation.cashAmount || 0;
+    if (donation.type === 'CASH' || donation.type === 'ASSETS') return donation.cashAmount || 0;
     if (donation.type === 'ITEMS') {
       return donation.items.reduce((total, item) => total + item.quantity * item.lockedValue, 0);
     }
@@ -227,6 +227,18 @@ export default function DonationsClient({
                                     <span className="font-black text-accent">{formatCurrency(item.lockedValue)}</span>
                                   </div>
                                 ))}
+                              </div>
+                            </div>
+                          )}
+                          {donation.type === 'ASSETS' && (
+                            <div className="mb-6">
+                              <h4 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-3">Asset Details</h4>
+                              <div className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5">
+                                <div>
+                                  <span className="font-bold text-white block">{donation.assetTicker}</span>
+                                  <span className="text-xs text-white/40">Shares: {donation.assetShares}</span>
+                                </div>
+                                <span className="font-black text-accent">{formatCurrency(donation.cashAmount || 0)}</span>
                               </div>
                             </div>
                           )}

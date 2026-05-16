@@ -256,4 +256,28 @@ describe('DonationBuilder Page', () => {
     expect(alertMock).toHaveBeenCalledWith('File "too-big.jpg" is too large. Max size is 10MB.');
     alertMock.mockRestore();
   });
+
+  it('correctly initializes assetValue when editing an asset donation', () => {
+    const mockInitialDonation = {
+      id: 3,
+      date: new Date('2026-05-15T10:00:00Z'),
+      organizationId: 1,
+      type: 'ASSETS',
+      cashAmount: 500.25,
+      assetTicker: 'AAPL',
+      assetShares: 2.5,
+      organization: { id: 1, name: 'Goodwill' },
+      items: [],
+      photos: [],
+    };
+
+    render(<DonationBuilder initialDonation={mockInitialDonation as any} initialOrganizations={mockOrganizations as any} />);
+
+    // Total Value should be $500.25
+    expect(screen.getByText('$500.25')).toBeInTheDocument();
+
+    // The asset value input should have "500.25"
+    const assetValueInput = screen.getByLabelText(/Total Value on Date/i);
+    expect(assetValueInput).toHaveValue(500.25);
+  });
 });
