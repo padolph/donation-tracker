@@ -47,15 +47,6 @@ export default function Sidebar() {
           })}
         </nav>
       </div>
-
-      <div className="mt-auto p-6">
-        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-          <p className="text-xs text-white/40 mb-2 uppercase tracking-wider font-bold">Need help?</p>
-          <p className="text-xs text-white/80 leading-relaxed">
-            Track your charitable donations for tax deductions
-          </p>
-        </div>
-      </div>
     </aside>
   );
 }
