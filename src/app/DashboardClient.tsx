@@ -56,19 +56,6 @@ export default function DashboardClient({ initialStats }: { initialStats: Dashbo
       <section className="pt-4">
         <TaxImpactWidget taxSavings={stats.taxSavings} marginalTaxRate={stats.marginalTaxRate} />
       </section>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-8 h-64 flex flex-col items-center justify-center text-center">
-          <span className="text-4xl mb-4">📈</span>
-          <h3 className="font-bold text-white/80 mb-2">Monthly Trends</h3>
-          <p className="text-sm text-white/40 max-w-[200px]">Visual trends coming in a future update.</p>
-        </div>
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-8 h-64 flex flex-col items-center justify-center text-center">
-          <span className="text-4xl mb-4">🏆</span>
-          <h3 className="font-bold text-white/80 mb-2">Top Organizations</h3>
-          <p className="text-sm text-white/40 max-w-[200px]">Your most supported causes will appear here.</p>
-        </div>
-      </div>
     </div>
   );
 }
