@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { YearlyReportData, ReportOrganization, ReportDonation, ReportItem } from '@/app/actions/reportActions';
 
 interface ReportClientProps {
@@ -7,6 +8,12 @@ interface ReportClientProps {
 }
 
 export default function ReportClient({ initialData }: ReportClientProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handlePrint = () => {
     window.print();
   };
@@ -143,7 +150,9 @@ export default function ReportClient({ initialData }: ReportClientProps) {
         <footer className="mt-16 pt-8 border-t-4 border-black flex justify-between items-center">
           <div>
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Report Generated</p>
-            <p className="text-sm font-bold">{new Date().toLocaleDateString()} {new Date().toLocaleTimeString()}</p>
+            <p className="text-sm font-bold">
+              {mounted ? `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}` : ''}
+            </p>
           </div>
           <div className="text-right">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Grand Total for {initialData.year}:</p>
