@@ -44,8 +44,19 @@ async function main() {
       create: { name: categoryName },
     });
 
-    await prisma.item.create({
-      data: {
+    await prisma.item.upsert({
+      where: {
+        categoryId_description: {
+          categoryId: category.id,
+          description: fullDescription,
+        },
+      },
+      update: {
+        leafName: leafName,
+        defaultHigh: cleanHigh,
+        defaultMedium: cleanMedium,
+      },
+      create: {
         categoryId: category.id,
         description: fullDescription,
         leafName: leafName,
