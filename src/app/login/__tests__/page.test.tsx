@@ -17,22 +17,23 @@ describe("Login Page", () => {
   const mockPush = jest.fn();
 
   beforeEach(() => {
-    (useRouter as jest.jest.Mock).mockReturnValue({
+    (useRouter as jest.Mock).mockReturnValue({
       push: mockPush,
+      refresh: jest.fn(),
     });
     jest.clearAllMocks();
   });
 
   it("renders the login form with a password input", () => {
     render(<LoginPage />);
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/access password/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /unlock application/i })).toBeInTheDocument();
   });
 
   it("calls signIn when the form is submitted", async () => {
     render(<LoginPage />);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole("button", { name: /sign in/i });
+    const passwordInput = screen.getByLabelText(/access password/i);
+    const submitButton = screen.getByRole("button", { name: /unlock application/i });
 
     fireEvent.change(passwordInput, { target: { value: "testpassword" } });
     fireEvent.click(submitButton);

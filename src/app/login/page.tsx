@@ -36,21 +36,28 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            Donation Tracker
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Please enter your password to continue
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="-space-y-px rounded-md shadow-sm">
-            <div>
-              <label htmlFor="password" title="Password" className="sr-only">
-                Password
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md">
+        <div className="bg-sidebar p-8 rounded-2xl border border-white/10 shadow-2xl">
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center text-black text-3xl font-bold mb-4 shadow-lg shadow-accent/20">
+              ♡
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-white">
+              DonationTrack
+            </h1>
+            <p className="text-white/50 text-sm">
+              Secure Personal Ledger
+            </p>
+          </div>
+
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <label 
+                htmlFor="password" 
+                className="text-xs font-semibold text-white/40 uppercase tracking-wider ml-1"
+              >
+                Access Password
               </label>
               <input
                 id="password"
@@ -58,30 +65,41 @@ export default function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="relative block w-full rounded-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-2"
-                placeholder="Password"
+                className="block w-full rounded-xl border-white/5 bg-[#1e1e21] py-3 px-4 text-white placeholder:text-white/20 focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-          </div>
 
-          {error && (
-            <div className="text-red-500 text-sm text-center font-medium">
-              {error}
-            </div>
-          )}
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 text-red-500 py-3 px-4 rounded-xl text-sm text-center font-medium animate-pulse">
+                {error}
+              </div>
+            )}
 
-          <div>
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
+              className="w-full flex justify-center items-center py-3 px-4 rounded-xl bg-accent hover:bg-yellow-500 text-black font-bold transition-all shadow-lg shadow-accent/10 active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100"
             >
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                  <span>Verifying...</span>
+                </div>
+              ) : (
+                "Unlock Application"
+              )}
             </button>
+          </form>
+          
+          <div className="mt-8 text-center">
+            <p className="text-white/20 text-[10px] uppercase tracking-[0.2em] font-medium">
+              Private Offline Access Only
+            </p>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
