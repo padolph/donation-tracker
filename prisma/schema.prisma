@@ -26,6 +26,8 @@ model Item {
 
   category       Category @relation(fields: [categoryId], references: [id])
   donatedItems   DonatedItem[]
+
+  @@unique([categoryId, description])
 }
 
 
