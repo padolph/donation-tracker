@@ -12,6 +12,7 @@ This application was "vibe-coded" into existence as a personal response to the r
 - **Organization Management:** Maintain a directory of your favorite charities, including Tax IDs and addresses.
 - **Receipt & Photo Attachments:** Securely attach local images and receipts to your donation events. Photos are copied to a private local storage directory.
 - **Interactive Dashboard:** View annual summaries of your giving, broken down by type and organization.
+- **Annual Tax Reporting:** Generate IRS-compliant annual summaries grouped by organization and date. Includes print-optimized layouts and CSV export for data portability.
 - **Tax Impact Widget:** Estimate your tax savings based on your marginal tax rate.
 - **Custom Items:** Easily add and save your own items if they aren't in the default catalog.
 
