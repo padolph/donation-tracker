@@ -4,8 +4,8 @@ jest.mock("../auth", () => ({
 
 import { auth } from "../auth";
 
-describe("Middleware", () => {
-  it("should export auth as the middleware", () => {
+describe("Proxy", () => {
+  it("should export auth as the proxy", () => {
     expect(auth).toBeDefined();
   });
 });
