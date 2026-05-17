@@ -65,3 +65,14 @@ This document defines the functional requirements for the Donation Tracker. When
 * It displays aggregate cards for Total Donated, Cash vs. Items breakdown, and total organizations supported.
 * **Tax Impact Widget:** It calculates an estimated tax savings based on a configurable marginal tax rate (e.g., Total Donated * 32%).
 
+### 6: Annual Tax Reporting Dashboard & Archival Export
+
+**Story:** As a user preparing for tax season, I want to generate a yearly summary report of my donations strictly grouped by Organization and then by Donation Date, with options to both print a clean hard copy and export the raw data, so that I can easily transcribe the required IRS Form 8283 data into TurboTax from paper, and securely archive the digital records for my permanent financial files.
+
+**Acceptance Criteria:**
+* **Year Filter:** The user must be able to select a specific tax year to filter the report via a simple dropdown or toggle.
+* **Hierarchical Grouping:** The on-screen and printed data must be grouped first by `Organization`, and secondarily by `Donation Date`.
+* **IRS Required Fields:** The lowest level of the report (the items) must display the aggregated category description, condition, quantity, total Fair Market Value (FMV), and the valuation method (defaulting to "Thrift Shop Value").
+* **Calculated Subtotals:** The report must automatically calculate and display the total FMV per Donation Date, the total FMV per Organization, and a Grand Total for the selected tax year.
+* **Print-Optimized View:** The UI must include a "Print Report" action that utilizes CSS print media queries (`@media print`) to automatically hide sidebars, navigation buttons, and extraneous UI elements, ensuring the printed hard copy is high-contrast, perfectly paginated, and strictly focused on the data hierarchy.
+* **CSV Data Export:** The UI must include an "Export to CSV" action that generates and downloads a flat-file `.csv` of the selected year's data. This export should denormalize the hierarchy into a flat table (e.g., columns for Year, Org, Date, Item, Value) making it easily readable by spreadsheet applications for cold-storage archival.

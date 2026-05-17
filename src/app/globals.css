@@ -30,3 +30,26 @@ input:focus, select:focus, textarea:focus {
   border-color: var(--accent);
   ring: 1px var(--accent);
 }
+
+@media print {
+  aside, .print-hidden {
+    display: none !important;
+  }
+  
+  main {
+    background: white !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}
