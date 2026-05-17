@@ -17,6 +17,7 @@ describe('Sidebar', () => {
     expect(screen.getByText('All Donations')).toBeInTheDocument();
     expect(screen.getByText('Add Donation')).toBeInTheDocument();
     expect(screen.getByText('Organizations')).toBeInTheDocument();
+    expect(screen.getByText('Tax Reports')).toBeInTheDocument();
     expect(screen.getByText('Settings')).toBeInTheDocument();
   });
 

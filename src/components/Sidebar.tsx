@@ -8,6 +8,7 @@ const navItems = [
   { name: 'All Donations', href: '/donations', icon: '📄' },
   { name: 'Add Donation', href: '/donations/new', icon: '➕' },
   { name: 'Organizations', href: '/organizations', icon: '🏢' },
+  { name: 'Tax Reports', href: '/reports', icon: '🧾' },
   { name: 'Settings', href: '/settings', icon: '⚙️' },
 ];
 
