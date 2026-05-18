@@ -49,9 +49,10 @@ The item database is seeded using data historically provided by Intuit's ItsDedu
    npm install
    ```
 3. Set up your environment variables:
-   Create a `.env.local` file in the root directory:
+   Create a `.env.local` file in the root directory. You can generate a secure `AUTH_SECRET` using `npx auth secret`.
    ```env
    APP_PASSWORD=your_secure_password
+   AUTH_SECRET=your_generated_secret
    DATABASE_URL="file:./prisma/dev.db"
    ```
 4. Initialize the database and seed the catalog:

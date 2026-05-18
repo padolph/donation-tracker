@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 
 const navItems = [
   { name: 'Dashboard', href: '/', icon: '📊' },
@@ -17,7 +18,7 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 bg-sidebar flex flex-col border-r border-white/10">
-      <div className="p-6">
+      <div className="p-6 flex-1">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center text-black text-xl font-bold">
             ♡
@@ -47,6 +48,16 @@ export default function Sidebar() {
             );
           })}
         </nav>
+      </div>
+      
+      <div className="p-6 border-t border-white/10">
+        <button
+          onClick={() => signOut()}
+          className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-white/60 hover:bg-white/5 hover:text-white w-full text-left"
+        >
+          <span className="text-xl">🚪</span>
+          <span className="font-medium text-sm">Sign Out</span>
+        </button>
       </div>
     </aside>
   );
