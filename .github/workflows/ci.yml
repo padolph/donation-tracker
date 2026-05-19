@@ -30,3 +30,10 @@ jobs:
     - name: Run Jest Test Suite
       run: npm test
 
+    - name: Typecheck Electron Wrapper
+      run: npm run electron:tsc
+
+    - name: Verify Desktop Build (Dry Run)
+      # Using npx electron-builder --dir directly avoids running 
+      # a redundant Next.js build if your previous CI steps already built it
+      run: npx electron-builder --dir
