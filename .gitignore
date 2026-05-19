@@ -50,3 +50,7 @@ prisma/*.db
 # Local Uploads
 /storage/
 
+# Electron Build Artifacts
+dist/
+dist-electron/
+

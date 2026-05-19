@@ -19,15 +19,16 @@ This application was "vibe-coded" into existence as a personal response to the r
 ## 🛠️ Tech Stack
 
 - **Frontend:** [Next.js](https://nextjs.org/) (App Router)
+- **Desktop Wrapper:** [Electron](https://www.electronjs.org/) (Bundled Server Pattern)
 - **Database:** [SQLite](https://sqlite.org/) via [Prisma ORM](https://www.prisma.io/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **Runtime:** Node.js (with Electron-ready architecture for desktop use)
+- **Runtime:** Node.js
 
 ## 🔒 Security & Privacy
 
 - **Local-First:** All data, including your donation history and receipt photos, is stored locally on your machine.
 - **Offline Capable:** No internet connection is required for core functionality.
-- **Password Protected:** Access to the application is secured via a simple password check (configured via environment variables).
+- **Password Protected:** Access to the application is secured via a simple password check.
 - **No Cloud Sync:** Your sensitive financial data is never uploaded to any cloud service.
 
 ## 📦 Data Seeding
@@ -40,6 +41,7 @@ The item database is seeded using data historically provided by Intuit's ItsDedu
 
 - Node.js (LTS version recommended)
 - npm or yarn
+- macOS (for DMG building, though it can run on other platforms)
 
 ### Installation
 
@@ -48,7 +50,7 @@ The item database is seeded using data historically provided by Intuit's ItsDedu
    ```bash
    npm install
    ```
-3. Set up your environment variables:
+3. Set up your environment variables for development:
    Create a `.env.local` file in the root directory. You can generate a secure `AUTH_SECRET` using `npx auth secret`.
    ```env
    APP_PASSWORD=your_secure_password
@@ -63,11 +65,44 @@ The item database is seeded using data historically provided by Intuit's ItsDedu
 
 ### Running the App
 
+#### Web Mode (Browser)
 Start the development server:
 ```bash
 npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+#### Desktop Mode (Electron)
+Start the app in a desktop window:
+```bash
+npm run desktop:dev
+```
+
+### 📦 Building for Desktop
+
+To create a packaged macOS application (`.app` and `.dmg`):
+
+1. **Prerequisites:** Install `gettext` via Homebrew for DMG packaging:
+   ```bash
+   brew install gettext
+   ```
+2. **Build:**
+   ```bash
+   npm run desktop:build
+   ```
+The output will be in the `dist/` directory.
+
+### 🖥️ Desktop Configuration (Production)
+
+When running the packaged `.app`, environment variables from `.env.local` are not loaded. The app uses a persistent configuration system:
+
+- **Database:** Your data is migrated to `~/Library/Application Support/Donation Tracker/database.db`.
+- **Password:** The `APP_PASSWORD` is stored in `config.json` in the same directory.
+- **Setting the Password:** To set your password for the first time in the packaged app, run it once from the terminal:
+  ```bash
+  APP_PASSWORD=your_password /Applications/Donation\ Tracker.app/Contents/MacOS/Donation\ Tracker
+  ```
+  The app will save this password and use it for all future GUI launches.
 
 ## 🧪 Testing
 
