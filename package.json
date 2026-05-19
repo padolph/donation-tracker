@@ -1,14 +1,40 @@
 {
   "name": "donation-tracker",
   "version": "0.1.0",
+  "description": "Secure, local, offline-first donation tracking application.",
+  "author": "Donation Tracker Team",
   "private": true,
+  "main": "dist-electron/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "electron:tsc": "tsc -p tsconfig.electron.json",
+    "desktop:dev": "concurrently \"npm run dev\" \"npm run electron:tsc -- --watch\" \"wait-on tcp:3000 || wait-on tcp:3001 && electron .\"",
+    "desktop:build": "npm run build && npm run electron:tsc && electron-builder"
+  },
+  "build": {
+    "appId": "com.donation-tracker.app",
+    "productName": "Donation Tracker",
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/**/*",
+      "prisma/**/*",
+      ".next/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.finance",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    }
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -31,6 +57,9 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^11.0.0",
+    "concurrently": "^9.2.1",
+    "electron": "^42.1.0",
+    "electron-builder": "^26.8.1",
     "eslint": "^9.39.4",
     "eslint-config-next": "16.2.6",
     "eslint-plugin-security": "^4.0.0",
@@ -42,7 +71,8 @@
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "tsx": "^4.22.0",
-    "typescript": "^6"
+    "typescript": "^6",
+    "wait-on": "^9.0.10"
   },
   "overrides": {
     "postcss": "^8.5.10"
