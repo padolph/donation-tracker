@@ -31,7 +31,7 @@ jobs:
       run: npm test
 
     - name: Typecheck Electron Wrapper
-        run: npm run electron:tsc
+      run: npm run electron:tsc
 
     - name: Verify Desktop Build (Dry Run)
       # Using npx electron-builder --dir directly avoids running 
