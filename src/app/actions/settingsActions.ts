@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import path from 'path';
 
 export async function getSettings() {
   try {
@@ -17,7 +18,16 @@ export async function getSettings() {
       });
     }
 
-    return { success: true, settings };
+    const rawUrl = process.env.DATABASE_URL || 'file:./prisma/dev.db';
+    let dbPath = rawUrl;
+    if (dbPath.startsWith('file:')) {
+      dbPath = dbPath.slice(5);
+    }
+    if (!path.isAbsolute(dbPath)) {
+      dbPath = path.resolve(process.cwd(), dbPath);
+    }
+
+    return { success: true, settings, databasePath: dbPath };
   } catch (error) {
     console.error('CRITICAL: getSettings failed', error);
     return { 

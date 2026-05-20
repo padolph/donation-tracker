@@ -36,6 +36,7 @@ describe('settingsActions', () => {
       expect(result.success).toBe(true);
       expect(result.settings?.marginalTaxRate).toBe(0.32);
       expect(prisma.appSettings.upsert).toHaveBeenCalled();
+      expect(result.databasePath).toBeDefined();
     });
 
     it('should return existing settings', async () => {
@@ -51,6 +52,40 @@ describe('settingsActions', () => {
       expect(result.success).toBe(true);
       expect(result.settings?.marginalTaxRate).toBe(0.25);
       expect(prisma.appSettings.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(result.databasePath).toBeDefined();
+    });
+
+    it('should resolve databasePath from DATABASE_URL env var', async () => {
+      const originalEnv = process.env.DATABASE_URL;
+      process.env.DATABASE_URL = 'file:/mock/path/production.db';
+      
+      (prisma.appSettings.findUnique as jest.Mock).mockResolvedValue({
+        id: 1,
+        marginalTaxRate: 0.32,
+      });
+
+      const result = await getSettings();
+      expect(result.success).toBe(true);
+      expect(result.databasePath).toBe('/mock/path/production.db');
+      
+      process.env.DATABASE_URL = originalEnv;
+    });
+
+    it('should resolve databasePath as absolute if relative in env var', async () => {
+      const originalEnv = process.env.DATABASE_URL;
+      process.env.DATABASE_URL = 'file:./prisma/dev.db';
+      
+      (prisma.appSettings.findUnique as jest.Mock).mockResolvedValue({
+        id: 1,
+        marginalTaxRate: 0.32,
+      });
+
+      const result = await getSettings();
+      expect(result.success).toBe(true);
+      expect(result.databasePath?.endsWith('prisma/dev.db')).toBe(true);
+      expect(result.databasePath?.startsWith('/')).toBe(true);
+      
+      process.env.DATABASE_URL = originalEnv;
     });
   });
 

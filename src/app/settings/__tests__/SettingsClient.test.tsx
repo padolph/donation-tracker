@@ -20,14 +20,24 @@ describe('SettingsClient', () => {
   });
 
   it('renders the current settings', () => {
-    render(<SettingsClient initialSettings={mockSettings} />);
+    render(<SettingsClient initialSettings={mockSettings} databasePath="/mock/path/dev.db" />);
     // 0.32 is displayed as 32(%)
     expect(screen.getByLabelText(/Marginal Tax Rate/i)).toHaveValue(32);
   });
 
+  it('renders the database path as read-only', () => {
+    const testPath = '/path/to/my/dev.db';
+    render(<SettingsClient initialSettings={mockSettings} databasePath={testPath} />);
+    
+    const dbInput = screen.getByLabelText(/Database Path/i);
+    expect(dbInput).toBeInTheDocument();
+    expect(dbInput).toHaveValue(testPath);
+    expect(dbInput).toHaveAttribute('readonly');
+  });
+
   it('updates the settings when form is submitted', async () => {
     (updateSettings as jest.Mock).mockResolvedValue({ success: true, settings: { ...mockSettings, marginalTaxRate: 0.35 } });
-    render(<SettingsClient initialSettings={mockSettings} />);
+    render(<SettingsClient initialSettings={mockSettings} databasePath="/mock/path/dev.db" />);
     
     const input = screen.getByLabelText(/Marginal Tax Rate/i);
     fireEvent.change(input, { target: { value: '35' } });
@@ -43,7 +53,7 @@ describe('SettingsClient', () => {
 
   it('shows an error if update fails', async () => {
     (updateSettings as jest.Mock).mockResolvedValue({ success: false, error: 'Database error' });
-    render(<SettingsClient initialSettings={mockSettings} />);
+    render(<SettingsClient initialSettings={mockSettings} databasePath="/mock/path/dev.db" />);
     
     const saveButton = screen.getByRole('button', { name: /Save Settings/i });
     fireEvent.click(saveButton);
