@@ -9,7 +9,13 @@ interface Settings {
   updatedAt: Date;
 }
 
-export default function SettingsClient({ initialSettings }: { initialSettings: Settings }) {
+export default function SettingsClient({ 
+  initialSettings,
+  databasePath,
+}: { 
+  initialSettings: Settings;
+  databasePath: string;
+}) {
   const [taxRate, setTaxRate] = useState(initialSettings.marginalTaxRate * 100);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -59,6 +65,24 @@ export default function SettingsClient({ initialSettings }: { initialSettings: S
             </div>
             <p className="text-xs text-white/30">
               Used to estimate tax savings on the dashboard (e.g., 32% for most individuals).
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2 pt-6 border-t border-white/10">
+            <label htmlFor="databasePath" className="text-xs font-bold uppercase tracking-widest text-white/40">
+              Database Path
+            </label>
+            <div className="relative w-full">
+              <input
+                id="databasePath"
+                type="text"
+                readOnly
+                className="w-full px-4 py-3 rounded-xl font-mono text-xs bg-[#151518] border-[#252528] text-white/30 cursor-not-allowed select-all focus:border-[#252528] focus:ring-0 focus:outline-none"
+                value={databasePath}
+              />
+            </div>
+            <p className="text-xs text-white/30">
+              The full absolute path to the SQLite database file in use by this application.
             </p>
           </div>
         </section>

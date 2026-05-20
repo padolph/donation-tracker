@@ -54,3 +54,6 @@ prisma/*.db
 dist/
 dist-electron/
 
+# Google Antigravity
+.antigravitycli/
+
