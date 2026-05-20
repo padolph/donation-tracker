@@ -2,7 +2,7 @@
   "name": "donation-tracker",
   "version": "0.1.0",
   "description": "Secure, local, offline-first donation tracking application.",
-  "author": "Donation Tracker Team",
+  "author": "Paul Adolph <padolph@gmail.com>",
   "private": true,
   "main": "dist-electron/main.js",
   "scripts": {
@@ -34,6 +34,9 @@
         "dmg",
         "zip"
       ]
+    },
+    "linux": {
+      "target": ["deb"]
     }
   },
   "dependencies": {

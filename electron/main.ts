@@ -28,13 +28,15 @@ async function startNextServer(port: number) {
   
   // Setup writable database path in userData
   const userDataPath = app.getPath('userData');
-  const dbPath = path.join(userDataPath, 'database.db');
+  const dbPath = isPackaged 
+    ? path.join(userDataPath, 'production.db')
+    : path.join(userDataPath, 'database.db');
   
   // Setup persistent AUTH_SECRET and APP_PASSWORD
   const secretPath = path.join(userDataPath, '.secret');
   const configPath = path.join(userDataPath, 'config.json');
   let authSecret = process.env.AUTH_SECRET;
-  let appPassword = process.env.APP_PASSWORD;
+  let appPassword = process.env.APP_PASSWORD || process.env.PASSWORD;
   
   // Load persistent config if it exists
   let persistentConfig: Record<string, string> = {};
@@ -48,7 +50,7 @@ async function startNextServer(port: number) {
 
   // Handle APP_PASSWORD
   if (!appPassword) {
-    appPassword = persistentConfig.APP_PASSWORD;
+    appPassword = persistentConfig.APP_PASSWORD || persistentConfig.PASSWORD;
   } else {
     // If provided in env, update the persistent config
     persistentConfig.APP_PASSWORD = appPassword;
@@ -86,7 +88,9 @@ async function startNextServer(port: number) {
   const env = {
     ...process.env,
     NODE_ENV: 'production',
-    DATABASE_URL: `file:${dbPath}`,
+    DATABASE_URL: isPackaged 
+      ? `file:${path.join(app.getPath('userData'), 'production.db')}` 
+      : `file:${dbPath}`,
     AUTH_TRUST_HOST: 'true',
     AUTH_URL: `http://localhost:${port}`,
     AUTH_SECRET: authSecret || 'fallback-secret',
