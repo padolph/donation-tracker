@@ -6,7 +6,7 @@ import { randomUUID } from 'crypto';
 
 export async function savePhoto(file: File) {
   try {
-    const storageDir = path.join(process.cwd(), 'storage', 'donations');
+    const storageDir = process.env.IMAGE_STORAGE_PATH || path.join(process.cwd(), 'storage', 'donations');
     
     await fs.mkdir(storageDir, { recursive: true });
 

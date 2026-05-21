@@ -95,6 +95,7 @@ async function startNextServer(port: number) {
     AUTH_URL: `http://localhost:${port}`,
     AUTH_SECRET: authSecret || 'fallback-secret',
     APP_PASSWORD: appPassword || '',
+    IMAGE_STORAGE_PATH: path.join(userDataPath, 'storage', 'donations'),
   };
 
   nextServerProcess = fork(nextPath, ['start', '-p', port.toString()], {

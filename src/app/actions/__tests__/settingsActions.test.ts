@@ -90,6 +90,22 @@ describe('settingsActions', () => {
       
       process.env.DATABASE_URL = originalEnv;
     });
+
+    it('should resolve storagePath from IMAGE_STORAGE_PATH env var', async () => {
+      const originalEnv = process.env.IMAGE_STORAGE_PATH;
+      process.env.IMAGE_STORAGE_PATH = '/mock/storage/path';
+      
+      (prisma.appSettings.findUnique as jest.Mock).mockResolvedValue({
+        id: 1,
+        marginalTaxRate: 0.32,
+      });
+
+      const result = await getSettings();
+      expect(result.success).toBe(true);
+      expect(result.storagePath).toBe('/mock/storage/path');
+      
+      process.env.IMAGE_STORAGE_PATH = originalEnv;
+    });
   });
 
   describe('updateSettings', () => {
