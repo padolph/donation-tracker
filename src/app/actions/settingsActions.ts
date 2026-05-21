@@ -27,7 +27,9 @@ export async function getSettings() {
       dbPath = path.resolve(process.cwd(), dbPath);
     }
 
-    return { success: true, settings, databasePath: dbPath };
+    const storagePath = path.join(process.cwd(), 'storage', 'donations');
+
+    return { success: true, settings, databasePath: dbPath, storagePath };
   } catch (error) {
     console.error('CRITICAL: getSettings failed', error);
     return { 

@@ -2,7 +2,7 @@ import { getSettings } from '@/app/actions/settingsActions';
 import SettingsClient from './SettingsClient';
 
 export default async function SettingsPage() {
-  const { settings, databasePath } = await getSettings();
+  const { settings, databasePath, storagePath } = await getSettings();
 
   if (!settings) {
     return (
@@ -13,5 +13,11 @@ export default async function SettingsPage() {
     );
   }
 
-  return <SettingsClient initialSettings={settings} databasePath={databasePath || ''} />;
+  return (
+    <SettingsClient
+      initialSettings={settings}
+      databasePath={databasePath || ''}
+      storagePath={storagePath || ''}
+    />
+  );
 }
