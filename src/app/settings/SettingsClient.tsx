@@ -12,9 +12,11 @@ interface Settings {
 export default function SettingsClient({ 
   initialSettings,
   databasePath,
+  storagePath,
 }: { 
   initialSettings: Settings;
   databasePath: string;
+  storagePath: string;
 }) {
   const [taxRate, setTaxRate] = useState(initialSettings.marginalTaxRate * 100);
   const [isSaving, setIsSaving] = useState(false);
@@ -83,6 +85,24 @@ export default function SettingsClient({
             </div>
             <p className="text-xs text-white/30">
               The full absolute path to the SQLite database file in use by this application.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2 pt-6 border-t border-white/10">
+            <label htmlFor="storagePath" className="text-xs font-bold uppercase tracking-widest text-white/40">
+              Image Storage Path
+            </label>
+            <div className="relative w-full">
+              <input
+                id="storagePath"
+                type="text"
+                readOnly
+                className="w-full px-4 py-3 rounded-xl font-mono text-xs bg-[#151518] border-[#252528] text-white/30 cursor-not-allowed select-all focus:border-[#252528] focus:ring-0 focus:outline-none"
+                value={storagePath}
+              />
+            </div>
+            <p className="text-xs text-white/30">
+              The full absolute path to the folder where receipt and donation images are stored.
             </p>
           </div>
         </section>

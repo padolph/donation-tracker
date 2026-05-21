@@ -1,6 +1,7 @@
 import { getSettings, updateSettings } from '../settingsActions';
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import path from 'path';
 
 // Mock Prisma
 jest.mock('@/lib/prisma', () => ({
@@ -37,6 +38,7 @@ describe('settingsActions', () => {
       expect(result.settings?.marginalTaxRate).toBe(0.32);
       expect(prisma.appSettings.upsert).toHaveBeenCalled();
       expect(result.databasePath).toBeDefined();
+      expect(result.storagePath).toBe(path.join(process.cwd(), 'storage', 'donations'));
     });
 
     it('should return existing settings', async () => {
@@ -53,6 +55,7 @@ describe('settingsActions', () => {
       expect(result.settings?.marginalTaxRate).toBe(0.25);
       expect(prisma.appSettings.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
       expect(result.databasePath).toBeDefined();
+      expect(result.storagePath).toBe(path.join(process.cwd(), 'storage', 'donations'));
     });
 
     it('should resolve databasePath from DATABASE_URL env var', async () => {
