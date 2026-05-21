@@ -7,7 +7,7 @@ jest.mock('path');
 
 describe('photoActions', () => {
   describe('savePhoto', () => {
-    it('should copy the photo to the local app directory and return the path', async () => {
+    it('should copy the photo to the local app directory and return the path in a success object', async () => {
       const mockBuffer = Buffer.from('mock-data');
       const mockFile = {
         name: 'receipt.jpg',
@@ -22,7 +22,23 @@ describe('photoActions', () => {
 
       expect(fs.mkdir).toHaveBeenCalled();
       expect(fs.writeFile).toHaveBeenCalledWith('/mock/app/dir/receipt_123.jpg', expect.any(Buffer));
-      expect(result).toBe('/mock/app/dir/receipt_123.jpg');
+      expect(result).toEqual({ success: true, filePath: '/mock/app/dir/receipt_123.jpg' });
+    });
+
+    it('should return a failure object if saving the photo fails', async () => {
+      const mockBuffer = Buffer.from('mock-data');
+      const mockFile = {
+        name: 'receipt.jpg',
+        arrayBuffer: jest.fn().mockResolvedValue(mockBuffer.buffer),
+      } as unknown as File;
+      
+      (path.join as jest.Mock).mockReturnValue('/mock/app/dir/receipt_123.jpg');
+      (fs.writeFile as jest.Mock).mockRejectedValue(new Error('Write failed'));
+      (fs.mkdir as jest.Mock).mockResolvedValue(undefined);
+
+      const result = await savePhoto(mockFile);
+
+      expect(result).toEqual({ success: false, error: 'Failed to upload file "receipt.jpg". Please try again.' });
     });
   });
 });

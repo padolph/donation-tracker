@@ -198,8 +198,19 @@ export default function DonationBuilder({
     if (!organizationId) return;
     setIsSaving(true);
     try {
-      // 1. Save photos first (will throw if any fails)
-      const photoPaths = await Promise.all(photos.map(savePhoto));
+      // 1. Save photos first (handle errors gracefully)
+      const photoPaths: string[] = [];
+      for (const photo of photos) {
+        const uploadResult = await savePhoto(photo);
+        if (!uploadResult.success) {
+          alert(uploadResult.error || `Failed to upload "${photo.name}".`);
+          setIsSaving(false);
+          return;
+        }
+        if (uploadResult.filePath) {
+          photoPaths.push(uploadResult.filePath);
+        }
+      }
 
       const typeMap: Record<string, string> = {
         items: 'ITEMS',

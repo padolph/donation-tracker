@@ -24,7 +24,8 @@
       "node_modules/**/*",
       "node_modules/.prisma/**/*",
       "prisma/**/*",
-      ".next/**/*"
+      ".next/**/*",
+      "next.config.js"
     ],
     "extraResources": [
       {
