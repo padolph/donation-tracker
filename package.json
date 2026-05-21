@@ -7,7 +7,7 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
@@ -22,8 +22,15 @@
     "asar": true,
     "asarUnpack": [
       "node_modules/**/*",
+      "node_modules/.prisma/**/*",
       "prisma/**/*",
       ".next/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "node_modules/.prisma",
+        "to": "app.asar.unpacked/node_modules/.prisma"
+      }
     ],
     "directories": {
       "output": "dist"
