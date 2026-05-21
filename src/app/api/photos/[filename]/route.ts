@@ -14,7 +14,7 @@ export async function GET(
       return new NextResponse('Invalid filename', { status: 400 });
     }
 
-    const storageDir = path.join(process.cwd(), 'storage', 'donations');
+    const storageDir = process.env.IMAGE_STORAGE_PATH || path.join(process.cwd(), 'storage', 'donations');
     const filePath = path.join(storageDir, filename);
 
     try {

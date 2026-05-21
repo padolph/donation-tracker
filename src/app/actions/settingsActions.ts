@@ -27,7 +27,7 @@ export async function getSettings() {
       dbPath = path.resolve(process.cwd(), dbPath);
     }
 
-    const storagePath = path.join(process.cwd(), 'storage', 'donations');
+    const storagePath = process.env.IMAGE_STORAGE_PATH || path.join(process.cwd(), 'storage', 'donations');
 
     return { success: true, settings, databasePath: dbPath, storagePath };
   } catch (error) {
