@@ -4,7 +4,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { randomUUID } from 'crypto';
 
-export async function savePhoto(file: File) {
+export async function savePhoto(file: File): Promise<{ success: boolean; filePath?: string; error?: string }> {
   try {
     const storageDir = process.env.IMAGE_STORAGE_PATH || path.join(process.cwd(), 'storage', 'donations');
     
@@ -18,12 +18,12 @@ export async function savePhoto(file: File) {
 
     await fs.writeFile(filePath, buffer);
 
-    return filePath;
+    return { success: true, filePath };
   } catch (error) {
     console.error('ERROR: Failed to save photo to disk', {
       fileName: file.name,
       error: error instanceof Error ? error.message : error
     });
-    throw new Error(`Failed to upload file "${file.name}". Please try again.`);
+    return { success: false, error: `Failed to upload file "${file.name}". Please try again.` };
   }
 }
