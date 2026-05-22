@@ -34,7 +34,8 @@
       }
     ],
     "directories": {
-      "output": "dist"
+      "output": "dist",
+      "buildResources": "assets"
     },
     "mac": {
       "category": "public.app-category.finance",
@@ -44,7 +45,9 @@
       ]
     },
     "linux": {
-      "target": ["deb"]
+      "target": [
+        "deb"
+      ]
     }
   },
   "dependencies": {
