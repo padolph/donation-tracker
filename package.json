@@ -25,6 +25,7 @@
       "node_modules/.prisma/**/*",
       "prisma/**/*",
       ".next/**/*",
+      "public/**/*",
       "next.config.js"
     ],
     "extraResources": [
