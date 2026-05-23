@@ -28,6 +28,14 @@ describe('Sidebar', () => {
     expect(screen.getByText('Sign Out')).toBeInTheDocument();
   });
 
+  it('renders the custom logo image instead of the generic heart character', () => {
+    render(<Sidebar />);
+    const logoImg = screen.getByAltText('DonationTrack Logo');
+    expect(logoImg).toBeInTheDocument();
+    expect(logoImg).toHaveAttribute('src', '/icon.png');
+    expect(screen.queryByText('♡')).not.toBeInTheDocument();
+  });
+
   it('highlights the active link correctly', () => {
     (usePathname as jest.Mock).mockReturnValue('/donations');
     render(<Sidebar />);
