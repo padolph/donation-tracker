@@ -20,8 +20,12 @@ export default function Sidebar() {
     <aside className="w-64 bg-sidebar flex flex-col border-r border-white/10">
       <div className="p-6 flex-1">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center text-black text-xl font-bold">
-            ♡
+          <div className="w-10 h-10 relative">
+            <img 
+              src="/icon.png" 
+              alt="DonationTrack Logo" 
+              className="w-full h-full object-contain rounded-xl"
+            />
           </div>
           <div>
             <h1 className="font-bold text-lg leading-none">DonationTrack</h1>
