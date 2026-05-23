@@ -30,18 +30,26 @@ export default function DonationDetailsClient({ donation }: { donation: Donation
 
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-8">
-      {/* Header with navigation */}
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold mb-1">Donation Details</h1>
           <p className="text-white/50 text-sm">Detailed breakdown of this contribution</p>
         </div>
-        <Link
-          href="/donations"
-          className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-sm font-bold text-white hover:text-white"
-        >
-          Back to Ledger
-        </Link>
+        <div className="flex gap-3">
+          <Link
+            href={`/donations/${donation.id}/edit`}
+            className="px-4 py-2 bg-accent hover:bg-accent/90 text-black rounded-lg transition-colors text-sm font-bold flex items-center gap-2"
+          >
+            <span>✏️</span>
+            Edit Donation
+          </Link>
+          <Link
+            href="/donations"
+            className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-sm font-bold text-white hover:text-white"
+          >
+            Back to Ledger
+          </Link>
+        </div>
       </header>
 
       {/* Main card - Dark/glassmorphism theme */}

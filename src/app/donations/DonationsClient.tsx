@@ -168,12 +168,6 @@ export default function DonationsClient({
                       {formatCurrency(calculateTotalValue(donation))}
                     </td>
                     <td className="p-4 text-right space-x-2 whitespace-nowrap">
-                      <Link
-                        href={`/donations/${donation.id}/edit`}
-                        className="text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white px-3 py-1 bg-white/5 rounded-lg transition-colors inline-block"
-                      >
-                        Edit
-                      </Link>
                       <button
                         onClick={() => handleDelete(donation.id, new Date(donation.date).toLocaleDateString())}
                         className="text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-500/20 px-3 py-1 bg-red-500/10 rounded-lg transition-colors inline-block"

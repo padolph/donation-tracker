@@ -76,7 +76,10 @@ describe('DonationDetailsClient', () => {
     expect(screen.getByText('Total Value:')).toBeInTheDocument();
     expect(screen.getByText('$120.00')).toBeInTheDocument();
 
-    // Back to Ledger button/link
+    // Edit and Back buttons
+    const editLink = screen.getByRole('link', { name: /edit donation/i });
+    expect(editLink).toHaveAttribute('href', '/donations/1/edit');
+
     const backLink = screen.getByRole('link', { name: /back to ledger/i });
     expect(backLink).toHaveAttribute('href', '/donations');
   });
