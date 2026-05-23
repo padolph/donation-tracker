@@ -96,92 +96,17 @@ describe('DonationsClient', () => {
     });
   });
 
-  it('expands a row to show detailed line items and photos', async () => {
+  it('renders expand links pointing to the donation details pages', async () => {
     (getDonations as jest.Mock).mockResolvedValue({ success: true, donations: mockDonations });
 
     await act(async () => {
       render(<DonationsClient initialDonations={mockDonations} organizations={mockOrganizations} />);
     });
 
-    // Expand first row
-    const expandButtons = screen.getAllByRole('button', { name: /expand/i });
-    await act(async () => {
-      fireEvent.click(expandButtons[0]);
-    });
-
-    // Should show line items for the first donation
-    expect(screen.getByText(/Shirt/)).toBeInTheDocument();
-    expect(screen.getByText(/Qty: 2/)).toBeInTheDocument();
-    expect(screen.getByText(/Condition: High/)).toBeInTheDocument();
-
-    // Expand second row
-    await act(async () => {
-      fireEvent.click(expandButtons[1]);
-    });
-
-    // Should show photo for second donation
-    const thumbnail = screen.getByRole('img', { name: /Attachment 1/i });
-    expect(thumbnail).toBeInTheDocument();
-    expect(thumbnail).toHaveAttribute('src', '/api/photos/receipt.jpg');
-  });
-
-  it('opens the image overlay when a thumbnail is clicked', async () => {
-    (getDonations as jest.Mock).mockResolvedValue({ success: true, donations: mockDonations });
-
-    await act(async () => {
-      render(<DonationsClient initialDonations={mockDonations} organizations={mockOrganizations} />);
-    });
-
-    // Expand second row
-    const expandButtons = screen.getAllByRole('button', { name: /expand/i });
-    await act(async () => {
-      fireEvent.click(expandButtons[1]);
-    });
-
-    // Click thumbnail
-    const thumbnailButton = screen.getByRole('button', { name: /view image/i });
-    await act(async () => {
-      fireEvent.click(thumbnailButton);
-    });
-
-    // Overlay should be visible
-    expect(screen.getByLabelText(/close overlay/i)).toBeInTheDocument();
-    const images = screen.getAllByRole('img', { name: /Attachment 1/i });
-    expect(images).toHaveLength(2); // One thumbnail, one overlay
-    expect(images.find(img => img.classList.contains('object-contain'))).toBeInTheDocument();
-
-    // Close overlay
-    const closeButton = screen.getByLabelText(/close overlay/i);
-    await act(async () => {
-      fireEvent.click(closeButton);
-    });
-
-    // Overlay should be gone
-    expect(screen.queryByLabelText(/close overlay/i)).not.toBeInTheDocument();
-  });
-
-  it('opens the image overlay with an iframe when a PDF thumbnail is clicked', async () => {
-    (getDonations as jest.Mock).mockResolvedValue({ success: true, donations: mockDonations });
-
-    await act(async () => {
-      render(<DonationsClient initialDonations={mockDonations} organizations={mockOrganizations} />);
-    });
-
-    // Expand second row
-    const expandButtons = screen.getAllByRole('button', { name: /expand/i });
-    await act(async () => {
-      fireEvent.click(expandButtons[1]);
-    });
-
-    // Click PDF thumbnail
-    const pdfButton = screen.getByRole('button', { name: /view pdf/i });
-    await act(async () => {
-      fireEvent.click(pdfButton);
-    });
-
-    // Overlay should show iframe for PDF
-    expect(screen.getByTitle(/Attachment 2/i)).toBeInTheDocument();
-    expect(screen.getByTitle(/Attachment 2/i).tagName).toBe('IFRAME');
+    const expandLinks = screen.getAllByRole('link', { name: /expand/i });
+    expect(expandLinks).toHaveLength(2);
+    expect(expandLinks[0]).toHaveAttribute('href', '/donations/1');
+    expect(expandLinks[1]).toHaveAttribute('href', '/donations/2');
   });
 
   it('correctly calculates total value for ASSET donations', async () => {

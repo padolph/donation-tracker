@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { getDonations, deleteDonation } from '@/app/actions/donationActions';
 import Link from 'next/link';
-import ImageOverlay from '@/components/ImageOverlay';
 
 export interface DonationEvent {
   id: number;
@@ -40,9 +39,7 @@ export default function DonationsClient({
   const [donations, setDonations] = useState<DonationEvent[]>(initialDonations);
   const [yearFilter, setYearFilter] = useState<string>('');
   const [orgFilter, setOrgFilter] = useState<string>('');
-  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [overlayImage, setOverlayImage] = useState<{ src: string, alt: string } | null>(null);
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
@@ -65,14 +62,6 @@ export default function DonationsClient({
 
     fetchFiltered();
   }, [yearFilter, orgFilter]);
-
-  const toggleRow = (id: number) => {
-    if (expandedRowId === id) {
-      setExpandedRowId(null);
-    } else {
-      setExpandedRowId(id);
-    }
-  };
 
   const handleDelete = async (id: number, dateStr: string) => {
     if (window.confirm(`Are you sure you want to delete the donation from ${dateStr}? This action cannot be undone.`)) {
@@ -164,149 +153,50 @@ export default function DonationsClient({
               </tr>
             ) : (
               donations.map((donation) => {
-                const isExpanded = expandedRowId === donation.id;
                 return (
-                  <React.Fragment key={donation.id}>
-                    <tr className="border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer" onClick={() => toggleRow(donation.id)}>
-                      <td className="p-4 font-bold text-white">
-                        {new Date(donation.date).toLocaleDateString()}
-                      </td>
-                      <td className="p-4 text-sm text-white/60">
-                        {donation.organization.name}
-                      </td>
-                      <td className="p-4 text-sm text-white/60">
-                        {donation.type}
-                      </td>
-                      <td className="p-4 text-right font-black text-accent">
-                        {formatCurrency(calculateTotalValue(donation))}
-                      </td>
-                      <td className="p-4 text-right space-x-2 whitespace-nowrap">
-                        <Link
-                          href={`/donations/${donation.id}/edit`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white px-3 py-1 bg-white/5 rounded-lg transition-colors inline-block"
-                        >
-                          Edit
-                        </Link>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(donation.id, new Date(donation.date).toLocaleDateString());
-                          }}
-                          className="text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-500/20 px-3 py-1 bg-red-500/10 rounded-lg transition-colors inline-block"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                      <td className="p-4 text-right">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleRow(donation.id);
-                          }}
-                          className="text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white px-3 py-1 bg-white/5 rounded-lg transition-colors whitespace-nowrap"
-                          aria-label="Expand"
-                        >
-                          {isExpanded ? 'Collapse' : 'Expand'}
-                        </button>
-                      </td>
-                    </tr>
-                    {isExpanded && (
-                      <tr className="bg-white/5 border-b border-white/10">
-                        <td colSpan={6} className="p-6">
-                          {donation.type === 'ITEMS' && donation.items.length > 0 && (
-                            <div className="mb-6">
-                              <h4 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-3">Line Items</h4>
-                              <div className="space-y-2">
-                                {donation.items.map((item, idx) => (
-                                  <div key={idx} className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5">
-                                    <div>
-                                      <span className="font-bold text-white block">{item.item.description}</span>
-                                      <span className="text-xs text-white/40">Qty: {item.quantity} · Condition: {item.condition}</span>
-                                    </div>
-                                    <span className="font-black text-accent">{formatCurrency(item.lockedValue)}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          {donation.type === 'ASSETS' && (
-                            <div className="mb-6">
-                              <h4 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-3">Asset Details</h4>
-                              <div className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5">
-                                <div>
-                                  <span className="font-bold text-white block">{donation.assetTicker}</span>
-                                  <span className="text-xs text-white/40">Shares: {donation.assetShares}</span>
-                                </div>
-                                <span className="font-black text-accent">{formatCurrency(donation.cashAmount || 0)}</span>
-                              </div>
-                            </div>
-                          )}
-                          {donation.photos.length > 0 && (
-                            <div>
-                              <h4 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-3">Attachments</h4>
-                              <div className="flex gap-4 flex-wrap">
-                                {donation.photos.map((photo, idx) => {
-                                  const url = getPhotoUrl(photo.filePath);
-                                  const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(photo.filePath);
-                                  const isPDF = /\.pdf$/i.test(photo.filePath);
-                                  const isViewable = isImage || isPDF;
-                                  
-                                  return (
-                                    <button 
-                                      key={idx} 
-                                      onClick={() => isViewable && setOverlayImage({ src: url, alt: `Attachment ${idx + 1}` })}
-                                      className={`group relative w-24 h-24 bg-white/5 rounded-xl border border-white/10 overflow-hidden transition-all hover:border-white/20 ${isViewable ? 'cursor-zoom-in' : 'cursor-default'}`}
-                                      aria-label={isViewable ? `View ${isPDF ? 'PDF' : 'image'}` : "Attachment"}
-                                    >
-                                      {isImage ? (
-                                        <>
-                                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                                          <img 
-                                            src={url} 
-                                            alt={`Attachment ${idx + 1}`} 
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </>
-                                      ) : (
-                                        <div className="w-full h-full flex flex-col items-center justify-center p-2 text-center">
-                                          <span className="text-3xl mb-1">{isPDF ? '📄' : '📎'}</span>
-                                          {isPDF && <span className="text-[10px] font-black text-white/40 uppercase tracking-tighter">PDF</span>}
-                                          {!isPDF && <span className="text-[8px] text-white/40 break-all">{photo.filePath.split(/[/\\]/).pop()}</span>}
-                                        </div>
-                                      )}
-                                      {isViewable && (
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                          <span className="text-xl">🔍</span>
-                                        </div>
-                                      )}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          )}
-                          {(donation.type !== 'ITEMS' || donation.items.length === 0) && donation.photos.length === 0 && (
-                            <div className="text-white/40 text-sm italic">No additional details or attachments.</div>
-                          )}
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
+                  <tr key={donation.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <td className="p-4 font-bold text-white">
+                      {new Date(donation.date).toLocaleDateString()}
+                    </td>
+                    <td className="p-4 text-sm text-white/60">
+                      {donation.organization.name}
+                    </td>
+                    <td className="p-4 text-sm text-white/60">
+                      {donation.type}
+                    </td>
+                    <td className="p-4 text-right font-black text-accent">
+                      {formatCurrency(calculateTotalValue(donation))}
+                    </td>
+                    <td className="p-4 text-right space-x-2 whitespace-nowrap">
+                      <Link
+                        href={`/donations/${donation.id}/edit`}
+                        className="text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white px-3 py-1 bg-white/5 rounded-lg transition-colors inline-block"
+                      >
+                        Edit
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(donation.id, new Date(donation.date).toLocaleDateString())}
+                        className="text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-500/20 px-3 py-1 bg-red-500/10 rounded-lg transition-colors inline-block"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                    <td className="p-4 text-right">
+                      <Link
+                        href={`/donations/${donation.id}`}
+                        className="text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white px-3 py-1 bg-white/5 rounded-lg transition-colors whitespace-nowrap inline-block"
+                        aria-label="Expand"
+                      >
+                        Expand
+                      </Link>
+                    </td>
+                  </tr>
                 );
               })
             )}
           </tbody>
         </table>
       </div>
-
-      {overlayImage && (
-        <ImageOverlay 
-          src={overlayImage.src} 
-          alt={overlayImage.alt} 
-          onClose={() => setOverlayImage(null)} 
-        />
-      )}
     </div>
   );
 }
