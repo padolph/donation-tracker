@@ -1,5 +1,8 @@
 name: Pre-merge Checks
 
+permissions:
+  contents: read
+
 # Trigger the workflow on every pull request to main
 on:
   pull_request:
