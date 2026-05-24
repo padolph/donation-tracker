@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-require-imports */
 jest.mock('electron', () => {
   const mockLoadURL = jest.fn().mockResolvedValue(undefined);
   const mockOn = jest.fn();

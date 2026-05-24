@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import ReportContainer from '../ReportContainer';
 import { getReportData, YearlyReportData } from '@/app/actions/reportActions';
