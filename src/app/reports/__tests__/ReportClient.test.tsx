@@ -60,7 +60,7 @@ describe('ReportClient', () => {
     const originalCreateElement = document.createElement;
     jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
       const el = originalCreateElement.call(document, tagName);
-      if (tagName === 'a') {
+      if ((tagName as string) === 'a') {
         jest.spyOn(el, 'click').mockImplementation(() => {});
       }
       return el;
