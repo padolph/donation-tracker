@@ -15,3 +15,8 @@
 ## 3. Step-by-Step Execution
 * **Iterative Building:** Execute the approved plan strictly one step at a time. Do not attempt to build the entire feature in a single output.
 * **Validation:** If a test fails or an error occurs, halt the plan and fix the immediate issue before proceeding to the next step in the checklist.
+
+## 4. Version Control
+* **Changes on Branch** Make all changes on a branch off main latest. If not currently on a branch, spawn one off main latest. Name branches according to Conventional Commits conventions.
+* **Never Merge to Main** Feel free to commit on the working branch, but never merge to the main branch.
+* **Conventional Commits** Use Conventional Commits (https://www.conventionalcommits.org/en/v1.0.0/conventions) for branch naming and commit messages.
