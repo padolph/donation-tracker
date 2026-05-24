@@ -3,6 +3,7 @@ import path from 'path';
 import { fork, ChildProcess } from 'child_process';
 import net from 'net';
 import fs from 'fs';
+import crypto from 'crypto';
 
 let nextServerProcess: ChildProcess | null = null;
 
@@ -68,7 +69,7 @@ async function startNextServer(port: number) {
       persistentConfig.AUTH_SECRET = legacySecret;
       fs.writeFileSync(configPath, JSON.stringify(persistentConfig), 'utf8');
     } else {
-      const generatedSecret = require('crypto').randomBytes(32).toString('hex');
+      const generatedSecret = crypto.randomBytes(32).toString('hex');
       authSecret = generatedSecret;
       persistentConfig.AUTH_SECRET = generatedSecret;
       fs.writeFileSync(configPath, JSON.stringify(persistentConfig), 'utf8');
@@ -100,7 +101,7 @@ async function startNextServer(port: number) {
 
   nextServerProcess = fork(nextPath, ['start', '-p', port.toString()], {
     cwd: unpackedPath,
-    env: env as any,
+    env: env as NodeJS.ProcessEnv,
     stdio: 'inherit',
   });
 
