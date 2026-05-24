@@ -23,7 +23,7 @@ const mockDonations = [
     assetShares: null,
     organization: { id: 1, name: 'Goodwill' },
     items: [
-      { id: 10, quantity: 2, condition: 'High', lockedValue: 50, item: { description: 'Shirt' } },
+      { id: 10, quantity: 2, condition: 'High', lockedValue: 50, item: { id: 100, description: 'Shirt' } },
     ],
     photos: [],
   },

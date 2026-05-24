@@ -1,15 +1,29 @@
 name: Node.js CI
 
-# Trigger the workflow on pushes to main, or any Pull Request
+# Trigger the workflow on pushes to main, or any Pull Request to main
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact-path: dist/*.deb
+          - os: macos-latest
+            artifact-path: dist/*.dmg
+          #- os: windows-latest
+          #  artifact-path: dist/*.exe
 
     steps:
     - name: Checkout repository
@@ -30,10 +44,20 @@ jobs:
     - name: Run Jest Test Suite
       run: npm test
 
-    - name: Typecheck Electron Wrapper
+    - name: Build Next.js App
+      run: npm run build
+
+    - name: Compile Electron TypeScript
       run: npm run electron:tsc
 
-    - name: Verify Desktop Build (Dry Run)
-      # Using npx electron-builder --dir directly avoids running 
-      # a redundant Next.js build if your previous CI steps already built it
-      run: npx electron-builder --dir
+    - name: Package Desktop Application
+      run: npx electron-builder
+      env:
+        CSC_IDENTITY_AUTO_DISCOVERY: false
+
+    - name: Upload Desktop Installer
+      uses: actions/upload-artifact@v4
+      with:
+        name: desktop-build-${{ matrix.os }}
+        path: ${{ matrix.artifact-path }}
+        if-no-files-found: error
