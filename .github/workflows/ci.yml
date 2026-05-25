@@ -44,11 +44,21 @@ jobs:
     - name: Run Jest Test Suite
       run: npm test
 
+    - name: Set Next.js Build Environment
+      run: |
+        echo "NEXT_DISABLE_SWC_MINIFY=true" >> $GITHUB_ENV
+
     - name: Build Next.js App
       run: npm run build
 
     - name: Compile Electron TypeScript
       run: npm run electron:tsc
+
+    - name: Rebuild Native Modules for Linux
+      if: matrix.os == 'ubuntu-latest'
+      run: npm rebuild
+      env:
+        npm_config_build_from_source: true
 
     - name: Package Desktop Application
       run: npx electron-builder
