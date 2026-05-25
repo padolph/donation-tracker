@@ -27,12 +27,16 @@ async function startNextServer(port: number) {
   // Point to the unpacked next binary
   const nextPath = path.join(unpackedPath, 'node_modules/next/dist/bin/next');
   
-  // Setup writable database path in userData
+  // Unify directory resolution at the top of the function
   const userDataPath = app.getPath('userData');
-  const dbPath = isPackaged 
-    ? path.join(userDataPath, 'production.db')
-    : path.join(userDataPath, 'database.db');
-  
+  const dbName = isPackaged ? 'production.db' : 'database.db';
+  const dbPath = path.join(userDataPath, dbName);
+  const imageStoragePath = path.join(userDataPath, 'storage', 'donations');
+
+  // Explicitly verify directories exist/are created structurally before config loading or forks
+  fs.mkdirSync(userDataPath, { recursive: true });
+  fs.mkdirSync(imageStoragePath, { recursive: true });
+
   // Setup persistent AUTH_SECRET and APP_PASSWORD
   const secretPath = path.join(userDataPath, '.secret');
   const configPath = path.join(userDataPath, 'config.json');
@@ -89,14 +93,12 @@ async function startNextServer(port: number) {
   const env = {
     ...process.env,
     NODE_ENV: 'production',
-    DATABASE_URL: isPackaged 
-      ? `file:${path.join(app.getPath('userData'), 'production.db')}` 
-      : `file:${dbPath}`,
+    DATABASE_URL: 'file:' + dbPath,
     AUTH_TRUST_HOST: 'true',
     AUTH_URL: `http://localhost:${port}`,
     AUTH_SECRET: authSecret || 'fallback-secret',
     APP_PASSWORD: appPassword || '',
-    IMAGE_STORAGE_PATH: path.join(userDataPath, 'storage', 'donations'),
+    IMAGE_STORAGE_PATH: imageStoragePath,
   };
 
   nextServerProcess = fork(nextPath, ['start', '-p', port.toString()], {
