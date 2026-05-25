@@ -57,8 +57,6 @@ jobs:
     - name: Rebuild Native Modules for Linux
       if: matrix.os == 'ubuntu-latest'
       run: npm rebuild
-      env:
-        npm_config_build_from_source: true
 
     - name: Package Desktop Application
       run: npx electron-builder
