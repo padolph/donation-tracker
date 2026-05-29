@@ -7,7 +7,7 @@ describe('Prisma Schema Configuration', () => {
     const content = fs.readFileSync(schemaPath, 'utf8');
     
     // Parse the binaryTargets from the generator client block
-    const generatorMatch = content.match(/generator\s+client\s*{[^}]*}/s);
+    const generatorMatch = content.match(/generator\s+client\s*{[^}]*}/);
     expect(generatorMatch).not.toBeNull();
     
     const generatorBlock = generatorMatch![0];
