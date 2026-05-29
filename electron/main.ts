@@ -33,6 +33,9 @@ async function startNextServer(port: number) {
   const dbPath = path.join(userDataPath, dbName);
   const imageStoragePath = path.join(userDataPath, 'storage', 'donations');
 
+  // Explicitly assign the database path to process.env.DATABASE_URL
+  process.env.DATABASE_URL = 'file:' + dbPath;
+
   // Explicitly verify directories exist/are created structurally before config loading or forks
   fs.mkdirSync(userDataPath, { recursive: true });
   fs.mkdirSync(imageStoragePath, { recursive: true });
