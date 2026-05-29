@@ -54,9 +54,9 @@ jobs:
     - name: Compile Electron TypeScript
       run: npm run electron:tsc
 
-    - name: Rebuild Native Modules for Linux
+    - name: Rebuild Native Modules for Electron (Linux)
       if: matrix.os == 'ubuntu-latest'
-      run: npm rebuild
+      run: npx electron-rebuild --arch=x64 --force --build-from-source
 
     - name: Package Desktop Application
       run: npx electron-builder
