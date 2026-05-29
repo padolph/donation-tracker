@@ -135,6 +135,7 @@ describe('Electron Main Process', () => {
   });
 
   it('should initialize paths, verify directory creation, and fork process with correct env in packaged production mode', async () => {
+    const originalDatabaseUrl = process.env.DATABASE_URL;
     const { app } = require('electron');
     // Set isPackaged to true
     app.isPackaged = true;
@@ -165,7 +166,11 @@ describe('Electron Main Process', () => {
     expect(forkEnv.DATABASE_URL).toBe('file:/mock/user/data/production.db');
     expect(forkEnv.IMAGE_STORAGE_PATH).toBe('/mock/user/data/storage/donations');
     
+    // Verify that process.env.DATABASE_URL itself was explicitly assigned in the main process
+    expect(process.env.DATABASE_URL).toBe('file:/mock/user/data/production.db');
+
     // Clean up
     app.isPackaged = false;
+    process.env.DATABASE_URL = originalDatabaseUrl;
   });
 });

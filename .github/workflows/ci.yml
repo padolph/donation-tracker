@@ -50,6 +50,9 @@ jobs:
 
     - name: Build Next.js App
       run: npm run build
+      env:
+        DATABASE_URL: "file:./prisma/empty.db"
+        NEXT_PHASE: "phase-production-build"
 
     - name: Compile Electron TypeScript
       run: npm run electron:tsc
