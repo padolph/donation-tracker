@@ -57,8 +57,8 @@ describe('SettingsClient', () => {
     
     await waitFor(() => {
       expect(updateSettings).toHaveBeenCalledWith({ marginalTaxRate: 0.35 });
+      expect(screen.getByText(/Settings updated successfully/i)).toBeInTheDocument();
     });
-    expect(screen.getByText(/Settings updated successfully/i)).toBeInTheDocument();
   });
 
   it('shows an error if update fails', async () => {

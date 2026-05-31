@@ -11,6 +11,7 @@
     1. Write the unit/integration tests for the specific component or function.
     2. Write the implementation code to satisfy the tests.
     3. Run the tests (or instruct the user to run them) to verify the step is complete before moving to the next step.
+* **Note:** Do not do TDD for changes to configuration files like YAML, MD, etc.
 
 ## 3. Step-by-Step Execution
 * **Iterative Building:** Execute the approved plan strictly one step at a time. Do not attempt to build the entire feature in a single output.

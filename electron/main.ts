@@ -85,7 +85,7 @@ async function startNextServer(port: number) {
   
   // Copy default db if it doesn't exist
   if (isPackaged && !fs.existsSync(dbPath)) {
-    const defaultDbPath = path.join(unpackedPath, 'prisma/dev.db');
+    const defaultDbPath = path.join(unpackedPath, 'prisma/production.db');
     if (fs.existsSync(defaultDbPath)) {
       fs.copyFileSync(defaultDbPath, dbPath);
       // Ensure the file is writable

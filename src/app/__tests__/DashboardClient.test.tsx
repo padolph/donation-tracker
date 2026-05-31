@@ -42,8 +42,7 @@ describe('DashboardClient', () => {
     
     await waitFor(() => {
       expect(getDashboardStats).toHaveBeenCalledWith(2025);
+      expect(screen.getByText('$2,000.00')).toBeInTheDocument();
     });
-    
-    expect(screen.getByText('$2,000.00')).toBeInTheDocument();
   });
 });

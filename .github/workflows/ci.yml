@@ -40,6 +40,8 @@ jobs:
 
     - name: Generate Prisma Client
       run: npx prisma generate
+      env:
+        DATABASE_URL: "file:./prisma/empty.db"
 
     - name: Run Jest Test Suite
       run: npm test
@@ -53,6 +55,11 @@ jobs:
       env:
         DATABASE_URL: "file:./prisma/empty.db"
         NEXT_PHASE: "phase-production-build"
+
+    - name: Create and Seed Default Production Database
+      run: |
+        DATABASE_URL="file:./production.db" npx prisma migrate deploy
+        DATABASE_URL="file:./production.db" npx prisma db seed
 
     - name: Compile Electron TypeScript
       run: npm run electron:tsc
