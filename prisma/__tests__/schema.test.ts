@@ -20,4 +20,11 @@ describe('Prisma Schema Configuration', () => {
       
     expect(binaryTargets).toContain('darwin');
   });
+
+  it('should use env("DATABASE_URL") for the datasource url', () => {
+    const schemaPath = path.resolve(__dirname, '../schema.prisma');
+    const content = fs.readFileSync(schemaPath, 'utf8');
+    expect(content).toContain('url      = env("DATABASE_URL")');
+  });
 });
+
