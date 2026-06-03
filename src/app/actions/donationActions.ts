@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
+import fs from 'fs/promises';
 
 interface DonationData {
   organizationId: number;
@@ -122,9 +123,35 @@ import { revalidatePath } from 'next/cache';
 
 export async function deleteDonation(id: number) {
   try {
+    const donation = await prisma.donationEvent.findUnique({
+      where: { id },
+      include: { photos: true },
+    });
+
+    if (!donation) {
+      throw new Error('Record not found');
+    }
+
     await prisma.donationEvent.delete({
       where: { id },
     });
+
+    // Delete associated photos on disk
+    if (donation.photos && donation.photos.length > 0) {
+      for (const photo of donation.photos) {
+        if (photo.filePath) {
+          try {
+            // eslint-disable-next-line security/detect-non-literal-fs-filename
+            await fs.unlink(photo.filePath);
+          } catch (unlinkError) {
+            console.error('ERROR: Failed to delete photo file from disk', {
+              filePath: photo.filePath,
+              error: unlinkError instanceof Error ? unlinkError.message : String(unlinkError),
+            });
+          }
+        }
+      }
+    }
 
     revalidatePath('/donations');
     return { success: true };
