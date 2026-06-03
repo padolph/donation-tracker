@@ -102,6 +102,7 @@ async function startNextServer(port: number) {
     AUTH_SECRET: authSecret || 'fallback-secret',
     APP_PASSWORD: appPassword || '',
     IMAGE_STORAGE_PATH: imageStoragePath,
+    CONFIG_PATH: configPath,
   };
 
   nextServerProcess = fork(nextPath, ['start', '-p', port.toString()], {
