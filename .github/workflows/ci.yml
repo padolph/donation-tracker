@@ -58,8 +58,8 @@ jobs:
 
     - name: Create and Seed Default Production Database
       run: |
-        DATABASE_URL="file:./production.db" npx prisma migrate deploy
-        DATABASE_URL="file:./production.db" npx prisma db seed
+        DATABASE_URL="file:$(pwd)/prisma/production.db" npx prisma migrate deploy
+        DATABASE_URL="file:$(pwd)/prisma/production.db" npx prisma db seed
 
     - name: Compile Electron TypeScript
       run: npm run electron:tsc
