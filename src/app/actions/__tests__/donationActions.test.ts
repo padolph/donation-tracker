@@ -1,5 +1,7 @@
 import { saveDonation, getDonations, deleteDonation, getDonationById, updateDonation } from '../donationActions';
+import fs from 'fs/promises';
 
+jest.mock('fs/promises');
 jest.mock('next/cache', () => ({
   revalidatePath: jest.fn(),
 }));
@@ -224,7 +226,65 @@ describe('donationActions', () => {
       jest.clearAllMocks();
     });
 
-    it('should delete a donation event and return success', async () => {
+    it('should delete a donation event, delete its associated photos, and return success', async () => {
+      (prisma.donationEvent.findUnique as jest.Mock).mockResolvedValue({
+        id: 1,
+        photos: [
+          { filePath: '/mock/storage/photo1.jpg' },
+          { filePath: '/mock/storage/photo2.jpg' },
+        ],
+      });
+      (prisma.donationEvent.delete as jest.Mock).mockResolvedValue({ id: 1 });
+      (fs.unlink as jest.Mock).mockResolvedValue(undefined);
+
+      const result = await deleteDonation(1);
+
+      expect(result).toEqual({ success: true });
+      expect(prisma.donationEvent.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+        include: { photos: true },
+      });
+      expect(prisma.donationEvent.delete).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+      expect(fs.unlink).toHaveBeenCalledTimes(2);
+      expect(fs.unlink).toHaveBeenNthCalledWith(1, '/mock/storage/photo1.jpg');
+      expect(fs.unlink).toHaveBeenNthCalledWith(2, '/mock/storage/photo2.jpg');
+    });
+
+    it('should delete a donation event and return success even if associated photos deletion fails', async () => {
+      (prisma.donationEvent.findUnique as jest.Mock).mockResolvedValue({
+        id: 1,
+        photos: [{ filePath: '/mock/storage/photo1.jpg' }],
+      });
+      (prisma.donationEvent.delete as jest.Mock).mockResolvedValue({ id: 1 });
+      (fs.unlink as jest.Mock).mockRejectedValue(new Error('ENOENT: no such file or directory'));
+      
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      const result = await deleteDonation(1);
+
+      expect(result).toEqual({ success: true });
+      expect(prisma.donationEvent.delete).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+      expect(fs.unlink).toHaveBeenCalledWith('/mock/storage/photo1.jpg');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'ERROR: Failed to delete photo file from disk',
+        expect.objectContaining({
+          filePath: '/mock/storage/photo1.jpg',
+          error: expect.any(String),
+        })
+      );
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should delete a donation event even if no photos are attached', async () => {
+      (prisma.donationEvent.findUnique as jest.Mock).mockResolvedValue({
+        id: 1,
+        photos: [],
+      });
       (prisma.donationEvent.delete as jest.Mock).mockResolvedValue({ id: 1 });
 
       const result = await deleteDonation(1);
@@ -233,16 +293,35 @@ describe('donationActions', () => {
       expect(prisma.donationEvent.delete).toHaveBeenCalledWith({
         where: { id: 1 },
       });
+      expect(fs.unlink).not.toHaveBeenCalled();
     });
 
-    it('should return failure if database throws an error', async () => {
-      (prisma.donationEvent.delete as jest.Mock).mockRejectedValue(new Error('Record not found'));
+    it('should return failure if database findUnique throws an error', async () => {
+      (prisma.donationEvent.findUnique as jest.Mock).mockRejectedValue(new Error('Record not found'));
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
       const result = await deleteDonation(1);
 
       expect(result).toEqual({ success: false, error: 'Record not found' });
       expect(consoleSpy).toHaveBeenCalledWith('CRITICAL: deleteDonation failed', expect.any(Error));
+      expect(fs.unlink).not.toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should return failure if database delete fails and not delete photos', async () => {
+      (prisma.donationEvent.findUnique as jest.Mock).mockResolvedValue({
+        id: 1,
+        photos: [{ filePath: '/mock/storage/photo1.jpg' }],
+      });
+      (prisma.donationEvent.delete as jest.Mock).mockRejectedValue(new Error('Database delete error'));
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      const result = await deleteDonation(1);
+
+      expect(result).toEqual({ success: false, error: 'Database delete error' });
+      expect(consoleSpy).toHaveBeenCalledWith('CRITICAL: deleteDonation failed', expect.any(Error));
+      expect(fs.unlink).not.toHaveBeenCalled();
 
       consoleSpy.mockRestore();
     });
