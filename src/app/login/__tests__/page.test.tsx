@@ -27,6 +27,7 @@ describe("LoginPage Server Component", () => {
     const client = screen.getByTestId("login-client");
     expect(client).toBeInTheDocument();
     expect(client).toHaveAttribute("data-password-set", "false");
+    expect(LoginClient).toHaveBeenCalledWith({ isPasswordSet: false }, expect.any(Object));
   });
 
   it("passes isPasswordSet=true when APP_PASSWORD is set", async () => {
@@ -39,5 +40,6 @@ describe("LoginPage Server Component", () => {
     const client = screen.getByTestId("login-client");
     expect(client).toBeInTheDocument();
     expect(client).toHaveAttribute("data-password-set", "true");
+    expect(LoginClient).toHaveBeenCalledWith({ isPasswordSet: true }, expect.any(Object));
   });
 });
