@@ -44,7 +44,7 @@ async function startNextServer(port: number) {
   const secretPath = path.join(userDataPath, '.secret');
   const configPath = path.join(userDataPath, 'config.json');
   let authSecret = process.env.AUTH_SECRET;
-  let appPassword = process.env.APP_PASSWORD || process.env.PASSWORD;
+  let appPassword = process.env.APP_PASSWORD;
   
   // Load persistent config if it exists
   let persistentConfig: Record<string, string> = {};
@@ -102,6 +102,7 @@ async function startNextServer(port: number) {
     AUTH_SECRET: authSecret || 'fallback-secret',
     APP_PASSWORD: appPassword || '',
     IMAGE_STORAGE_PATH: imageStoragePath,
+    CONFIG_PATH: configPath,
   };
 
   nextServerProcess = fork(nextPath, ['start', '-p', port.toString()], {

@@ -1,46 +1,45 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import LoginPage from "../page";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import LoginClient from "../LoginClient";
 
-// Mock next-auth/react
-jest.mock("next-auth/react", () => ({
-  signIn: jest.fn(),
-}));
+// Mock LoginClient to verify it receives the correct props
+jest.mock("../LoginClient", () => {
+  return jest.fn().mockImplementation(({ isPasswordSet }) => {
+    return <div data-testid="login-client" data-password-set={isPasswordSet.toString()} />;
+  });
+});
 
-// Mock next/navigation
-jest.mock("next/navigation", () => ({
-  useRouter: jest.fn(),
-}));
+describe("LoginPage Server Component", () => {
+  const originalEnv = process.env.APP_PASSWORD;
 
-describe("Login Page", () => {
-  const mockPush = jest.fn();
-
-  beforeEach(() => {
-    (useRouter as jest.Mock).mockReturnValue({
-      push: mockPush,
-      refresh: jest.fn(),
-    });
+  afterEach(() => {
+    process.env.APP_PASSWORD = originalEnv;
     jest.clearAllMocks();
   });
 
-  it("renders the login form with a password input", () => {
-    render(<LoginPage />);
-    expect(screen.getByLabelText(/access password/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /unlock application/i })).toBeInTheDocument();
+  it("passes isPasswordSet=false when APP_PASSWORD is not set", async () => {
+    delete process.env.APP_PASSWORD;
+
+    // Resolve the server component
+    const PageComponent = await LoginPage();
+    render(PageComponent);
+
+    const client = screen.getByTestId("login-client");
+    expect(client).toBeInTheDocument();
+    expect(client).toHaveAttribute("data-password-set", "false");
+    expect(LoginClient).toHaveBeenCalledWith({ isPasswordSet: false }, undefined);
   });
 
-  it("calls signIn when the form is submitted", async () => {
-    render(<LoginPage />);
-    const passwordInput = screen.getByLabelText(/access password/i);
-    const submitButton = screen.getByRole("button", { name: /unlock application/i });
+  it("passes isPasswordSet=true when APP_PASSWORD is set", async () => {
+    process.env.APP_PASSWORD = "some-password";
 
-    fireEvent.change(passwordInput, { target: { value: "testpassword" } });
-    fireEvent.click(submitButton);
+    // Resolve the server component
+    const PageComponent = await LoginPage();
+    render(PageComponent);
 
-    expect(signIn).toHaveBeenCalledWith("credentials", {
-      password: "testpassword",
-      redirect: false,
-    });
+    const client = screen.getByTestId("login-client");
+    expect(client).toBeInTheDocument();
+    expect(client).toHaveAttribute("data-password-set", "true");
+    expect(LoginClient).toHaveBeenCalledWith({ isPasswordSet: true }, undefined);
   });
 });
