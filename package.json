@@ -14,7 +14,7 @@
     "test:watch": "jest --watch",
     "electron:tsc": "tsc -p tsconfig.electron.json",
     "desktop:dev": "concurrently \"npm run dev\" \"npm run electron:tsc -- --watch\" \"wait-on tcp:3000 || wait-on tcp:3001 && electron .\"",
-    "desktop:build": "DATABASE_URL=\"file:./production.db\" npx prisma migrate deploy && DATABASE_URL=\"file:./production.db\" npx prisma db seed && npm run build && npm run electron:tsc && electron-builder"
+    "desktop:build": "npx prisma generate && DATABASE_URL=\"file:\\$(pwd)/prisma/production.db\" npx prisma migrate deploy && DATABASE_URL=\"file:\\$(pwd)/prisma/production.db\" npx prisma db seed && npm run build && npm run electron:tsc && electron-builder"
   },
   "build": {
     "appId": "com.donation-tracker.app",
