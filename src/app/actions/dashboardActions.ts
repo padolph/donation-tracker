@@ -1,6 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { calculateTaxSavings } from '@/utils/calculators/resolver';
 
 export async function getDashboardStats(year: number) {
   try {
@@ -46,7 +47,15 @@ export async function getDashboardStats(year: number) {
     });
 
     const totalDonated = itemsTotal + cashTotal + assetsTotal;
-    const taxSavings = totalDonated * marginalTaxRate;
+    
+    const estimatedAGI = settings?.estimatedAGI ?? 0.0;
+    const calculation = calculateTaxSavings(year, {
+      estimatedAGI,
+      marginalTaxRate,
+      itemsTotal,
+      cashTotal,
+      assetsTotal,
+    });
 
     return {
       success: true,
@@ -56,8 +65,13 @@ export async function getDashboardStats(year: number) {
         cashTotal,
         assetsTotal,
         organizationCount: organizationIds.size,
-        taxSavings,
+        taxSavings: calculation.taxSavings,
         marginalTaxRate,
+        estimatedAGI,
+        calculationState: calculation.state,
+        floor: calculation.floor,
+        floorRemaining: calculation.floorRemaining,
+        allowedContributionsRemaining: calculation.allowedContributionsRemaining,
       },
     };
   } catch (error) {

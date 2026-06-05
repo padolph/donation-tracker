@@ -3,10 +3,60 @@ import { render, screen } from '@testing-library/react';
 import TaxImpactWidget from '../TaxImpactWidget';
 
 describe('TaxImpactWidget', () => {
-  it('renders correctly', () => {
-    render(<TaxImpactWidget taxSavings={544.16} marginalTaxRate={0.32} />);
+  it('renders default state correctly for non-2026 years', () => {
+    render(<TaxImpactWidget taxSavings={544.16} marginalTaxRate={0.32} year={2025} calculationState="default" />);
     
     expect(screen.getByText('$544.16')).toBeInTheDocument();
     expect(screen.getByText(/32(\.0)?%/)).toBeInTheDocument();
+    expect(screen.getByText(/You can adjust this in the settings/i)).toBeInTheDocument();
+  });
+
+  it('renders State 1 correctly (Below the Floor)', () => {
+    render(
+      <TaxImpactWidget
+        taxSavings={0}
+        marginalTaxRate={0.32}
+        year={2026}
+        calculationState="below_floor"
+        floor={500}
+        floorRemaining={100}
+      />
+    );
+
+    expect(screen.getByText('$0.00')).toBeInTheDocument();
+    expect(screen.getByText(/You are/)).toBeInTheDocument();
+    expect(screen.getByText(/\$100.00/)).toBeInTheDocument();
+    expect(screen.getByText(/away from clearing your statutory 2026 0.5% AGI floor/)).toBeInTheDocument();
+    expect(screen.getByText(/\$500.00/)).toBeInTheDocument();
+  });
+
+  it('renders State 2 correctly (Active Zone)', () => {
+    render(
+      <TaxImpactWidget
+        taxSavings={800}
+        marginalTaxRate={0.32}
+        year={2026}
+        calculationState="active"
+        allowedContributionsRemaining={87000}
+      />
+    );
+
+    expect(screen.getByText('$800.00')).toBeInTheDocument();
+    expect(screen.getByText(/actively saving you money/i)).toBeInTheDocument();
+    expect(screen.getByText(/\$87,000.00/)).toBeInTheDocument();
+  });
+
+  it('renders State 3 correctly (Maximized Ceiling)', () => {
+    render(
+      <TaxImpactWidget
+        taxSavings={28640}
+        marginalTaxRate={0.32}
+        year={2026}
+        calculationState="max_ceiling"
+      />
+    );
+
+    expect(screen.getByText('$28,640.00')).toBeInTheDocument();
+    expect(screen.getByText(/fully maximized your allowable 2026 deductions/i)).toBeInTheDocument();
   });
 });

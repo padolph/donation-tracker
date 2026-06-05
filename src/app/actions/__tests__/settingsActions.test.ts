@@ -30,12 +30,14 @@ describe('settingsActions', () => {
       (prisma.appSettings.upsert as jest.Mock).mockResolvedValue({
         id: 1,
         marginalTaxRate: 0.32,
+        estimatedAGI: 0.0,
       });
 
       const result = await getSettings();
 
       expect(result.success).toBe(true);
       expect(result.settings?.marginalTaxRate).toBe(0.32);
+      expect(result.settings?.estimatedAGI).toBe(0.0);
       expect(prisma.appSettings.upsert).toHaveBeenCalled();
       expect(result.databasePath).toBeDefined();
       expect(result.storagePath).toBe(path.join(process.cwd(), 'storage', 'donations'));
@@ -45,6 +47,7 @@ describe('settingsActions', () => {
       const existingSettings = {
         id: 1,
         marginalTaxRate: 0.25,
+        estimatedAGI: 75000.0,
         updatedAt: new Date(),
       };
       (prisma.appSettings.findUnique as jest.Mock).mockResolvedValue(existingSettings);
@@ -53,6 +56,7 @@ describe('settingsActions', () => {
 
       expect(result.success).toBe(true);
       expect(result.settings?.marginalTaxRate).toBe(0.25);
+      expect(result.settings?.estimatedAGI).toBe(75000.0);
       expect(prisma.appSettings.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
       expect(result.databasePath).toBeDefined();
       expect(result.storagePath).toBe(path.join(process.cwd(), 'storage', 'donations'));
@@ -110,10 +114,11 @@ describe('settingsActions', () => {
 
   describe('updateSettings', () => {
     it('should update settings and revalidate path', async () => {
-      const mockData = { marginalTaxRate: 0.35 };
+      const mockData = { marginalTaxRate: 0.35, estimatedAGI: 85000.0 };
       (prisma.appSettings.upsert as jest.Mock).mockResolvedValue({ 
         id: 1, 
         marginalTaxRate: 0.35,
+        estimatedAGI: 85000.0,
         updatedAt: new Date()
       });
 
@@ -121,6 +126,7 @@ describe('settingsActions', () => {
 
       expect(result.success).toBe(true);
       expect(result.settings?.marginalTaxRate).toBe(0.35);
+      expect(result.settings?.estimatedAGI).toBe(85000.0);
       expect(prisma.appSettings.upsert).toHaveBeenCalledWith(expect.objectContaining({
         where: { id: 1 },
         update: mockData,

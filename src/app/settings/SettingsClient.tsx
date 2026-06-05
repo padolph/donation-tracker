@@ -6,6 +6,7 @@ import { updateSettings } from '@/app/actions/settingsActions';
 interface Settings {
   id: number;
   marginalTaxRate: number;
+  estimatedAGI: number;
   updatedAt: Date;
 }
 
@@ -19,6 +20,7 @@ export default function SettingsClient({
   storagePath: string;
 }) {
   const [taxRate, setTaxRate] = useState(initialSettings.marginalTaxRate * 100);
+  const [estimatedAGI, setEstimatedAGI] = useState(initialSettings.estimatedAGI);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -29,6 +31,7 @@ export default function SettingsClient({
 
     const result = await updateSettings({
       marginalTaxRate: taxRate / 100,
+      estimatedAGI: estimatedAGI,
     });
 
     if (result.success) {
@@ -67,6 +70,27 @@ export default function SettingsClient({
             </div>
             <p className="text-xs text-white/30">
               Used to estimate tax savings on the dashboard (e.g., 32% for most individuals).
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2 pt-6 border-t border-white/10">
+            <label htmlFor="estimatedAGI" className="text-xs font-bold uppercase tracking-widest text-white/40">
+              Estimated AGI ($)
+            </label>
+            <div className="relative max-w-[200px]">
+              <input
+                id="estimatedAGI"
+                type="number"
+                min="0"
+                step="1"
+                className="w-full px-4 py-3 rounded-xl font-bold pr-10"
+                value={estimatedAGI}
+                onChange={(e) => setEstimatedAGI(parseFloat(e.target.value) || 0)}
+              />
+              <span className="absolute right-4 top-3 text-white/40">$</span>
+            </div>
+            <p className="text-xs text-white/30">
+              Used to calculate OBBBA compliance floors and ceilings for the 2026+ tax year.
             </p>
           </div>
 
