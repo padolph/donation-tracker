@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/padolph/donation-tracker/compare/v1.0.0...v1.1.0) (2026-06-05)
+
+
+### Features
+
+* implement 2026 OBBBA tax savings compliance engine ([9d4fc22](https://github.com/padolph/donation-tracker/commit/9d4fc22b56caa656059b227a57411cde81598607))
+
+
+### Bug Fixes
+
+* make updateSettings properties optional to resolve TS compilation error ([871574c](https://github.com/padolph/donation-tracker/commit/871574c77fbfa864e85396d6a7020a5c6ee5e265))
+
 ## 1.0.0 (2026-06-04)
 
 
