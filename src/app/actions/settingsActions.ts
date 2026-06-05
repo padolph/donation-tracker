@@ -14,7 +14,7 @@ export async function getSettings() {
       settings = await prisma.appSettings.upsert({
         where: { id: 1 },
         update: {},
-        create: { id: 1, marginalTaxRate: 0.32 },
+        create: { id: 1, marginalTaxRate: 0.32, estimatedAGI: 0.0 },
       });
     }
 
@@ -41,6 +41,7 @@ export async function getSettings() {
 
 interface UpdateSettingsData {
   marginalTaxRate: number;
+  estimatedAGI: number;
 }
 
 export async function updateSettings(data: UpdateSettingsData) {
@@ -49,10 +50,12 @@ export async function updateSettings(data: UpdateSettingsData) {
       where: { id: 1 },
       update: {
         marginalTaxRate: data.marginalTaxRate,
+        estimatedAGI: data.estimatedAGI,
       },
       create: {
         id: 1,
         marginalTaxRate: data.marginalTaxRate,
+        estimatedAGI: data.estimatedAGI,
       },
     });
 

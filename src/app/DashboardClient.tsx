@@ -14,6 +14,11 @@ interface DashboardStats {
   organizationCount: number;
   taxSavings: number;
   marginalTaxRate: number;
+  estimatedAGI?: number;
+  calculationState?: 'below_floor' | 'active' | 'max_ceiling' | 'default';
+  floor?: number;
+  floorRemaining?: number;
+  allowedContributionsRemaining?: number;
 }
 
 export default function DashboardClient({ initialStats }: { initialStats: DashboardStats }) {
@@ -54,7 +59,15 @@ export default function DashboardClient({ initialStats }: { initialStats: Dashbo
       <SummaryCards stats={stats} />
 
       <section className="pt-4">
-        <TaxImpactWidget taxSavings={stats.taxSavings} marginalTaxRate={stats.marginalTaxRate} />
+        <TaxImpactWidget
+          taxSavings={stats.taxSavings}
+          marginalTaxRate={stats.marginalTaxRate}
+          year={year}
+          calculationState={stats.calculationState}
+          floor={stats.floor}
+          floorRemaining={stats.floorRemaining}
+          allowedContributionsRemaining={stats.allowedContributionsRemaining}
+        />
       </section>
     </div>
   );

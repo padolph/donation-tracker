@@ -80,6 +80,7 @@ model DonatedItem {
 model AppSettings {
   id               Int      @id @default(1)
   marginalTaxRate  Float    @default(0.32)
+  estimatedAGI     Float    @default(0.0)
   updatedAt        DateTime @updatedAt
 }
 

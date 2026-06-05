@@ -21,7 +21,7 @@ describe('dashboardActions', () => {
 
   describe('getDashboardStats', () => {
     it('should aggregate stats correctly for a given year', async () => {
-      const year = 2026;
+      const year = 2025;
       const mockDonations = [
         {
           type: 'ITEMS',
@@ -51,7 +51,7 @@ describe('dashboardActions', () => {
       ];
 
       (prisma.donationEvent.findMany as jest.Mock).mockResolvedValue(mockDonations);
-      (prisma.appSettings.findUnique as jest.Mock).mockResolvedValue({ marginalTaxRate: 0.32 });
+      (prisma.appSettings.findUnique as jest.Mock).mockResolvedValue({ marginalTaxRate: 0.32, estimatedAGI: 0.0 });
 
       const result = await getDashboardStats(year);
 
@@ -66,9 +66,9 @@ describe('dashboardActions', () => {
 
     it('should return default stats if no donations exist', async () => {
       (prisma.donationEvent.findMany as jest.Mock).mockResolvedValue([]);
-      (prisma.appSettings.findUnique as jest.Mock).mockResolvedValue({ marginalTaxRate: 0.32 });
+      (prisma.appSettings.findUnique as jest.Mock).mockResolvedValue({ marginalTaxRate: 0.32, estimatedAGI: 0.0 });
 
-      const result = await getDashboardStats(2026);
+      const result = await getDashboardStats(2025);
 
       expect(result.success).toBe(true);
       expect(result.stats?.totalDonated).toBe(0);
@@ -79,10 +79,50 @@ describe('dashboardActions', () => {
     it('should handle database errors gracefully', async () => {
       (prisma.donationEvent.findMany as jest.Mock).mockRejectedValue(new Error('Fetch failed'));
 
-      const result = await getDashboardStats(2026);
+      const result = await getDashboardStats(2025);
 
       expect(result.success).toBe(false);
       expect(result.error).toBe('Fetch failed');
+    });
+
+    it('should calculate OBBBA compliance tax savings when year is 2026', async () => {
+      const year = 2026;
+      const mockDonations = [
+        {
+          type: 'ITEMS',
+          items: [
+            { quantity: 2, lockedValue: 500 },
+          ],
+          cashAmount: null,
+          assetShares: null,
+          organizationId: 1,
+        },
+        {
+          type: 'CASH',
+          items: [],
+          cashAmount: 2000,
+          assetShares: null,
+          organizationId: 2,
+        },
+      ];
+
+      (prisma.donationEvent.findMany as jest.Mock).mockResolvedValue(mockDonations);
+      (prisma.appSettings.findUnique as jest.Mock).mockResolvedValue({ marginalTaxRate: 0.32, estimatedAGI: 100000 });
+
+      const result = await getDashboardStats(year);
+
+      expect(result.success).toBe(true);
+      expect(result.stats?.totalDonated).toBe(3000);
+      expect(result.stats?.itemsTotal).toBe(1000);
+      expect(result.stats?.cashTotal).toBe(2000);
+      
+      // floor = 500. Total deductible = 3000. Savings = (3000 - 500) * 0.32 = 800
+      expect(result.stats?.taxSavings).toBe(800);
+      expect(result.stats?.estimatedAGI).toBe(100000);
+      expect(result.stats?.calculationState).toBe('active');
+      expect(result.stats?.floor).toBe(500);
+      expect(result.stats?.floorRemaining).toBe(0);
+      expect(result.stats?.allowedContributionsRemaining).toBe(87000);
     });
   });
 });

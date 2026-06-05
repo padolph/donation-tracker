@@ -11,6 +11,7 @@ jest.mock('@/app/actions/settingsActions', () => ({
 const mockSettings = {
   id: 1,
   marginalTaxRate: 0.32,
+  estimatedAGI: 50000,
   updatedAt: new Date(),
 };
 
@@ -23,6 +24,7 @@ describe('SettingsClient', () => {
     render(<SettingsClient initialSettings={mockSettings} databasePath="/mock/path/dev.db" storagePath="/mock/path/storage" />);
     // 0.32 is displayed as 32(%)
     expect(screen.getByLabelText(/Marginal Tax Rate/i)).toHaveValue(32);
+    expect(screen.getByLabelText(/Estimated AGI/i)).toHaveValue(50000);
   });
 
   it('renders the database path as read-only', () => {
@@ -46,17 +48,20 @@ describe('SettingsClient', () => {
   });
 
   it('updates the settings when form is submitted', async () => {
-    (updateSettings as jest.Mock).mockResolvedValue({ success: true, settings: { ...mockSettings, marginalTaxRate: 0.35 } });
+    (updateSettings as jest.Mock).mockResolvedValue({ success: true, settings: { ...mockSettings, marginalTaxRate: 0.35, estimatedAGI: 60000 } });
     render(<SettingsClient initialSettings={mockSettings} databasePath="/mock/path/dev.db" storagePath="/mock/path/storage" />);
     
     const input = screen.getByLabelText(/Marginal Tax Rate/i);
     fireEvent.change(input, { target: { value: '35' } });
+
+    const agiInput = screen.getByLabelText(/Estimated AGI/i);
+    fireEvent.change(agiInput, { target: { value: '60000' } });
     
     const saveButton = screen.getByRole('button', { name: /Save Settings/i });
     fireEvent.click(saveButton);
     
     await waitFor(() => {
-      expect(updateSettings).toHaveBeenCalledWith({ marginalTaxRate: 0.35 });
+      expect(updateSettings).toHaveBeenCalledWith({ marginalTaxRate: 0.35, estimatedAGI: 60000 });
       expect(screen.getByText(/Settings updated successfully/i)).toBeInTheDocument();
     });
   });
