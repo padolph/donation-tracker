@@ -121,16 +121,15 @@ export async function getReportData(year: number) {
         // as entered by the user in the UI.
         const totalAssetValue = event.cashAmount || 0;
         const shares = event.assetShares || 0;
-        const perShareValue = shares > 0 ? totalAssetValue / shares : totalAssetValue;
 
         eventTotal = totalAssetValue;
         reportItems.push({
           id: event.id,
-          description: `Asset: ${event.assetTicker} (${shares} shares)`,
+          description: event.assetTicker,
           category: 'Assets',
           condition: 'N/A',
-          quantity: 1,
-          unitValue: perShareValue,
+          quantity: shares,
+          unitValue: totalAssetValue,
           totalValue: totalAssetValue,
           valuationMethod: 'Market Quotations',
         });

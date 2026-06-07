@@ -138,11 +138,14 @@ describe('reportActions', () => {
       expect(result.success).toBe(true);
       const assetReport = result.data?.organizations.find(o => o.name === 'University');
       
-      // Expected: $1,500.00 (The total value entered by the user)
-      // Current Buggy behavior likely results in: 10 * 1500 = $15,000.00
       expect(assetReport?.totalValue).toBe(1500);
-      expect(assetReport?.donations[0].items[0].totalValue).toBe(1500);
-      expect(assetReport?.donations[0].items[0].valuationMethod).toBe('Market Quotations');
+      
+      const item = assetReport?.donations[0].items[0];
+      expect(item?.description).toBe('AAPL');
+      expect(item?.quantity).toBe(10);
+      expect(item?.unitValue).toBe(1500);
+      expect(item?.totalValue).toBe(1500);
+      expect(item?.valuationMethod).toBe('Market Quotations');
     });
   });
 });
