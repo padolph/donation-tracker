@@ -30,10 +30,15 @@ describe('Sidebar', () => {
 
   it('renders the custom logo image instead of the generic heart character', () => {
     render(<Sidebar />);
-    const logoImg = screen.getByAltText('DonationTrack Logo');
+    const logoImg = screen.getByAltText('DonationTracker Logo');
     expect(logoImg).toBeInTheDocument();
     expect(logoImg).toHaveAttribute('src', '/icon.png');
     expect(screen.queryByText('♡')).not.toBeInTheDocument();
+  });
+
+  it('renders the application brand name DonationTracker', () => {
+    render(<Sidebar />);
+    expect(screen.getByRole('heading', { name: 'DonationTracker' })).toBeInTheDocument();
   });
 
   it('highlights the active link correctly', () => {

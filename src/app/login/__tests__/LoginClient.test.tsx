@@ -34,6 +34,7 @@ describe("LoginClient", () => {
   describe("Unlock Mode (isPasswordSet = true)", () => {
     it("renders the unlock form", () => {
       render(<LoginClient isPasswordSet={true} />);
+      expect(screen.getByRole("heading", { name: "DonationTracker" })).toBeInTheDocument();
       expect(screen.getByLabelText(/access password/i)).toBeInTheDocument();
       expect(screen.queryByLabelText(/confirm password/i)).not.toBeInTheDocument();
       expect(screen.getByRole("button", { name: /unlock application/i })).toBeInTheDocument();
@@ -79,7 +80,7 @@ describe("LoginClient", () => {
   describe("Setup Mode (isPasswordSet = false)", () => {
     it("renders the setup form", () => {
       render(<LoginClient isPasswordSet={false} />);
-      expect(screen.getByText(/donationtrack setup/i)).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "DonationTracker Setup" })).toBeInTheDocument();
       expect(screen.getByLabelText(/^choose password/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /set password/i })).toBeInTheDocument();

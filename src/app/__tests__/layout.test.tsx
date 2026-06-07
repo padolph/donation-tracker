@@ -12,4 +12,9 @@ describe('Root Layout Configuration', () => {
     const layout = await import('../layout');
     expect(layout.dynamic).toBe('force-dynamic');
   });
+
+  it('exports metadata with the correct title "DonationTracker"', async () => {
+    const layout = await import('../layout');
+    expect(layout.metadata.title).toBe('DonationTracker');
+  });
 });

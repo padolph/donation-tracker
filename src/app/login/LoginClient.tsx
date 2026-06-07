@@ -103,7 +103,7 @@ export default function LoginClient({ isPasswordSet }: LoginClientProps) {
               ♡
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-white">
-              {isPasswordSet ? "DonationTrack" : "DonationTrack Setup"}
+              {isPasswordSet ? "DonationTracker" : "DonationTracker Setup"}
             </h1>
             <p className="text-white/50 text-sm">
               {isPasswordSet ? "Secure Personal Ledger" : "Create Access Password"}

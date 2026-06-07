@@ -5,7 +5,7 @@ import Sidebar from "@/components/Sidebar";
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "DonationTrack",
+  title: "DonationTracker",
   description: "Tax Deduction Tracker",
 };
 
