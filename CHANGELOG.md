@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.1](https://github.com/padolph/donation-tracker/compare/v1.1.0...v1.1.1) (2026-06-07)
+
+
+### Bug Fixes
+
+* **reports:** format asset donations with ticker as description, shares as quantity, and total value as unitValue ([73e242b](https://github.com/padolph/donation-tracker/commit/73e242bf41605ba1144ee4bb08599b8bb40bf553))
+* **ui:** correct application name to DonationTracker in layout, sidebar, and login ([eac53de](https://github.com/padolph/donation-tracker/commit/eac53de7a1abdb54acda7127b9fa0cb7f98624d5))
+* **ui:** rename adjust tax rate button to adjust tax settings on dashboard ([9fb71d9](https://github.com/padolph/donation-tracker/commit/9fb71d91ea18c98adb87a2c9f93f80765d26ced4))
+
 ## [1.1.0](https://github.com/padolph/donation-tracker/compare/v1.0.0...v1.1.0) (2026-06-05)
 
 
