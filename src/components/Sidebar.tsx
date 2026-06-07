@@ -23,12 +23,12 @@ export default function Sidebar() {
           <div className="w-10 h-10 relative">
             <img 
               src="/icon.png" 
-              alt="DonationTrack Logo" 
+              alt="DonationTracker Logo" 
               className="w-full h-full object-contain rounded-xl"
             />
           </div>
           <div>
-            <h1 className="font-bold text-lg leading-none">DonationTrack</h1>
+            <h1 className="font-bold text-lg leading-none">DonationTracker</h1>
             <p className="text-xs text-white/50">Tax Deduction Tracker</p>
           </div>
         </div>
