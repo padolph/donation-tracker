@@ -79,7 +79,7 @@ export default function TaxImpactWidget({
           href="/settings"
           className="text-[10px] font-bold uppercase tracking-widest text-white/30 hover:text-white transition-colors"
         >
-          ⚙️ Adjust Tax Rate
+          ⚙️ Adjust Tax Settings
         </Link>
       </div>
     </div>

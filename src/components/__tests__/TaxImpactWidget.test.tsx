@@ -59,4 +59,12 @@ describe('TaxImpactWidget', () => {
     expect(screen.getByText('$28,640.00')).toBeInTheDocument();
     expect(screen.getByText(/fully maximized your allowable 2026 deductions/i)).toBeInTheDocument();
   });
+
+  it('renders the link to settings page with "Adjust Tax Settings" text', () => {
+    render(<TaxImpactWidget taxSavings={544.16} marginalTaxRate={0.32} year={2025} calculationState="default" />);
+    
+    const link = screen.getByRole('link', { name: /Adjust Tax Settings/i });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute('href', '/settings');
+  });
 });
