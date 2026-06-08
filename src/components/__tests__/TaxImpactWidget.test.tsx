@@ -23,13 +23,14 @@ describe('TaxImpactWidget', () => {
         cashTotal={400}
         itemsTotal={0}
         assetsTotal={0}
+        estimatedAGI={100000}
       />
     );
 
     expect(screen.getByText('$0.00')).toBeInTheDocument();
     expect(screen.getByText(/You are/)).toBeInTheDocument();
     expect(screen.getAllByText(/\$100.00/)[0]).toBeInTheDocument();
-    expect(screen.getByText(/away from clearing your statutory 2026 0.5% AGI floor/)).toBeInTheDocument();
+    expect(screen.getByText(/away from clearing your statutory AGI-based floor \(0\.5%, or/)).toBeInTheDocument();
     expect(screen.getAllByText(/\$500.00/)[0]).toBeInTheDocument();
 
     // Verify floor progress details
