@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.2](https://github.com/padolph/donation-tracker/compare/v1.1.1...v1.1.2) (2026-06-08)
+
+
+### Bug Fixes
+
+* implement cascading AGI limits and add remaining room UI lines ([55e3ad7](https://github.com/padolph/donation-tracker/commit/55e3ad78a9d67a60636547956fba4c60ebf224e8))
+* update tax savings calculation and remove redundant sentence ([a315c05](https://github.com/padolph/donation-tracker/commit/a315c05484770d8e490ca24e2867660b1f7368c6))
+
 ## [1.1.1](https://github.com/padolph/donation-tracker/compare/v1.1.0...v1.1.1) (2026-06-07)
 
 
