@@ -72,6 +72,9 @@ export async function getDashboardStats(year: number) {
         floor: calculation.floor,
         floorRemaining: calculation.floorRemaining,
         allowedContributionsRemaining: calculation.allowedContributionsRemaining,
+        cashRoomRemaining: calculation.cashRoomRemaining,
+        physicalRoomRemaining: calculation.physicalRoomRemaining,
+        assetRoomRemaining: calculation.assetRoomRemaining,
       },
     };
   } catch (error) {

@@ -19,6 +19,9 @@ interface DashboardStats {
   floor?: number;
   floorRemaining?: number;
   allowedContributionsRemaining?: number;
+  cashRoomRemaining?: number;
+  physicalRoomRemaining?: number;
+  assetRoomRemaining?: number;
 }
 
 export default function DashboardClient({ initialStats }: { initialStats: DashboardStats }) {
@@ -67,6 +70,12 @@ export default function DashboardClient({ initialStats }: { initialStats: Dashbo
           floor={stats.floor}
           floorRemaining={stats.floorRemaining}
           allowedContributionsRemaining={stats.allowedContributionsRemaining}
+          cashRoomRemaining={stats.cashRoomRemaining}
+          physicalRoomRemaining={stats.physicalRoomRemaining}
+          assetRoomRemaining={stats.assetRoomRemaining}
+          cashTotal={stats.cashTotal}
+          itemsTotal={stats.itemsTotal}
+          assetsTotal={stats.assetsTotal}
         />
       </section>
     </div>

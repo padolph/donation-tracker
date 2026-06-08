@@ -67,4 +67,31 @@ describe('TaxImpactWidget', () => {
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute('href', '/settings');
   });
+
+  it('renders cascading remaining capacity indicators and handles maximized warnings when year is 2026', () => {
+    render(
+      <TaxImpactWidget
+        taxSavings={800}
+        marginalTaxRate={0.32}
+        year={2026}
+        calculationState="active"
+        allowedContributionsRemaining={79000}
+        cashRoomRemaining={0}
+        physicalRoomRemaining={49000}
+        assetRoomRemaining={30000}
+      />
+    );
+
+    // Verify main labels
+    expect(screen.getByText('Cash Room Remaining:')).toBeInTheDocument();
+    expect(screen.getByText('Physical Items Room Remaining:')).toBeInTheDocument();
+    expect(screen.getByText('Stock/Asset Room Remaining:')).toBeInTheDocument();
+
+    // Verify warning for Cash Room ($0 remaining)
+    expect(screen.getByText('Maximized (Excess will trigger a 5-year tax carryover)')).toBeInTheDocument();
+
+    // Verify values for Physical and Stock Room
+    expect(screen.getByText('$49,000.00')).toBeInTheDocument();
+    expect(screen.getByText('$30,000.00')).toBeInTheDocument();
+  });
 });

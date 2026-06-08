@@ -12,6 +12,9 @@ export interface CalculationResult {
   floor?: number;
   floorRemaining?: number;
   allowedContributionsRemaining?: number;
+  cashRoomRemaining?: number;
+  physicalRoomRemaining?: number;
+  assetRoomRemaining?: number;
   marginalTaxRate: number;
   estimatedAGI?: number;
 }

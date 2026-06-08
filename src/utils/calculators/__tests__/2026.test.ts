@@ -21,10 +21,13 @@ describe('2026 OBBBA Calculator', () => {
     expect(result.taxSavings).toBe(0);
     expect(result.floor).toBe(500);
     expect(result.floorRemaining).toBe(100);
+    expect(result.assetRoomRemaining).toBe(30000);
+    expect(result.physicalRoomRemaining).toBe(50000);
+    expect(result.cashRoomRemaining).toBe(59600);
   });
 
   it('calculates State 2: Active Zone (Floor < Total Giving <= Ceilings)', () => {
-    // AGI = 100,000 => Floor = 500, CashAssetCap = 60k, PhysicalCap = 30k
+    // AGI = 100,000 => Floor = 500
     // Giving: Cash = 1000, Assets = 1000, Items = 1000 => Total = 3000
     // Allowed: 3000
     // Savings = (3000 - 500) * 0.32 = 800
@@ -38,7 +41,10 @@ describe('2026 OBBBA Calculator', () => {
     expect(result.state).toBe('active');
     expect(result.taxSavings).toBe(800);
     expect(result.floor).toBe(500);
-    expect(result.allowedContributionsRemaining).toBe(87000); // (60k - 2k) + (30k - 1k)
+    expect(result.assetRoomRemaining).toBe(29000);
+    expect(result.physicalRoomRemaining).toBe(48000);
+    expect(result.cashRoomRemaining).toBe(57000);
+    expect(result.allowedContributionsRemaining).toBe(134000);
   });
 
   it('applies the 35% benefit cap for 37% marginal rate earners in Active Zone', () => {
@@ -56,27 +62,36 @@ describe('2026 OBBBA Calculator', () => {
   });
 
   it('calculates State 3: Above the Ceiling (Total Giving > Ceilings)', () => {
-    // AGI = 100,000 => Floor = 500, CashAssetCap = 60k, PhysicalCap = 30k
-    // Giving: Cash = 70k, Physical = 35k
-    // Allowed: CashAsset = 60k, Physical = 30k => Total allowed = 90k
-    // Savings = (90k - 500) * 0.32 = 28,640
+    // AGI = 100,000 => Floor = 500
+    // Giving: Cash = 15k, Physical = 25k, Stock = 35k
+    // Stock Cap: 30% of 100k = 30k (Deducted stock = 30k)
+    // Physical Cap: 50% of 100k - 30k = 20k (Deducted physical = 20k)
+    // Cash Cap: 60% of 100k - 30k - 20k = 10k (Deducted cash = 10k)
+    // Total Allowed: 60k
+    // Savings = (60k - 500) * 0.32 = 19040
     const result = calculator2026.calculate({
       ...baseInput,
-      cashTotal: 70000,
-      itemsTotal: 35000,
+      cashTotal: 15000,
+      itemsTotal: 25000,
+      assetsTotal: 35000,
     });
 
     expect(result.state).toBe('max_ceiling');
-    expect(result.taxSavings).toBe(28640);
+    expect(result.taxSavings).toBe(19040);
     expect(result.allowedContributionsRemaining).toBe(0);
+    expect(result.assetRoomRemaining).toBe(0);
+    expect(result.physicalRoomRemaining).toBe(0);
+    expect(result.cashRoomRemaining).toBe(0);
   });
 
   it('handles partial ceiling maximization (one category hit, other still open)', () => {
-    // AGI = 100,000 => Floor = 500, CashAssetCap = 60k, PhysicalCap = 30k
-    // Giving: Cash = 70k, Physical = 10k
-    // Allowed: CashAsset = 60k, Physical = 10k => Total allowed = 70k
-    // Savings = (70k - 500) * 0.32 = 22,240
-    // Headroom remaining: 0 (cash) + 20k (physical) = 20k
+    // AGI = 100,000 => Floor = 500
+    // Giving: Cash = 70k, Physical = 10k, Assets = 0
+    // Stock Cap: 30k (Deducted: 0, Room: 30k)
+    // Physical Cap: 50k (Deducted: 10k, Room: 40k)
+    // Cash Cap: 60k - 10k = 50k (Deducted: 50k, Room: 0)
+    // Total Allowed: 60k
+    // Savings = (60k - 500) * 0.32 = 19,040
     const result = calculator2026.calculate({
       ...baseInput,
       cashTotal: 70000,
@@ -84,8 +99,11 @@ describe('2026 OBBBA Calculator', () => {
     });
 
     expect(result.state).toBe('active');
-    expect(result.taxSavings).toBe(22240);
-    expect(result.allowedContributionsRemaining).toBe(20000);
+    expect(result.taxSavings).toBe(19040);
+    expect(result.assetRoomRemaining).toBe(30000);
+    expect(result.physicalRoomRemaining).toBe(40000);
+    expect(result.cashRoomRemaining).toBe(0);
+    expect(result.allowedContributionsRemaining).toBe(70000);
   });
 
   it('handles AGI = 0 case correctly', () => {
@@ -102,5 +120,8 @@ describe('2026 OBBBA Calculator', () => {
     expect(result.state).toBe('max_ceiling');
     expect(result.taxSavings).toBe(0);
     expect(result.allowedContributionsRemaining).toBe(0);
+    expect(result.assetRoomRemaining).toBe(0);
+    expect(result.physicalRoomRemaining).toBe(0);
+    expect(result.cashRoomRemaining).toBe(0);
   });
 });
