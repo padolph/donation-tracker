@@ -76,6 +76,7 @@ export default function DashboardClient({ initialStats }: { initialStats: Dashbo
           cashTotal={stats.cashTotal}
           itemsTotal={stats.itemsTotal}
           assetsTotal={stats.assetsTotal}
+          estimatedAGI={stats.estimatedAGI}
         />
       </section>
     </div>

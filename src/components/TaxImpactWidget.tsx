@@ -16,6 +16,7 @@ interface TaxImpactWidgetProps {
   cashTotal?: number;
   itemsTotal?: number;
   assetsTotal?: number;
+  estimatedAGI?: number;
 }
 
 export default function TaxImpactWidget({
@@ -31,6 +32,7 @@ export default function TaxImpactWidget({
   cashTotal = 0,
   itemsTotal = 0,
   assetsTotal = 0,
+  estimatedAGI = 0,
 }: TaxImpactWidgetProps) {
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -46,9 +48,11 @@ export default function TaxImpactWidget({
     if (isObbba) {
       switch (calculationState) {
         case 'below_floor':
+          const floorPercentage = estimatedAGI && estimatedAGI > 0 ? (floor ?? 0) / estimatedAGI : 0.005;
+          const formattedPercentage = `${(floorPercentage * 100).toFixed(1)}%`;
           return (
             <p className="text-white/60 text-sm max-w-md">
-              You are <span className="text-white font-bold">{formatCurrency(floorRemaining ?? 0)}</span> away from clearing your statutory 2026 0.5% AGI floor ({formatCurrency(floor ?? 0)}). Once crossed, your giving will begin unlocking tax savings.
+              You are <span className="text-white font-bold">{formatCurrency(floorRemaining ?? 0)}</span> away from clearing your statutory AGI-based floor ({formattedPercentage}, or {formatCurrency(floor ?? 0)}). Once crossed, your giving will begin unlocking tax savings.
             </p>
           );
         case 'active':
@@ -140,6 +144,23 @@ export default function TaxImpactWidget({
                   : 'Within statutory 30% AGI limit'}
               </span>
               {renderProgressBar(assetRoomRemaining ?? 0, assetsTotal)}
+            </div>
+          </div>
+        )}
+
+        {calculationState === 'below_floor' && isObbba && (
+          <div className="mt-5 space-y-4 w-full max-w-md border-t border-accent/10 pt-4 text-left">
+            <div className="flex flex-col gap-0.5">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-white/60">Deduction Floor Progress:</span>
+                <span className="font-semibold text-white">
+                  {formatCurrency(cashTotal + itemsTotal + assetsTotal)} / {formatCurrency(floor ?? 0)}
+                </span>
+              </div>
+              <span className="text-[10px] text-amber-400 font-medium">
+                Donate another {formatCurrency(floorRemaining ?? 0)} to unlock tax savings
+              </span>
+              {renderProgressBar(floorRemaining ?? 0, cashTotal + itemsTotal + assetsTotal)}
             </div>
           </div>
         )}
