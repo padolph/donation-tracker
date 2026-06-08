@@ -122,7 +122,10 @@ describe('dashboardActions', () => {
       expect(result.stats?.calculationState).toBe('active');
       expect(result.stats?.floor).toBe(500);
       expect(result.stats?.floorRemaining).toBe(0);
-      expect(result.stats?.allowedContributionsRemaining).toBe(87000);
+      expect(result.stats?.allowedContributionsRemaining).toBe(136000);
+      expect(result.stats?.cashRoomRemaining).toBe(57000);
+      expect(result.stats?.physicalRoomRemaining).toBe(49000);
+      expect(result.stats?.assetRoomRemaining).toBe(30000);
     });
   });
 });
