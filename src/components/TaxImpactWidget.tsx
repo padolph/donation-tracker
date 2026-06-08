@@ -25,7 +25,6 @@ export default function TaxImpactWidget({
   calculationState = 'default',
   floor,
   floorRemaining,
-  allowedContributionsRemaining,
   cashRoomRemaining,
   physicalRoomRemaining,
   assetRoomRemaining,
@@ -55,7 +54,7 @@ export default function TaxImpactWidget({
         case 'active':
           return (
             <p className="text-white/60 text-sm max-w-md">
-              Your donations are actively saving you money! You can log another <span className="text-white font-bold">{formatCurrency(allowedContributionsRemaining ?? 0)}</span> in contributions before hitting your annual AGI deduction limit.
+              Your donations are actively saving you money!
             </p>
           );
         case 'max_ceiling':

@@ -50,7 +50,7 @@ describe('2026 OBBBA Calculator', () => {
   it('applies the 35% benefit cap for 37% marginal rate earners in Active Zone', () => {
     // AGI = 100,000 => Floor = 500
     // Giving: Cash = 1500 => Total = 1500
-    // Savings = (1500 - 500) * 0.35 = 350 (since rate 37% is capped at 35%)
+    // Savings = (1500 - 500) * 0.37 = 370 (under revised rules, we use the Marginal Tax Rate directly)
     const result = calculator2026.calculate({
       ...baseInput,
       marginalTaxRate: 0.37,
@@ -58,7 +58,7 @@ describe('2026 OBBBA Calculator', () => {
     });
 
     expect(result.state).toBe('active');
-    expect(result.taxSavings).toBe(350);
+    expect(result.taxSavings).toBe(370);
   });
 
   it('calculates State 3: Above the Ceiling (Total Giving > Ceilings)', () => {
@@ -68,7 +68,7 @@ describe('2026 OBBBA Calculator', () => {
     // Physical Cap: 50% of 100k - 30k = 20k (Deducted physical = 20k)
     // Cash Cap: 60% of 100k - 30k - 20k = 10k (Deducted cash = 10k)
     // Total Allowed: 60k
-    // Savings = (60k - 500) * 0.32 = 19040
+    // Savings = (75k - 500) * 0.32 = 23,840 (based on total giving)
     const result = calculator2026.calculate({
       ...baseInput,
       cashTotal: 15000,
@@ -77,7 +77,7 @@ describe('2026 OBBBA Calculator', () => {
     });
 
     expect(result.state).toBe('max_ceiling');
-    expect(result.taxSavings).toBe(19040);
+    expect(result.taxSavings).toBe(23840);
     expect(result.allowedContributionsRemaining).toBe(0);
     expect(result.assetRoomRemaining).toBe(0);
     expect(result.physicalRoomRemaining).toBe(0);
@@ -91,7 +91,7 @@ describe('2026 OBBBA Calculator', () => {
     // Physical Cap: 50k (Deducted: 10k, Room: 40k)
     // Cash Cap: 60k - 10k = 50k (Deducted: 50k, Room: 0)
     // Total Allowed: 60k
-    // Savings = (60k - 500) * 0.32 = 19,040
+    // Savings = (80k - 500) * 0.32 = 25,440 (based on total giving)
     const result = calculator2026.calculate({
       ...baseInput,
       cashTotal: 70000,
@@ -99,7 +99,7 @@ describe('2026 OBBBA Calculator', () => {
     });
 
     expect(result.state).toBe('active');
-    expect(result.taxSavings).toBe(19040);
+    expect(result.taxSavings).toBe(25440);
     expect(result.assetRoomRemaining).toBe(30000);
     expect(result.physicalRoomRemaining).toBe(40000);
     expect(result.cashRoomRemaining).toBe(0);

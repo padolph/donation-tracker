@@ -43,7 +43,6 @@ describe('TaxImpactWidget', () => {
 
     expect(screen.getByText('$800.00')).toBeInTheDocument();
     expect(screen.getByText(/actively saving you money/i)).toBeInTheDocument();
-    expect(screen.getByText(/\$87,000.00/)).toBeInTheDocument();
   });
 
   it('renders State 3 correctly (Maximized Ceiling)', () => {

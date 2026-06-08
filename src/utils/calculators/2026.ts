@@ -5,7 +5,6 @@ export const calculator2026: TaxCalculator = {
     const { estimatedAGI, marginalTaxRate, itemsTotal, cashTotal, assetsTotal } = input;
 
     const floor = estimatedAGI * 0.005;
-    const effectiveRate = marginalTaxRate === 0.37 ? 0.35 : marginalTaxRate;
 
     // IRS Publication 526 ("Charitable Contributions") - Limits on Deductions:
 
@@ -24,10 +23,8 @@ export const calculator2026: TaxCalculator = {
     // 3. Tier 3 (Cash): Absolute cap of 60% of AGI, reduced by the combined total of stock and physical deducted.
     // Reference: IRS Pub 526, "Limits on Deductions" - 60% Limit Section / Worksheet 1 & 2
     const cashCap = Math.max(0, estimatedAGI * 0.6 - deductedStock - deductedPhysical);
-    const deductedCash = Math.min(cashTotal, cashCap);
     const cashRoomRemaining = Math.max(0, cashCap - cashTotal);
 
-    const allowedTotal = deductedStock + deductedPhysical + deductedCash;
     const totalGiving = cashTotal + assetsTotal + itemsTotal;
     const allowedContributionsRemaining = assetRoomRemaining + physicalRoomRemaining + cashRoomRemaining;
 
@@ -46,8 +43,8 @@ export const calculator2026: TaxCalculator = {
       };
     }
 
-    const eligibleAmount = Math.max(0, allowedTotal - floor);
-    const taxSavings = eligibleAmount * effectiveRate;
+    const eligibleAmount = Math.max(0, totalGiving - floor);
+    const taxSavings = estimatedAGI === 0 ? 0 : eligibleAmount * marginalTaxRate;
 
     if (allowedContributionsRemaining === 0) {
       return {
