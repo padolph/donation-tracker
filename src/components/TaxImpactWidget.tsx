@@ -143,6 +143,23 @@ export default function TaxImpactWidget({
             </div>
           </div>
         )}
+
+        {calculationState === 'below_floor' && isObbba && (
+          <div className="mt-5 space-y-4 w-full max-w-md border-t border-accent/10 pt-4 text-left">
+            <div className="flex flex-col gap-0.5">
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-white/60">Deduction Floor Progress:</span>
+                <span className="font-semibold text-white">
+                  {formatCurrency(cashTotal + itemsTotal + assetsTotal)} / {formatCurrency(floor ?? 0)}
+                </span>
+              </div>
+              <span className="text-[10px] text-amber-400 font-medium">
+                Donate another {formatCurrency(floorRemaining ?? 0)} to unlock tax savings
+              </span>
+              {renderProgressBar(floorRemaining ?? 0, cashTotal + itemsTotal + assetsTotal)}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col items-center md:items-end gap-2 shrink-0">

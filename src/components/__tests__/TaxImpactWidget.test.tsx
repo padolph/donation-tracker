@@ -20,14 +20,22 @@ describe('TaxImpactWidget', () => {
         calculationState="below_floor"
         floor={500}
         floorRemaining={100}
+        cashTotal={400}
+        itemsTotal={0}
+        assetsTotal={0}
       />
     );
 
     expect(screen.getByText('$0.00')).toBeInTheDocument();
     expect(screen.getByText(/You are/)).toBeInTheDocument();
-    expect(screen.getByText(/\$100.00/)).toBeInTheDocument();
+    expect(screen.getAllByText(/\$100.00/)[0]).toBeInTheDocument();
     expect(screen.getByText(/away from clearing your statutory 2026 0.5% AGI floor/)).toBeInTheDocument();
-    expect(screen.getByText(/\$500.00/)).toBeInTheDocument();
+    expect(screen.getAllByText(/\$500.00/)[0]).toBeInTheDocument();
+
+    // Verify floor progress details
+    expect(screen.getByText('Deduction Floor Progress:')).toBeInTheDocument();
+    expect(screen.getByText('$400.00 / $500.00')).toBeInTheDocument();
+    expect(screen.getByText('Donate another $100.00 to unlock tax savings')).toBeInTheDocument();
   });
 
   it('renders State 2 correctly (Active Zone)', () => {
