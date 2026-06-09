@@ -44,9 +44,9 @@ export default function DashboardClient({ initialStats }: { initialStats: Dashbo
     // For now, let's just always fetch when year changes.
     const isInitialYear = year === new Date().getFullYear();
     if (!isInitialYear || stats !== initialStats) {
-        fetchStats();
+      fetchStats();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year]);
 
   return (
@@ -54,7 +54,7 @@ export default function DashboardClient({ initialStats }: { initialStats: Dashbo
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h1 className="text-4xl font-black mb-1 tracking-tight">Dashboard</h1>
-          <p className="text-white/50 text-sm">Giving summary and tax impact overview</p>
+          <p className="text-white/50 text-sm">Summary and tax impact overview</p>
         </div>
         <YearSelector currentYear={year} onChange={setYear} />
       </header>
