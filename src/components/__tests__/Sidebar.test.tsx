@@ -2,6 +2,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import Sidebar from '../Sidebar';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
+import { version } from '../../../package.json';
 
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
@@ -79,6 +80,6 @@ describe('Sidebar', () => {
 
   it('renders the application version from package.json', () => {
     render(<Sidebar />);
-    expect(screen.getByText('v1.1.2')).toBeInTheDocument();
+    expect(screen.getByText(`v${version}`)).toBeInTheDocument();
   });
 });
