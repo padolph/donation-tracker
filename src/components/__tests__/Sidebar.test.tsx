@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import Sidebar from '../Sidebar';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
@@ -34,6 +34,27 @@ describe('Sidebar', () => {
     expect(logoImg).toBeInTheDocument();
     expect(logoImg).toHaveAttribute('src', '/icon.png');
     expect(screen.queryByText('♡')).not.toBeInTheDocument();
+  });
+
+  it('retries loading the logo image with a query parameter on error', () => {
+    jest.useFakeTimers();
+    render(<Sidebar />);
+    const logoImg = screen.getByAltText('DonationTracker Logo');
+    
+    expect(logoImg).toHaveAttribute('src', '/icon.png');
+    
+    // Trigger error event to simulate loading failure
+    fireEvent.error(logoImg);
+    
+    // Fast-forward time by 1 second inside act
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
+    
+    // The src should now be updated with retry query parameters
+    expect(logoImg.getAttribute('src')).toMatch(/^\/icon\.png\?retry=1&t=\d+/);
+    
+    jest.useRealTimers();
   });
 
   it('renders the application brand name DonationTracker', () => {
