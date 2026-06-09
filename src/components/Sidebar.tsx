@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
+import { version } from '../../package.json';
 
 const navItems = [
   { name: 'Dashboard', href: '/', icon: '📊' },
@@ -21,15 +22,15 @@ export default function Sidebar() {
       <div className="p-6 flex-1">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 relative">
-            <img 
-              src="/icon.png" 
-              alt="DonationTracker Logo" 
+            <img
+              src="/icon.png"
+              alt="DonationTracker Logo"
               className="w-full h-full object-contain rounded-xl"
             />
           </div>
           <div>
             <h1 className="font-bold text-lg leading-none">DonationTracker</h1>
-            <p className="text-xs text-white/50">Tax Deduction Tracker</p>
+            <p className="text-xs text-white/50">Charitable Giving Tracker</p>
           </div>
         </div>
 
@@ -40,11 +41,10 @@ export default function Sidebar() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive 
-                    ? 'bg-white/10 text-white' 
-                    : 'text-white/60 hover:bg-white/5 hover:text-white'
-                }`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
+                  ? 'bg-white/10 text-white'
+                  : 'text-white/60 hover:bg-white/5 hover:text-white'
+                  }`}
               >
                 <span className="text-xl">{item.icon}</span>
                 <span className="font-medium text-sm">{item.name}</span>
@@ -53,8 +53,8 @@ export default function Sidebar() {
           })}
         </nav>
       </div>
-      
-      <div className="p-6 border-t border-white/10">
+
+      <div className="p-6 border-t border-white/10 flex flex-col gap-2">
         <button
           onClick={() => signOut()}
           className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-white/60 hover:bg-white/5 hover:text-white w-full text-left"
@@ -62,6 +62,9 @@ export default function Sidebar() {
           <span className="text-xl">🚪</span>
           <span className="font-medium text-sm">Sign Out</span>
         </button>
+        <div className="px-4 text-xs text-white/35">
+          v{version}
+        </div>
       </div>
     </aside>
   );

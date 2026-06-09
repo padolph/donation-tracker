@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "DonationTracker",
-  description: "Tax Deduction Tracker",
+  description: "Charitable Giving Tracker",
 };
 
 export default function RootLayout({
