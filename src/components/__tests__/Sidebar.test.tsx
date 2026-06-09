@@ -55,4 +55,9 @@ describe('Sidebar', () => {
     fireEvent.click(signOutButton);
     expect(signOut).toHaveBeenCalled();
   });
+
+  it('renders the application version from package.json', () => {
+    render(<Sidebar />);
+    expect(screen.getByText('v1.1.2')).toBeInTheDocument();
+  });
 });
