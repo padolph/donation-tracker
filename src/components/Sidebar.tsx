@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
@@ -16,6 +17,18 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [logoSrc, setLogoSrc] = useState('/icon.png');
+  const [retryCount, setRetryCount] = useState(0);
+
+  const handleLogoError = () => {
+    if (retryCount < 5) {
+      const nextRetry = retryCount + 1;
+      setRetryCount(nextRetry);
+      setTimeout(() => {
+        setLogoSrc(`/icon.png?retry=${nextRetry}&t=${Date.now()}`);
+      }, 1000);
+    }
+  };
 
   return (
     <aside className="w-64 bg-sidebar flex flex-col border-r border-white/10">
@@ -23,8 +36,9 @@ export default function Sidebar() {
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 relative">
             <img
-              src="/icon.png"
+              src={logoSrc}
               alt="DonationTracker Logo"
+              onError={handleLogoError}
               className="w-full h-full object-contain rounded-xl"
             />
           </div>
