@@ -27,6 +27,27 @@ describe('SettingsClient', () => {
     expect(screen.getByLabelText(/Estimated AGI/i)).toHaveValue(50000);
   });
 
+  it('applies correct container and form styling for left justification matching other pages', () => {
+    const { container } = render(
+      <SettingsClient
+        initialSettings={mockSettings}
+        databasePath="/mock/path/dev.db"
+        storagePath="/mock/path/storage"
+      />
+    );
+    
+    // The main container should have p-8 max-w-5xl mx-auto
+    const mainContainer = container.firstChild;
+    expect(mainContainer).toHaveClass('p-8');
+    expect(mainContainer).toHaveClass('max-w-5xl');
+    expect(mainContainer).toHaveClass('mx-auto');
+    expect(mainContainer).not.toHaveClass('max-w-2xl');
+    
+    // The form itself should have max-w-2xl for styling
+    const form = container.querySelector('form');
+    expect(form).toHaveClass('max-w-2xl');
+  });
+
   it('renders the database path as read-only', () => {
     const testPath = '/path/to/my/dev.db';
     render(<SettingsClient initialSettings={mockSettings} databasePath={testPath} storagePath="/mock/path/storage" />);

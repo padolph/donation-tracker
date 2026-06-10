@@ -113,7 +113,8 @@ describe('Prisma Client Initialization', () => {
     await import('../prisma');
     
     expect(spyExistsSync).toHaveBeenCalledWith(expect.stringContaining('prisma/dev.db'));
-    expect(spyExecSync).not.toHaveBeenCalled();
+    expect(spyExecSync).toHaveBeenCalledWith('npx prisma migrate deploy', expect.any(Object));
+    expect(spyExecSync).not.toHaveBeenCalledWith('npx prisma db seed', expect.any(Object));
     expect(MockPrismaClient).toHaveBeenCalledWith(
       expect.objectContaining({
         datasources: {
