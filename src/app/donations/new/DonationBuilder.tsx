@@ -30,7 +30,7 @@ interface StagedItem {
   itemId: number;
   description: string;
   quantity: number;
-  condition: 'High' | 'Medium' | 'Good';
+  condition: 'High' | 'Medium';
   value: number;
   totalValue: number;
 }
@@ -131,13 +131,13 @@ export default function DonationBuilder({
   const [isAddingCustom, setIsAddingCustom] = useState(false);
   const [itemEntryMode, setItemEntryMode] = useState<'search' | 'browse'>('search');
   const [quantity, setQuantity] = useState(1);
-  const [condition, setCondition] = useState<'High' | 'Medium' | 'Good'>('Good');
+  const [condition, setCondition] = useState<'High' | 'Medium'>('Medium');
   
   const initialStagedItems = initialDonation?.items?.map((i) => ({
     itemId: i.item ? i.item.id : i.id, // In some contexts item.id might be used, handling carefully, let's just bypass with proper typing
     description: i.item.description,
     quantity: i.quantity,
-    condition: i.condition === 'Medium' ? 'Good' : i.condition as 'High' | 'Medium' | 'Good',
+    condition: i.condition as 'High' | 'Medium',
     value: i.lockedValue,
     totalValue: i.lockedValue * i.quantity,
   })) || [];
@@ -157,13 +157,12 @@ export default function DonationBuilder({
   const handleSelectItem = (item: Item) => {
     setSelectedItem(item);
     setQuantity(1);
-    setCondition('Good');
+    setCondition('Medium');
   };
 
   const handleAddToDonation = () => {
     if (!selectedItem) return;
 
-    // Mapping Good to High for now based on previous logic, or just use defaults
     const value = condition === 'High' ? selectedItem.defaultHigh || 0 : selectedItem.defaultMedium || 0;
     const newStagedItem: StagedItem = {
       itemId: selectedItem.id,
@@ -227,7 +226,7 @@ export default function DonationBuilder({
         items: activeType === 'items' ? stagedItems.map(item => ({
           itemId: item.itemId,
           quantity: item.quantity,
-          condition: item.condition === 'Good' ? 'Medium' : item.condition,
+          condition: item.condition,
           lockedValue: item.value,
         })) : [],
         cashAmount: activeType === 'cash' ? parseFloat(cashAmount) || undefined : activeType === 'assets' ? parseFloat(assetValue) || undefined : undefined,
@@ -414,11 +413,10 @@ export default function DonationBuilder({
                         id="item-condition"
                         className="w-full px-4 py-2 rounded-lg"
                         value={condition}
-                        onChange={(e) => setCondition(e.target.value as 'High' | 'Medium' | 'Good')}
+                        onChange={(e) => setCondition(e.target.value as 'High' | 'Medium')}
                       >
-                        <option value="Good">Good</option>
-                        <option value="High">High</option>
                         <option value="Medium">Medium</option>
+                        <option value="High">High</option>
                       </select>
                     </div>
 

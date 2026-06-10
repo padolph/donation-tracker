@@ -95,7 +95,7 @@ describe('DonationBuilder Page', () => {
 
     // 4. Staged list updates
     expect(screen.getByText('Item 1')).toBeInTheDocument();
-    expect(screen.getAllByText('$25.00').length).toBeGreaterThan(0); // Good condition falls back to Medium (25)
+    expect(screen.getAllByText('$25.00').length).toBeGreaterThan(0); // Medium condition gets the defaultMedium value (25)
   });
 
   it('allows adding a custom item if not found', async () => {
