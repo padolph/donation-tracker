@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.0](https://github.com/padolph/donation-tracker/compare/v1.1.2...v1.2.0) (2026-06-10)
+
+
+### Features
+
+* **dashboard:** generalize AGI floor description to be year-independent ([c8b8e90](https://github.com/padolph/donation-tracker/commit/c8b8e90b7fc097bd7c4eafceee383124d7f33faf))
+* **dashboard:** show helper text and progress bar before AGI floor is met ([a00fd2a](https://github.com/padolph/donation-tracker/commit/a00fd2acd1cd9a723c4ea89c8ac97bebe04068b6))
+* show application version at bottom of sidebar ([#84](https://github.com/padolph/donation-tracker/issues/84)) ([8a140a4](https://github.com/padolph/donation-tracker/commit/8a140a49b2fcfe5c12a11f97555453c57512ca6a))
+
+
+### Bug Fixes
+
+* add image loading retry mechanism for sidebar app icon ([#85](https://github.com/padolph/donation-tracker/issues/85)) ([60a487c](https://github.com/padolph/donation-tracker/commit/60a487c5a5f1e048a97dfbf6041f1b0d591748c1))
+* **donations:** restrict condition dropdown to High and Medium and resolve relative database path mismatch ([e8dfae2](https://github.com/padolph/donation-tracker/commit/e8dfae25e68fcdbd61c8e2b58f4cf75f0eec04e8))
+* **test:** dynamically check sidebar version from package.json ([336a173](https://github.com/padolph/donation-tracker/commit/336a17390b13cccddacefd17c672908b2cfa5a4e))
+
 ## [1.1.2](https://github.com/padolph/donation-tracker/compare/v1.1.1...v1.1.2) (2026-06-08)
 
 
