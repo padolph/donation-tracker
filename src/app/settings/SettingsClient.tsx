@@ -43,13 +43,13 @@ export default function SettingsClient({
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-8">
+    <div className="p-8 max-w-5xl mx-auto">
       <header className="mb-10">
         <h1 className="text-3xl font-bold mb-1">Settings</h1>
         <p className="text-white/50 text-sm">Configure application-wide preferences</p>
       </header>
 
-      <form onSubmit={handleSave} className="space-y-8 bg-white/5 border border-white/10 rounded-2xl p-8">
+      <form onSubmit={handleSave} className="max-w-2xl space-y-8 bg-white/5 border border-white/10 rounded-2xl p-8">
         <section className="space-y-4">
           <div className="flex flex-col gap-2">
             <label htmlFor="taxRate" className="text-xs font-bold uppercase tracking-widest text-white/40">

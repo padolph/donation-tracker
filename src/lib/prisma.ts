@@ -37,6 +37,17 @@ if (databaseUrl && databaseUrl.startsWith('file:') && process.env.NODE_ENV === '
     } catch (error) {
       console.error('Failed to initialize database programmatically:', error);
     }
+  } else {
+    console.log(`Database file found at ${dbPath}. Running migrations to ensure it is up-to-date...`);
+    try {
+      execSync('npx prisma migrate deploy', {
+        env: { ...process.env, DATABASE_URL: databaseUrl },
+        stdio: 'inherit',
+      });
+      console.log('Database migrations applied successfully.');
+    } catch (error) {
+      console.error('Failed to run database migrations programmatically:', error);
+    }
   }
 }
 

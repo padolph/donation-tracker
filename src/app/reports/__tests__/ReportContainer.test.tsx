@@ -45,6 +45,15 @@ describe('ReportContainer', () => {
     expect(screen.getByTestId('report-client')).toHaveTextContent('2026');
   });
 
+  it('renders the title with the correct text-3xl font-bold class', () => {
+    render(<ReportContainer initialData={mockInitialData} />);
+    const heading = screen.getByRole('heading', { level: 1 });
+    expect(heading).toHaveClass('text-3xl');
+    expect(heading).toHaveClass('font-bold');
+    expect(heading).not.toHaveClass('text-4xl');
+    expect(heading).not.toHaveClass('font-black');
+  });
+
   it('fetches new data when year changes', async () => {
     const newData: YearlyReportData = {
       year: 2025,

@@ -33,7 +33,7 @@ export default function ReportContainer({ initialData }: ReportContainerProps) {
     <div className="space-y-10">
       <header className="flex justify-between items-center print:hidden">
         <div>
-          <h1 className="text-4xl font-black mb-1 tracking-tight">Tax Reports</h1>
+          <h1 className="text-3xl font-bold mb-1">Tax Reports</h1>
           <p className="text-white/50 text-sm">Review and export your annual donation data</p>
         </div>
         <YearSelector currentYear={year} onChange={setYear} />

@@ -53,7 +53,7 @@ export default function DashboardClient({ initialStats }: { initialStats: Dashbo
     <div className={`p-8 max-w-5xl mx-auto space-y-10 transition-opacity duration-200 ${isLoading ? 'opacity-50' : 'opacity-100'}`}>
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h1 className="text-4xl font-black mb-1 tracking-tight">Dashboard</h1>
+          <h1 className="text-3xl font-bold mb-1">Dashboard</h1>
           <p className="text-white/50 text-sm">Summary and tax impact overview</p>
         </div>
         <YearSelector currentYear={year} onChange={setYear} />

@@ -31,6 +31,15 @@ describe('DashboardClient', () => {
     expect(screen.getByText('3')).toBeInTheDocument();
   });
 
+  it('renders the title with the correct text-3xl font-bold class', () => {
+    render(<DashboardClient initialStats={mockStats} />);
+    const heading = screen.getByRole('heading', { level: 1 });
+    expect(heading).toHaveClass('text-3xl');
+    expect(heading).toHaveClass('font-bold');
+    expect(heading).not.toHaveClass('text-4xl');
+    expect(heading).not.toHaveClass('font-black');
+  });
+
   it('updates stats when year changes', async () => {
     const newStats = { ...mockStats, totalDonated: 2000, taxSavings: 640 };
     (getDashboardStats as jest.Mock).mockResolvedValue({ success: true, stats: newStats });
