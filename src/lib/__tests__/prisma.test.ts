@@ -76,7 +76,7 @@ describe('Prisma Client Initialization', () => {
 
   it('should default to file:./prisma/dev.db and run migrations/seed if database file does not exist in development', async () => {
     delete process.env.DATABASE_URL;
-    process.env.NODE_ENV = 'development';
+    (process.env as Record<string, string | undefined>).NODE_ENV = 'development';
     
     spyExistsSync.mockReturnValue(false);
     
@@ -103,7 +103,7 @@ describe('Prisma Client Initialization', () => {
 
   it('should not run migrations/seed if database file exists in development', async () => {
     delete process.env.DATABASE_URL;
-    process.env.NODE_ENV = 'development';
+    (process.env as Record<string, string | undefined>).NODE_ENV = 'development';
     
     spyExistsSync.mockReturnValue(true);
     
@@ -127,7 +127,7 @@ describe('Prisma Client Initialization', () => {
 
   it('should convert relative DATABASE_URL to absolute path in development', async () => {
     process.env.DATABASE_URL = 'file:./prisma/custom.db';
-    process.env.NODE_ENV = 'development';
+    (process.env as Record<string, string | undefined>).NODE_ENV = 'development';
     
     spyExistsSync.mockReturnValue(true);
     
