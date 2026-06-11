@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/padolph/donation-tracker/compare/v1.3.0...v1.4.0) (2026-06-11)
+
+
+### Features
+
+* Force release again ([03bad30](https://github.com/padolph/donation-tracker/commit/03bad30a01feb654eb04b21eb1b56a2b3915e9a8))
+
 ## [1.3.0](https://github.com/padolph/donation-tracker/compare/v1.2.0...v1.3.0) (2026-06-11)
 
 
