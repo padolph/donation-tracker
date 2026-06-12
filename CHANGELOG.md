@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.5.0](https://github.com/padolph/donation-tracker/compare/v1.4.0...v1.5.0) (2026-06-12)
+
+
+### Features
+
+* 75 feat add export import feature ([cb84677](https://github.com/padolph/donation-tracker/commit/cb84677a9f312be3b047734fbe4082d5175b371b)), closes [#75](https://github.com/padolph/donation-tracker/issues/75)
+* implement sync package export and import with UI and unit tests ([5900d65](https://github.com/padolph/donation-tracker/commit/5900d655d0c7d13e1e213ad0e7805e6ce67d1214))
+
+
+### Bug Fixes
+
+* enforce string-level includes and indexOf sanitizer inline to satisfy CodeQL tracking ([269df10](https://github.com/padolph/donation-tracker/commit/269df100840f275e1d5260e4de9831cfa6069b18))
+* harmonize path traversal startsWith check using path.sep separator ([576ee18](https://github.com/padolph/donation-tracker/commit/576ee18a7203f6ae64ea53feac5a66dedd8fc467))
+* implement isSafeArchiveEntryName sanitization suggested by CodeQL ([561eeee](https://github.com/padolph/donation-tracker/commit/561eeeea657c3eaf26eff03e3617a5a4c62ce896))
+* implement resolveSafeArchiveTargetPath as suggested by CodeQL ([c328286](https://github.com/padolph/donation-tracker/commit/c328286455f856fd33b9232f19d32a41a56c0da6))
+* inline char-by-char validation loop inside render context to resolve CodeQL XSS warning ([55665cc](https://github.com/padolph/donation-tracker/commit/55665cc83acd93e65abbfc442f563372f9648d77))
+* inline path traversal sanitization checks to satisfy CodeQL inter-procedural restrictions ([768563b](https://github.com/padolph/donation-tracker/commit/768563bde442100f75aaa605c7830beb62e92258))
+* resolve CodeQL DOM-based XSS vulnerability in image preview ([c0a219e](https://github.com/padolph/donation-tracker/commit/c0a219ee43049fdecc29c19c6aa77dd7bbb6178c))
+* resolve CodeQL DOM-based XSS vulnerability in image preview ([4e8db64](https://github.com/padolph/donation-tracker/commit/4e8db64dfec18ce9bd56c8452e78c73782062789))
+* sanitize zip entry paths in sync actions to satisfy CodeQL ([d800995](https://github.com/padolph/donation-tracker/commit/d8009958f740e1ee82d6d36cafe6b5e941389166))
+
 ## [1.4.0](https://github.com/padolph/donation-tracker/compare/v1.3.0...v1.4.0) (2026-06-11)
 
 
