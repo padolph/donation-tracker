@@ -3,7 +3,6 @@
  */
 
 import { GET } from '@/app/api/sync/export/route';
-import { NextRequest } from 'next/server';
 import fs from 'fs/promises';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
@@ -44,7 +43,6 @@ describe('GET /api/sync/export', () => {
 
   it('should return 401 if unauthorized', async () => {
     (auth as jest.Mock).mockResolvedValue(null);
-    const request = new NextRequest('http://localhost/api/sync/export');
     const response = await GET();
 
     expect(response.status).toBe(401);
@@ -71,7 +69,6 @@ describe('GET /api/sync/export', () => {
     const mockPhotoBuffer = Buffer.from('mock-photo-binary-data');
     (fs.readFile as jest.Mock).mockResolvedValueOnce(mockPhotoBuffer);
 
-    const request = new NextRequest('http://localhost/api/sync/export');
     const response = await GET();
 
     expect(response.status).toBe(200);
@@ -119,7 +116,6 @@ describe('GET /api/sync/export', () => {
     // Mock readFile to fail with ENOENT
     (fs.readFile as jest.Mock).mockRejectedValueOnce(new Error('ENOENT: no such file or directory'));
 
-    const request = new NextRequest('http://localhost/api/sync/export');
     const response = await GET();
 
     expect(response.status).toBe(200);

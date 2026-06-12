@@ -76,6 +76,11 @@ export async function parseSyncPackage(formData: FormData): Promise<ParseSyncRes
     for (const entry of entries) {
       const entryName = entry.entryName;
 
+      if (entryName.includes('..')) {
+        await fs.rm(resolvedTempDir, { recursive: true, force: true });
+        return { success: false, error: `Path traversal detected: ${entryName}` };
+      }
+
       // Path traversal check
       const targetPath = path.resolve(resolvedTempDir, entryName);
       if (!targetPath.startsWith(resolvedTempDir)) {
@@ -100,7 +105,18 @@ export async function parseSyncPackage(formData: FormData): Promise<ParseSyncRes
     // Write entries to temp directory
     for (const entry of entries) {
       if (entry.isDirectory) continue;
-      const targetPath = path.join(resolvedTempDir, entry.entryName);
+
+      if (entry.entryName.includes('..')) {
+        await fs.rm(resolvedTempDir, { recursive: true, force: true });
+        return { success: false, error: `Path traversal detected: ${entry.entryName}` };
+      }
+
+      const targetPath = path.resolve(resolvedTempDir, entry.entryName);
+      if (!targetPath.startsWith(resolvedTempDir)) {
+        await fs.rm(resolvedTempDir, { recursive: true, force: true });
+        return { success: false, error: `Path traversal detected: ${entry.entryName}` };
+      }
+
       await fs.mkdir(path.dirname(targetPath), { recursive: true });
       await fs.writeFile(targetPath, entry.getData());
     }
