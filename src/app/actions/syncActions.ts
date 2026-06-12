@@ -24,20 +24,6 @@ function isSafeArchiveEntryName(entryName: string): boolean {
   return true;
 }
 
-function resolveSafeArchiveTargetPath(baseDir: string, entryName: string): string | null {
-  if (!isSafeArchiveEntryName(entryName)) return null;
-
-  const targetPath = path.resolve(baseDir, entryName);
-  const baseResolved = path.resolve(baseDir);
-  const basePrefix = `${baseResolved}${path.sep}`;
-
-  if (targetPath !== baseResolved && !targetPath.startsWith(basePrefix)) {
-    return null;
-  }
-
-  return targetPath;
-}
-
 export interface ParseSyncSummary {
   categories: number;
   items: number;
@@ -104,8 +90,16 @@ export async function parseSyncPackage(formData: FormData): Promise<ParseSyncRes
 
     for (const entry of entries) {
       const entryName = entry.entryName;
-      const targetPath = resolveSafeArchiveTargetPath(resolvedTempDir, entryName);
-      if (!targetPath) {
+
+      if (!isSafeArchiveEntryName(entryName)) {
+        await fs.rm(resolvedTempDir, { recursive: true, force: true });
+        return { success: false, error: `Path traversal detected: ${entryName}` };
+      }
+
+      const targetPath = path.resolve(resolvedTempDir, entryName);
+      const baseResolved = path.resolve(resolvedTempDir);
+      const basePrefix = `${baseResolved}${path.sep}`;
+      if (targetPath !== baseResolved && !targetPath.startsWith(basePrefix)) {
         await fs.rm(resolvedTempDir, { recursive: true, force: true });
         return { success: false, error: `Path traversal detected: ${entryName}` };
       }
@@ -129,8 +123,15 @@ export async function parseSyncPackage(formData: FormData): Promise<ParseSyncRes
       if (entry.isDirectory) continue;
 
       const entryName = entry.entryName;
-      const targetPath = resolveSafeArchiveTargetPath(resolvedTempDir, entryName);
-      if (!targetPath) {
+      if (!isSafeArchiveEntryName(entryName)) {
+        await fs.rm(resolvedTempDir, { recursive: true, force: true });
+        return { success: false, error: `Path traversal detected: ${entryName}` };
+      }
+
+      const targetPath = path.resolve(resolvedTempDir, entryName);
+      const baseResolved = path.resolve(resolvedTempDir);
+      const basePrefix = `${baseResolved}${path.sep}`;
+      if (targetPath !== baseResolved && !targetPath.startsWith(basePrefix)) {
         await fs.rm(resolvedTempDir, { recursive: true, force: true });
         return { success: false, error: `Path traversal detected: ${entryName}` };
       }
