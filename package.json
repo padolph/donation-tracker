@@ -1,6 +1,6 @@
 {
   "name": "donation-tracker",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Secure, local, offline-first donation tracking application.",
   "author": "Paul Adolph <padolph@gmail.com>",
   "private": true,
