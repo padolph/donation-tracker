@@ -47,8 +47,10 @@ function AttachmentPreview({ file, onRemove }: { file: File; onRemove: () => voi
   useEffect(() => {
     if (file.type.startsWith('image/')) {
       const url = URL.createObjectURL(file);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setPreview(url);
+      if (url.startsWith('blob:')) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setPreview(url);
+      }
       return () => URL.revokeObjectURL(url);
     }
   }, [file]);
@@ -57,9 +59,9 @@ function AttachmentPreview({ file, onRemove }: { file: File; onRemove: () => voi
 
   return (
     <div className="group relative w-24 h-24 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden hover:border-white/20 transition-all shadow-lg">
-      {preview ? (
+      {preview && preview.startsWith('blob:') ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={preview} alt={file.name} className="w-full h-full object-cover" />
+        <img src={preview.startsWith('blob:') ? preview : ''} alt={file.name} className="w-full h-full object-cover" />
       ) : isPDF ? (
         <div className="flex flex-col items-center gap-1">
           <span className="text-3xl">📄</span>

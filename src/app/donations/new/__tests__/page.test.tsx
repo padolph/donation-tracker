@@ -307,4 +307,56 @@ describe('DonationBuilder Page', () => {
     const assetValueInput = screen.getByLabelText(/Total Value on Date/i);
     expect(assetValueInput).toHaveValue(500.25);
   });
+
+  it('renders a preview image when a valid photo is uploaded', async () => {
+    const createObjectURLMock = jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-photo-url');
+    const revokeObjectURLMock = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+
+    renderComponent();
+
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File(['image-content'], 'test-image.jpg', { type: 'image/jpeg' });
+
+    fireEvent.change(input, { target: { files: [file] } });
+
+    // Wait for the preview image to be rendered
+    const previewImg = await screen.findByRole('img');
+    expect(previewImg).toBeInTheDocument();
+    expect(previewImg).toHaveAttribute('src', 'blob:mock-photo-url');
+    expect(previewImg).toHaveAttribute('alt', 'test-image.jpg');
+
+    // Click remove button
+    const removeBtn = screen.getByRole('button', { name: /remove/i });
+    fireEvent.click(removeBtn);
+
+    // Wait for it to be removed
+    await waitFor(() => {
+      expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    });
+
+    expect(revokeObjectURLMock).toHaveBeenCalledWith('blob:mock-photo-url');
+
+    createObjectURLMock.mockRestore();
+    revokeObjectURLMock.mockRestore();
+  });
+
+  it('does not render a preview image if the created object URL is invalid (not starting with blob:)', async () => {
+    const createObjectURLMock = jest.spyOn(URL, 'createObjectURL').mockReturnValue('http://malicious-site.com/xss.jpg');
+    const revokeObjectURLMock = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+
+    renderComponent();
+
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File(['image-content'], 'test-image.jpg', { type: 'image/jpeg' });
+
+    fireEvent.change(input, { target: { files: [file] } });
+
+    // We wait briefly to make sure effect ran, but the image should NOT be rendered
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+
+    createObjectURLMock.mockRestore();
+    revokeObjectURLMock.mockRestore();
+  });
 });
+
