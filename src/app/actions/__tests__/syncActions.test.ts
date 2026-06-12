@@ -143,6 +143,60 @@ describe('syncActions - parseSyncPackage', () => {
     expect(result.error).toContain('Path traversal detected');
   });
 
+  it('should fail and detect sibling directory path traversal in zip entry', async () => {
+    const zipBuffer = createMockZipBuffer({
+      'metadata.json': '{}',
+    });
+    
+    useCustomMock = true;
+    mockGetEntries.mockReturnValue([
+      {
+        entryName: 'metadata.json',
+        isDirectory: false,
+        header: { size: 100 },
+        getData: () => Buffer.from('{}'),
+      },
+      {
+        entryName: '../dt-sync-abcdef/sibling.txt',
+        isDirectory: false,
+        header: { size: 100 },
+        getData: () => Buffer.from('malicious sibling'),
+      },
+    ] as any);
+
+    const formData = createFormData(zipBuffer);
+    const result = await parseSyncPackage(formData) as any;
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('Path traversal detected');
+  });
+
+  it('should fail and detect absolute path traversal in zip entry', async () => {
+    const zipBuffer = createMockZipBuffer({
+      'metadata.json': '{}',
+    });
+    
+    useCustomMock = true;
+    mockGetEntries.mockReturnValue([
+      {
+        entryName: 'metadata.json',
+        isDirectory: false,
+        header: { size: 100 },
+        getData: () => Buffer.from('{}'),
+      },
+      {
+        entryName: '/absolute-malicious.txt',
+        isDirectory: false,
+        header: { size: 100 },
+        getData: () => Buffer.from('malicious absolute'),
+      },
+    ] as any);
+
+    const formData = createFormData(zipBuffer);
+    const result = await parseSyncPackage(formData) as any;
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('Path traversal detected');
+  });
+
   it('should fail zip bomb validation if there are too many files', async () => {
     const zip = new (jest.requireActual('adm-zip') as any)();
     zip.addFile('metadata.json', Buffer.from('{}'));
