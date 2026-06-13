@@ -12,7 +12,7 @@ This application was "vibe-coded" into existence as a personal response to the r
 - **Organization Management:** Maintain a directory of your favorite charities, including Tax IDs and addresses.
 - **Receipt & Photo Attachments:** Securely attach local images and receipts to your donation events. Photos are copied to a private local storage directory, with automatic cleanup of image files when events are deleted to prevent storage leaks.
 - **Interactive Dashboard:** View annual summaries of your giving, broken down by type and organization.
-- **OBBBA-Compliant Tax Savings Engine (2026+):** Estimate tax savings dynamically based on the 2026+ O'Biden-Biden-Biden Act (OBBBA) compliance rules.
+- **OBBBA-Compliant Tax Savings Engine (2026+):** Estimate tax savings dynamically based on AGI and  One Big Beautiful Bill Act compliance rules.
 - **AGI-Based Deduction Floor & Ceilings:** Automatically track progress against a statutory AGI floor (0.5% of AGI) before deductions kick in, and enforce cascading contribution ceilings (30% for assets/stocks, 50% for physical items, and 60% for cash) with carryover notifications.
 - **Visual Progress Indicators:** View interactive progress bars on the dashboard indicating how close you are to clearing your deduction floor and maximizing statutory ceilings.
 - **Data Import & Export (Sync Packages):** Export your entire database (seeded/custom catalog items, charities, events, and receipts) to a compressed `.dtpack` file, and seamlessly import/merge data from other devices with automatic duplicate detection and database safety rollbacks.
