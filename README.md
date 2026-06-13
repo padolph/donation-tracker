@@ -19,7 +19,6 @@ This application was "vibe-coded" into existence as a personal response to the r
 - **First-Run Setup Wizard:** Configure a secure access password directly inside the app on first launch, without needing to pre-configure environment variables manually.
 - **Annual Tax Reporting:** Generate IRS-compliant annual summaries grouped by organization and date. Includes print-optimized layouts and CSV export for data portability.
 - **Custom Items:** Easily add and save your own items if they aren't in the default catalog.
-- **Sidebar Version Indicator:** Display the current application version dynamically at the bottom of the navigation sidebar.
 
 ## 🛠️ Tech Stack
 
