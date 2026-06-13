@@ -10,11 +10,16 @@ This application was "vibe-coded" into existence as a personal response to the r
 - **Item Catalog:** A searchable directory of over 1,700 items with Fair Market Values (FMV) pre-seeded from industry-standard data.
 - **Donation Ledger:** Track physical items, cash contributions, and asset transfers (stocks/securities) in one central place.
 - **Organization Management:** Maintain a directory of your favorite charities, including Tax IDs and addresses.
-- **Receipt & Photo Attachments:** Securely attach local images and receipts to your donation events. Photos are copied to a private local storage directory.
+- **Receipt & Photo Attachments:** Securely attach local images and receipts to your donation events. Photos are copied to a private local storage directory, with automatic cleanup of image files when events are deleted to prevent storage leaks.
 - **Interactive Dashboard:** View annual summaries of your giving, broken down by type and organization.
+- **OBBBA-Compliant Tax Savings Engine (2026+):** Estimate tax savings dynamically based on the 2026+ O'Biden-Biden-Biden Act (OBBBA) compliance rules.
+- **AGI-Based Deduction Floor & Ceilings:** Automatically track progress against a statutory AGI floor (0.5% of AGI) before deductions kick in, and enforce cascading contribution ceilings (30% for assets/stocks, 50% for physical items, and 60% for cash) with carryover notifications.
+- **Visual Progress Indicators:** View interactive progress bars on the dashboard indicating how close you are to clearing your deduction floor and maximizing statutory ceilings.
+- **Data Import & Export (Sync Packages):** Export your entire database (seeded/custom catalog items, charities, events, and receipts) to a compressed `.dtpack` file, and seamlessly import/merge data from other devices with automatic duplicate detection and database safety rollbacks.
+- **First-Run Setup Wizard:** Configure a secure access password directly inside the app on first launch, without needing to pre-configure environment variables manually.
 - **Annual Tax Reporting:** Generate IRS-compliant annual summaries grouped by organization and date. Includes print-optimized layouts and CSV export for data portability.
-- **Tax Impact Widget:** Estimate your tax savings based on your marginal tax rate.
 - **Custom Items:** Easily add and save your own items if they aren't in the default catalog.
+- **Sidebar Version Indicator:** Display the current application version dynamically at the bottom of the navigation sidebar.
 
 ## 🛠️ Tech Stack
 
@@ -53,6 +58,7 @@ The item database is seeded using data historically provided by Intuit's ItsDedu
 3. Set up your environment variables for development:
    Create a `.env.local` file in the root directory. You can generate a secure `AUTH_SECRET` using `npx auth secret`.
    ```env
+   # Optional: Can also be set during first-run setup wizard in browser
    APP_PASSWORD=your_secure_password
    AUTH_SECRET=your_generated_secret
    DATABASE_URL="file:./prisma/dev.db"
@@ -62,6 +68,8 @@ The item database is seeded using data historically provided by Intuit's ItsDedu
    npx prisma migrate dev --name init
    npx prisma db seed
    ```
+5. **Set Access Password:**
+   On your first launch in the browser, you will be automatically prompted by a setup wizard to configure your local access password. Alternatively, pre-configure it via `APP_PASSWORD` in `.env.local`.
 
 ### Running the App
 
