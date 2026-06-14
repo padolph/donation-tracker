@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1](https://github.com/padolph/donation-tracker/compare/v1.5.0...v1.5.1) (2026-06-14)
+
+
+### Bug Fixes
+
+* 85 resolve startup app icon unpacking race condition ([aabe14f](https://github.com/padolph/donation-tracker/commit/aabe14ff6ea60f9563e1fcdb766010d057105185))
+* resolve startup app icon unpacking race condition ([baeae29](https://github.com/padolph/donation-tracker/commit/baeae2996d717029fca190020ee4a6fe085e2f72))
+
 ## [1.5.0](https://github.com/padolph/donation-tracker/compare/v1.4.0...v1.5.0) (2026-06-12)
 
 
