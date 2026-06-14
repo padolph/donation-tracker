@@ -65,6 +65,30 @@ jest.mock('net', () => {
   };
 });
 
+jest.mock('http', () => {
+  const mockRequest = {
+    on: jest.fn().mockReturnThis(),
+    end: jest.fn(),
+    destroy: jest.fn(),
+  };
+  return {
+    request: jest.fn().mockImplementation((options, callback) => {
+      const mockResponse = {
+        on: jest.fn().mockImplementation((event, handler) => {
+          if (event === 'end') {
+            setTimeout(handler, 0);
+          }
+          return mockResponse;
+        }),
+      };
+      if (callback) {
+        setTimeout(() => callback(mockResponse), 0);
+      }
+      return mockRequest;
+    }),
+  };
+});
+
 jest.mock('fs', () => {
   return {
     ...jest.requireActual('fs'),
@@ -172,5 +196,30 @@ describe('Electron Main Process', () => {
     // Clean up
     app.isPackaged = false;
     process.env.DATABASE_URL = originalDatabaseUrl;
+  });
+
+  it('should verify the server check makes an HTTP GET request to localhost on startup', async () => {
+    const { app } = require('electron');
+    app.isPackaged = true;
+
+    const http = require('http');
+    http.request.mockClear();
+
+    require('../main');
+
+    // Wait for the ready promise to resolve and checkServer/http.request to be called
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(http.request).toHaveBeenCalledWith(
+      expect.objectContaining({
+        hostname: 'localhost',
+        path: '/',
+        method: 'GET',
+      }),
+      expect.any(Function)
+    );
+
+    // Clean up
+    app.isPackaged = false;
   });
 });
