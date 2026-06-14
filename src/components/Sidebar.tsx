@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
@@ -18,12 +18,12 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [logoSrc, setLogoSrc] = useState('/icon.png');
-  const [retryCount, setRetryCount] = useState(0);
+  const retryRef = useRef(0);
 
   const handleLogoError = () => {
-    if (retryCount < 5) {
-      const nextRetry = retryCount + 1;
-      setRetryCount(nextRetry);
+    if (retryRef.current < 10) {
+      retryRef.current += 1;
+      const nextRetry = retryRef.current;
       setTimeout(() => {
         setLogoSrc(`/icon.png?retry=${nextRetry}&t=${Date.now()}`);
       }, 1000);

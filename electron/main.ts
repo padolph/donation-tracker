@@ -4,6 +4,7 @@ import { fork, ChildProcess } from 'child_process';
 import net from 'net';
 import fs from 'fs';
 import crypto from 'crypto';
+import http from 'http';
 
 let nextServerProcess: ChildProcess | null = null;
 
@@ -113,13 +114,29 @@ async function startNextServer(port: number) {
 
   return new Promise<void>((resolve) => {
     const checkServer = () => {
-      const client = net.createConnection({ port }, () => {
-        client.end();
-        resolve();
+      const req = http.request({
+        hostname: 'localhost',
+        port: port,
+        path: '/',
+        method: 'GET',
+        timeout: 1000,
+      }, (res) => {
+        res.on('data', () => {});
+        res.on('end', () => {
+          resolve();
+        });
       });
-      client.on('error', () => {
+
+      req.on('error', () => {
         setTimeout(checkServer, 500);
       });
+
+      req.on('timeout', () => {
+        req.destroy();
+        setTimeout(checkServer, 500);
+      });
+
+      req.end();
     };
     checkServer();
   });
