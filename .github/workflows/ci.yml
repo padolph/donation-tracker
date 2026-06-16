@@ -14,16 +14,20 @@ jobs:
   build-and-test:
     runs-on: ${{ matrix.os }}
 
+    defaults:
+      run:
+        shell: bash
+
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         include:
           - os: ubuntu-latest
             artifact-path: dist/*.deb
           - os: macos-latest
             artifact-path: dist/*.dmg
-          #- os: windows-latest
-          #  artifact-path: dist/*.exe
+          - os: windows-latest
+            artifact-path: dist/*.exe
 
     steps:
     - name: Checkout repository
@@ -56,10 +60,16 @@ jobs:
         DATABASE_URL: "file:./prisma/empty.db"
         NEXT_PHASE: "phase-production-build"
 
+    - name: Set Production Database URL
+      run: |
+        echo "PROD_DATABASE_URL=file:$(node -p "require('path').resolve('./prisma/production.db').replace(/\\\\/g, '/')")" >> $GITHUB_ENV
+
     - name: Create and Seed Default Production Database
       run: |
-        DATABASE_URL="file:$(pwd)/prisma/production.db" npx prisma migrate deploy
-        DATABASE_URL="file:$(pwd)/prisma/production.db" npx prisma db seed
+        npx prisma migrate deploy
+        npx prisma db seed
+      env:
+        DATABASE_URL: ${{ env.PROD_DATABASE_URL }}
 
     - name: Compile Electron TypeScript
       run: npm run electron:tsc
@@ -79,6 +89,14 @@ jobs:
     - name: Package Desktop Application (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: npx electron-builder --linux
+      env:
+        CSC_IDENTITY_AUTO_DISCOVERY: false
+        # This references GitHub's built-in cryptographic token automatically
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Package Desktop Application (Windows)
+      if: matrix.os == 'windows-latest'
+      run: npx electron-builder --win
       env:
         CSC_IDENTITY_AUTO_DISCOVERY: false
         # This references GitHub's built-in cryptographic token automatically
