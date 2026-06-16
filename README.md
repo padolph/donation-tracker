@@ -45,7 +45,7 @@ The item database is seeded using data historically provided by Intuit's ItsDedu
 
 - Node.js (LTS version recommended)
 - npm or yarn
-- macOS (for DMG building, though it can run on other platforms)
+- macOS, Windows, or Linux (cross-platform building is fully supported)
 
 ### Installation
 
@@ -87,8 +87,9 @@ npm run desktop:dev
 
 ### 📦 Building for Desktop
 
-To create a packaged macOS application (`.app` and `.dmg`):
+To create a packaged desktop application for your platform:
 
+#### macOS (`.app` and `.dmg`):
 1. **Prerequisites:** Install `gettext` via Homebrew for DMG packaging:
    ```bash
    brew install gettext
@@ -97,19 +98,44 @@ To create a packaged macOS application (`.app` and `.dmg`):
    ```bash
    npm run desktop:build
    ```
-The output will be in the `dist/` directory.
+
+#### Windows (`.exe`):
+1. **Build:**
+   ```bash
+   npm run desktop:build
+   ```
+
+#### Linux (`.deb`):
+1. **Build:**
+   ```bash
+   npm run desktop:build
+   ```
+
+The output will be generated in the `dist/` directory.
 
 ### 🖥️ Desktop Configuration (Production)
 
-When running the packaged `.app`, environment variables from `.env.local` are not loaded. The app uses a persistent configuration system:
+When running the packaged desktop application, environment variables from `.env.local` are not loaded. The app uses a persistent configuration system where the database (`production.db`) and configuration (`config.json`) are stored in the platform's standard user data directory:
 
-- **Database:** Your data is migrated to `~/Library/Application Support/Donation Tracker/database.db`.
-- **Password:** The `APP_PASSWORD` is stored in `config.json` in the same directory.
-- **Setting the Password:** To set your password for the first time in the packaged app, run it once from the terminal:
+- **macOS:** `~/Library/Application Support/Donation Tracker`
+- **Windows:** `%APPDATA%\Donation Tracker` (e.g., `C:\Users\<username>\AppData\Roaming\Donation Tracker`)
+- **Linux:** `~/.config/Donation Tracker`
+
+#### Setting the Access Password
+Access is protected by a password. To set your password for the first time in the packaged app, launch it once from the terminal with the `APP_PASSWORD` environment variable. This will persist the password for all subsequent GUI launches:
+
+- **macOS:**
   ```bash
   APP_PASSWORD=your_password /Applications/Donation\ Tracker.app/Contents/MacOS/Donation\ Tracker
   ```
-  The app will save this password and use it for all future GUI launches.
+- **Windows (PowerShell):**
+  ```powershell
+  $env:APP_PASSWORD="your_password"; & "$env:USERPROFILE\AppData\Local\Programs\donation-tracker\Donation Tracker.exe"
+  ```
+- **Linux:**
+  ```bash
+  APP_PASSWORD=your_password donation-tracker
+  ```
 
 ## 🧪 Testing
 
