@@ -89,8 +89,8 @@ describe('settingsActions', () => {
 
       const result = await getSettings();
       expect(result.success).toBe(true);
-      expect(result.databasePath?.endsWith('prisma/dev.db')).toBe(true);
-      expect(result.databasePath?.startsWith('/')).toBe(true);
+      expect(result.databasePath?.endsWith(path.join('prisma', 'dev.db'))).toBe(true);
+      expect(path.isAbsolute(result.databasePath || '')).toBe(true);
       
       process.env.DATABASE_URL = originalEnv;
     });

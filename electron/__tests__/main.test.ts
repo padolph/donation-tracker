@@ -176,22 +176,23 @@ describe('Electron Main Process', () => {
     // Wait for async initialization
     await new Promise((resolve) => setTimeout(resolve, 50));
 
+    const path = require('path');
     // Verify fs.mkdirSync was called for userDataPath and IMAGE_STORAGE_PATH
     // userDataPath is '/mock/user/data'
     // IMAGE_STORAGE_PATH is '/mock/user/data/storage/donations'
     expect(fs.mkdirSync).toHaveBeenCalledWith('/mock/user/data', { recursive: true });
-    expect(fs.mkdirSync).toHaveBeenCalledWith('/mock/user/data/storage/donations', { recursive: true });
+    expect(fs.mkdirSync).toHaveBeenCalledWith(path.join('/mock/user/data', 'storage', 'donations'), { recursive: true });
 
     // Verify child_process.fork is called with correct DATABASE_URL and IMAGE_STORAGE_PATH in env
     expect(child_process.fork).toHaveBeenCalled();
     const forkArgs = child_process.fork.mock.calls[0];
     const forkEnv = forkArgs[2].env;
 
-    expect(forkEnv.DATABASE_URL).toBe('file:/mock/user/data/production.db');
-    expect(forkEnv.IMAGE_STORAGE_PATH).toBe('/mock/user/data/storage/donations');
+    expect(forkEnv.DATABASE_URL).toBe('file:' + path.join('/mock/user/data', 'production.db'));
+    expect(forkEnv.IMAGE_STORAGE_PATH).toBe(path.join('/mock/user/data', 'storage', 'donations'));
     
     // Verify that process.env.DATABASE_URL itself was explicitly assigned in the main process
-    expect(process.env.DATABASE_URL).toBe('file:/mock/user/data/production.db');
+    expect(process.env.DATABASE_URL).toBe('file:' + path.join('/mock/user/data', 'production.db'));
 
     // Clean up
     app.isPackaged = false;
