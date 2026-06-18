@@ -29,16 +29,20 @@ describe('settingsActions', () => {
       (prisma.appSettings.findUnique as jest.Mock).mockResolvedValue(null);
       (prisma.appSettings.upsert as jest.Mock).mockResolvedValue({
         id: 1,
-        marginalTaxRate: 0.32,
-        estimatedAGI: 0.0,
+        marginalTaxRate: 0.22,
+        estimatedAGI: 100000.0,
       });
 
       const result = await getSettings();
 
       expect(result.success).toBe(true);
-      expect(result.settings?.marginalTaxRate).toBe(0.32);
-      expect(result.settings?.estimatedAGI).toBe(0.0);
-      expect(prisma.appSettings.upsert).toHaveBeenCalled();
+      expect(result.settings?.marginalTaxRate).toBe(0.22);
+      expect(result.settings?.estimatedAGI).toBe(100000.0);
+      expect(prisma.appSettings.upsert).toHaveBeenCalledWith({
+        where: { id: 1 },
+        update: {},
+        create: { id: 1, marginalTaxRate: 0.22, estimatedAGI: 100000.0 },
+      });
       expect(result.databasePath).toBeDefined();
       expect(result.storagePath).toBe(path.join(process.cwd(), 'storage', 'donations'));
     });
@@ -132,6 +136,30 @@ describe('settingsActions', () => {
         update: mockData,
         create: { id: 1, ...mockData },
       }));
+      expect(revalidatePath).toHaveBeenCalled();
+    });
+
+    it('should use default values as fallback when creating settings via updateSettings with empty fields', async () => {
+      const mockData = {};
+      (prisma.appSettings.upsert as jest.Mock).mockResolvedValue({ 
+        id: 1, 
+        marginalTaxRate: 0.22,
+        estimatedAGI: 100000.0,
+        updatedAt: new Date()
+      });
+
+      const result = await updateSettings(mockData);
+
+      expect(result.success).toBe(true);
+      expect(prisma.appSettings.upsert).toHaveBeenCalledWith({
+        where: { id: 1 },
+        update: {},
+        create: {
+          id: 1,
+          marginalTaxRate: 0.22,
+          estimatedAGI: 100000.0,
+        },
+      });
       expect(revalidatePath).toHaveBeenCalled();
     });
 
