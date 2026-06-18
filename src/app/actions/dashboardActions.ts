@@ -23,7 +23,7 @@ export async function getDashboardStats(year: number) {
     const settings = await prisma.appSettings.findUnique({
       where: { id: 1 },
     });
-    const marginalTaxRate = settings?.marginalTaxRate ?? 0.32;
+    const marginalTaxRate = settings?.marginalTaxRate ?? 0.22;
 
     let itemsTotal = 0;
     let cashTotal = 0;
@@ -48,7 +48,7 @@ export async function getDashboardStats(year: number) {
 
     const totalDonated = itemsTotal + cashTotal + assetsTotal;
     
-    const estimatedAGI = settings?.estimatedAGI ?? 0.0;
+    const estimatedAGI = settings?.estimatedAGI ?? 100000.0;
     const calculation = calculateTaxSavings(year, {
       estimatedAGI,
       marginalTaxRate,
