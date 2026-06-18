@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.2](https://github.com/padolph/donation-tracker/compare/v1.5.1...v1.5.2) (2026-06-18)
+
+
+### Bug Fixes
+
+* set default marginal tax rate to 22% and AGI to $100K ([601d91a](https://github.com/padolph/donation-tracker/commit/601d91adba2f85a68746c6e5a88c6ef7b55838f2))
+* set default marginal tax rate to 22% and AGI to $100K ([9f7acde](https://github.com/padolph/donation-tracker/commit/9f7acde07fb334086d29e0a2d831088ccc51c88d))
+
 ## [1.5.1](https://github.com/padolph/donation-tracker/compare/v1.5.0...v1.5.1) (2026-06-14)
 
 
