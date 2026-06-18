@@ -127,5 +127,40 @@ describe('dashboardActions', () => {
       expect(result.stats?.physicalRoomRemaining).toBe(49000);
       expect(result.stats?.assetRoomRemaining).toBe(30000);
     });
+
+    it('should use default values as fallback for marginal tax rate (0.22) and estimated AGI (100k) if settings do not exist', async () => {
+      const year = 2026;
+      const mockDonations = [
+        {
+          type: 'ITEMS',
+          items: [
+            { quantity: 2, lockedValue: 500 },
+          ],
+          cashAmount: null,
+          assetShares: null,
+          organizationId: 1,
+        },
+        {
+          type: 'CASH',
+          items: [],
+          cashAmount: 2000,
+          assetShares: null,
+          organizationId: 2,
+        },
+      ];
+
+      (prisma.donationEvent.findMany as jest.Mock).mockResolvedValue(mockDonations);
+      (prisma.appSettings.findUnique as jest.Mock).mockResolvedValue(null);
+
+      const result = await getDashboardStats(year);
+
+      expect(result.success).toBe(true);
+      expect(result.stats?.estimatedAGI).toBe(100000);
+      expect(result.stats?.marginalTaxRate).toBe(0.22);
+      
+      // floor = 500. Total deductible = 3000. Savings = (3000 - 500) * 0.22 = 550
+      expect(result.stats?.taxSavings).toBe(550);
+      expect(result.stats?.calculationState).toBe('active');
+    });
   });
 });
