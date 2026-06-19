@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.3](https://github.com/padolph/donation-tracker/compare/v1.5.2...v1.5.3) (2026-06-19)
+
+
+### Bug Fixes
+
+* **docker:** skip postinstall scripts in deps stage via ignore-scripts ([2910d00](https://github.com/padolph/donation-tracker/commit/2910d006c8fe706773396f8a01de4abf390d1e60))
+* **docker:** use npm install with legacy-peer-deps to fix alpine compile failure ([e7d8d0e](https://github.com/padolph/donation-tracker/commit/e7d8d0ee829323c8d5daf812a43e998bc3a48b40))
+
 ## [1.5.2](https://github.com/padolph/donation-tracker/compare/v1.5.1...v1.5.2) (2026-06-18)
 
 
