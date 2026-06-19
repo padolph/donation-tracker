@@ -57,3 +57,6 @@ dist-electron/
 # Google Antigravity
 .antigravitycli/
 
+# Compiled Prisma seed script
+prisma/seed.js
+
