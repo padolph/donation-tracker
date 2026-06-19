@@ -85,6 +85,9 @@ Start the app in a desktop window:
 npm run desktop:dev
 ```
 
+#### Docker Mode (Self-Hosted)
+For self-hosting or running in a headless environment, you can run the application as a Docker container. See [🐳 Running with Docker](#-running-with-docker) below for details.
+
 ### 📦 Building for Desktop
 
 To create a packaged desktop application for your platform:
@@ -136,6 +139,56 @@ Access is protected by a password. To set your password for the first time in th
   ```bash
   APP_PASSWORD=your_password donation-tracker
   ```
+
+## 🐳 Running with Docker
+
+As an alternative to running the Electron packaged desktop application, you can build and run a lightweight, standalone, platform-independent Docker container. This is ideal for self-hosting on a home server, NAS, or local machine.
+
+### Prerequisites
+- Docker installed on your host system.
+
+### Downloading the Pre-built Image from GHCR
+Multi-architecture container images (supporting both `linux/amd64` and `linux/arm64` / Apple Silicon) are automatically built and published to GitHub Container Registry (GHCR).
+
+1. **Pull the latest image:**
+   ```bash
+   docker pull ghcr.io/padolph/donation-tracker:latest
+   ```
+
+2. **Run the container:**
+   Make sure to pass a secure password via the `APP_PASSWORD` environment variable, and mount a persistent local directory to `/app/data` to store your SQLite database and uploaded receipts safely:
+   ```bash
+   docker run -d \
+     --name donation-tracker \
+     -p 3000:3000 \
+     -e APP_PASSWORD=your_secure_password \
+     -v /path/to/host/data:/app/data \
+     ghcr.io/padolph/donation-tracker:latest
+   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Building the Image Locally
+If you want to build the container from source locally:
+
+1. **Build the image:**
+   ```bash
+   docker build -t donation-tracker .
+   ```
+
+2. **Run your local build:**
+   ```bash
+   docker run -d \
+     --name donation-tracker \
+     -p 3000:3000 \
+     -e APP_PASSWORD=your_secure_password \
+     -v $(pwd)/local-data:/app/data \
+     donation-tracker:latest
+   ```
+
+### Persistent Data Structure
+When the container starts up for the first time, it automatically creates and seeds the SQLite database (`dev.db`) and creates the image upload directory (`donations/`) inside your mounted `/app/data` volume:
+- SQLite Database path: `/app/data/dev.db`
+- Image uploads path: `/app/data/donations`
 
 ## 🧪 Testing
 
