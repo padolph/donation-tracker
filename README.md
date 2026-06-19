@@ -7,7 +7,7 @@ This application was "vibe-coded" into existence as a personal response to the r
 
 ## ✨ Features
 
-- **Item Catalog:** A searchable directory of over 1,700 items with Fair Market Values (FMV) pre-seeded from industry-standard data.
+- **Item Catalog:** A searchable directory of over 1,700 items with Fair Market Values (FMV) pre-seeded from industry-standard data. Easily add and save your own custom items if they aren't in the default catalog.
 - **Donation Ledger:** Track physical items, cash contributions, and asset transfers (stocks/securities) in one central place.
 - **Organization Management:** Maintain a directory of your favorite charities, including Tax IDs and addresses.
 - **Receipt & Photo Attachments:** Securely attach local images and receipts to your donation events. Photos are copied to a private local storage directory, with automatic cleanup of image files when events are deleted to prevent storage leaks.
@@ -16,9 +16,7 @@ This application was "vibe-coded" into existence as a personal response to the r
 - **AGI-Based Deduction Floor & Ceilings:** Automatically track progress against a statutory AGI floor (0.5% of AGI) before deductions kick in, and enforce cascading contribution ceilings (30% for assets/stocks, 50% for physical items, and 60% for cash) with carryover notifications.
 - **Visual Progress Indicators:** View interactive progress bars on the dashboard indicating how close you are to clearing your deduction floor and maximizing statutory ceilings.
 - **Data Import & Export (Sync Packages):** Export your entire database (seeded/custom catalog items, charities, events, and receipts) to a compressed `.dtpack` file, and seamlessly import/merge data from other devices with automatic duplicate detection and database safety rollbacks.
-- **First-Run Setup Wizard:** Configure a secure access password directly inside the app on first launch, without needing to pre-configure environment variables manually.
 - **Annual Tax Reporting:** Generate IRS-compliant annual summaries grouped by organization and date. Includes print-optimized layouts and CSV export for data portability.
-- **Custom Items:** Easily add and save your own items if they aren't in the default catalog.
 
 ## 🛠️ Tech Stack
 
