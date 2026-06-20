@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.4](https://github.com/padolph/donation-tracker/compare/v1.5.3...v1.5.4) (2026-06-20)
+
+
+### Bug Fixes
+
+* docker prisma debug dependency ([8f9136b](https://github.com/padolph/donation-tracker/commit/8f9136b9343c85a66940d4258685822759c0ceb7))
+* **docker:** configure AUTH_TRUST_HOST by default in Docker container ([2adb327](https://github.com/padolph/donation-tracker/commit/2adb3277257249519c7d279da39eec18b3204a8f))
+* **docker:** configure AUTH_TRUST_HOST by default in Docker container ([b69da51](https://github.com/padolph/donation-tracker/commit/b69da5125de07fdbdabb456ea5d2f31da82f4d0c))
+* **docker:** copy the entire [@prisma](https://github.com/prisma) directory to support all prisma cli dependencies ([8023194](https://github.com/padolph/donation-tracker/commit/8023194e2d8f22b2d8884c4feb7113ab17bd099e))
+* **docker:** generate and load AUTH_SECRET from config.json at runtime ([8bea8d7](https://github.com/padolph/donation-tracker/commit/8bea8d744e7ecffc9ea166f20841d9af6caea20a))
+* **docker:** install openssl and use production.db in container environment ([46d6f3c](https://github.com/padolph/donation-tracker/commit/46d6f3ce5fecabb67c79558dfc8ab45c90095ca4))
+
 ## [1.5.3](https://github.com/padolph/donation-tracker/compare/v1.5.2...v1.5.3) (2026-06-19)
 
 
