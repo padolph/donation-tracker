@@ -29,6 +29,8 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV AUTH_TRUST_HOST=true
+ENV CONFIG_PATH="/app/data/config.json"
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 ENV DATABASE_URL="file:/app/data/production.db"
@@ -53,9 +55,12 @@ COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_module
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/csv-parse ./node_modules/csv-parse
 
+# Copy entrypoint script
+COPY --from=builder --chown=nextjs:nodejs /app/entrypoint.js ./entrypoint.js
+
 USER nextjs
 
 EXPOSE 3000
 
 # Run migrations and seeding on container boot, then start the server
-CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy --schema=prisma/schema.prisma && node prisma/seed.js && node server.js"]
+CMD ["node", "entrypoint.js"]
