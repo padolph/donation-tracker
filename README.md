@@ -184,8 +184,8 @@ If you want to build the container from source locally:
    ```
 
 ### Persistent Data Structure
-When the container starts up for the first time, it automatically creates and seeds the SQLite database (`dev.db`) and creates the image upload directory (`donations/`) inside your mounted `/app/data` volume:
-- SQLite Database path: `/app/data/dev.db`
+When the container starts up for the first time, it automatically creates and seeds the SQLite database (`production.db`) and creates the image upload directory (`donations/`) inside your mounted `/app/data` volume:
+- SQLite Database path: `/app/data/production.db`
 - Image uploads path: `/app/data/donations`
 
 ## 🧪 Testing
