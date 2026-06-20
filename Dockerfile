@@ -1,6 +1,6 @@
 # Stage 1: Install dependencies
 FROM node:alpine AS deps
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 COPY package.json package-lock.json ./
@@ -8,6 +8,7 @@ RUN npm ci --ignore-scripts --legacy-peer-deps
 
 # Stage 2: Build the application
 FROM node:alpine AS builder
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -24,12 +25,13 @@ RUN npm run build
 
 # Stage 3: Runtime runner
 FROM node:alpine AS runner
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
-ENV DATABASE_URL="file:/app/data/dev.db"
+ENV DATABASE_URL="file:/app/data/production.db"
 ENV IMAGE_STORAGE_PATH="/app/data/donations"
 
 # Set up runtime user and directories for security/permissions
