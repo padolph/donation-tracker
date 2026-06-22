@@ -19,7 +19,7 @@ export default function RootLayout({
       lang="en"
       className="h-full antialiased dark"
     >
-      <body className="min-h-full flex flex-row">
+      <body className="min-h-full flex flex-col md:flex-row">
         <Sidebar />
         <main className="flex-1 overflow-auto bg-background">
           {children}
