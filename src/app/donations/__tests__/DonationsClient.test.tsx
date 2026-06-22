@@ -15,7 +15,7 @@ const mockOrganizations = [
 const mockDonations = [
   {
     id: 1,
-    date: new Date('2026-05-12T10:00:00Z'),
+    date: new Date('2026-05-12T00:00:00Z'),
     organizationId: 1,
     type: 'ITEMS',
     cashAmount: null,
@@ -29,7 +29,7 @@ const mockDonations = [
   },
   {
     id: 2,
-    date: new Date('2025-12-25T10:00:00Z'),
+    date: new Date('2025-12-25T00:00:00Z'),
     organizationId: 2,
     type: 'CASH',
     cashAmount: 1500,
@@ -62,6 +62,8 @@ describe('DonationsClient', () => {
     // Should render data rows
     expect(screen.getByRole('cell', { name: 'Goodwill' })).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'Salvation Army' })).toBeInTheDocument();
+    expect(screen.getByRole('cell', { name: '5/12/2026' })).toBeInTheDocument();
+    expect(screen.getByRole('cell', { name: '12/25/2025' })).toBeInTheDocument();
 
     // Total value calculations: 2 * 50 = $100 for items, $1,500 for cash
     expect(screen.getByRole('cell', { name: '$100.00' })).toBeInTheDocument();
@@ -113,7 +115,7 @@ describe('DonationsClient', () => {
     const mockAssetDonations = [
       {
         id: 3,
-        date: new Date('2026-05-15T10:00:00Z'),
+        date: new Date('2026-05-15T00:00:00Z'),
         organizationId: 1,
         type: 'ASSETS',
         cashAmount: 500.25,

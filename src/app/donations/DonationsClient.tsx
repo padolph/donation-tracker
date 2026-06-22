@@ -150,7 +150,7 @@ export default function DonationsClient({
                 return (
                   <tr key={donation.id} className="border-b border-white/5 hover:bg-white/5 transition-colors block md:table-row p-4 md:p-0">
                     <td className="p-2 md:p-4 font-bold text-white block md:table-cell before:content-['Date:'] before:block before:md:hidden before:text-[10px] before:font-black before:uppercase before:tracking-widest before:text-white/40 before:mb-1">
-                      {new Date(donation.date).toLocaleDateString()}
+                      {new Date(donation.date).toLocaleDateString(undefined, { timeZone: 'UTC' })}
                     </td>
                     <td className="p-2 md:p-4 text-sm text-white/60 block md:table-cell before:content-['Organization:'] before:block before:md:hidden before:text-[10px] before:font-black before:uppercase before:tracking-widest before:text-white/40 before:mb-1">
                       {donation.organization.name}
@@ -163,7 +163,7 @@ export default function DonationsClient({
                     </td>
                     <td className="p-2 md:p-4 text-left md:text-right whitespace-nowrap block md:table-cell before:content-['Actions:'] before:block before:md:hidden before:text-[10px] before:font-black before:uppercase before:tracking-widest before:text-white/40 before:mb-1">
                       <button
-                        onClick={() => handleDelete(donation.id, new Date(donation.date).toLocaleDateString())}
+                        onClick={() => handleDelete(donation.id, new Date(donation.date).toLocaleDateString(undefined, { timeZone: 'UTC' }))}
                         className="text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-500/20 px-3 py-1 bg-red-500/10 rounded-lg transition-colors"
                       >
                         Delete
