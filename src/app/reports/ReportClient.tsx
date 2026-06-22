@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { YearlyReportData, ReportOrganization, ReportDonation, ReportItem } from '@/app/actions/reportActions';
+import { YearlyReportData } from '@/app/actions/reportActions';
 
 interface ReportClientProps {
   initialData: YearlyReportData;
@@ -62,7 +62,7 @@ export default function ReportClient({ initialData }: ReportClientProps) {
   return (
     <div className="space-y-8">
       {/* Controls - Hidden during print */}
-      <div className="flex justify-between items-center print:hidden">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden">
         <h1 className="text-2xl font-bold">Annual Tax Report: {initialData.year}</h1>
         <div className="flex gap-4">
           <button
@@ -83,22 +83,22 @@ export default function ReportClient({ initialData }: ReportClientProps) {
       </div>
 
       {/* Report Content */}
-      <div className="bg-white text-black p-8 rounded-xl shadow-lg print:shadow-none print:p-0">
-        <header className="mb-8 border-b-2 border-black pb-4 flex justify-between items-end">
+      <div className="bg-white text-black p-4 sm:p-8 rounded-xl shadow-lg print:shadow-none print:p-0">
+        <header className="mb-8 border-b-2 border-black pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
           <div>
             <h2 className="text-3xl font-black uppercase tracking-tighter">Donation Tracker</h2>
             <p className="text-sm font-bold text-gray-600">Annual Charitable Contributions Summary</p>
           </div>
-          <div className="text-right">
-            <p className="text-4xl font-black">{initialData.year}</p>
-            <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Tax Year</p>
+          <div className="text-left sm:text-right">
+            <p className="text-4xl font-black leading-none">{initialData.year}</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mt-1">Tax Year</p>
           </div>
         </header>
 
         <div className="space-y-12">
           {initialData.organizations.map((org) => (
             <section key={org.id} className="break-inside-avoid">
-              <div className="flex justify-between items-baseline border-b border-gray-200 mb-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-baseline border-b border-gray-200 mb-4 gap-2">
                 <h3 className="text-xl font-bold">{org.name}</h3>
                 <p className="text-sm font-bold text-gray-500">
                   Org Total: <span className="text-black ml-2">${org.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
@@ -107,8 +107,8 @@ export default function ReportClient({ initialData }: ReportClientProps) {
 
               <div className="space-y-6">
                 {org.donations.map((donation) => (
-                  <div key={donation.id} className="ml-4">
-                    <div className="flex justify-between items-center mb-2">
+                  <div key={donation.id} className="ml-0 sm:ml-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
                       <p className="text-sm font-black bg-gray-100 px-2 py-1 rounded">
                         {new Date(donation.date).toLocaleDateString()}
                       </p>
@@ -117,9 +117,9 @@ export default function ReportClient({ initialData }: ReportClientProps) {
                       </p>
                     </div>
 
-                    <table className="w-full text-left text-xs border-collapse">
+                    <table className="w-full text-left text-xs border-collapse block md:table">
                       <thead>
-                        <tr className="border-b border-gray-100 text-gray-400 font-bold uppercase tracking-widest">
+                        <tr className="border-b border-gray-100 text-gray-400 font-bold uppercase tracking-widest hidden md:table-row">
                           <th className="py-2 w-1/3">Description</th>
                           <th className="py-2">Category</th>
                           <th className="py-2 text-center">Condition</th>
@@ -128,15 +128,27 @@ export default function ReportClient({ initialData }: ReportClientProps) {
                           <th className="py-2 text-right">Method</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody className="block md:table-row-group">
                         {donation.items.map((item) => (
-                          <tr key={item.id} className="border-b border-gray-50 last:border-0">
-                            <td className="py-2 font-medium">{item.description}</td>
-                            <td className="py-2 text-gray-600">{item.category}</td>
-                            <td className="py-2 text-center">{item.condition}</td>
-                            <td className="py-2 text-center">{item.quantity}</td>
-                            <td className="py-2 text-right font-bold">${item.unitValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-                            <td className="py-2 text-right text-gray-400 italic">{item.valuationMethod}</td>
+                          <tr key={item.id} className="border-b border-gray-50 last:border-0 block md:table-row py-2 md:py-0">
+                            <td className="py-1 md:py-2 font-medium block md:table-cell before:content-['Description:'] before:block before:md:hidden before:text-[10px] before:font-bold before:text-gray-400 before:uppercase before:tracking-wider before:mb-0.5">
+                              {item.description}
+                            </td>
+                            <td className="py-1 md:py-2 text-gray-600 block md:table-cell before:content-['Category:'] before:block before:md:hidden before:text-[10px] before:font-bold before:text-gray-400 before:uppercase before:tracking-wider before:mb-0.5">
+                              {item.category}
+                            </td>
+                            <td className="py-1 md:py-2 md:text-center block md:table-cell before:content-['Condition:'] before:block before:md:hidden before:text-[10px] before:font-bold before:text-gray-400 before:uppercase before:tracking-wider before:mb-0.5">
+                              {item.condition}
+                            </td>
+                            <td className="py-1 md:py-2 md:text-center block md:table-cell before:content-['Qty:'] before:block before:md:hidden before:text-[10px] before:font-bold before:text-gray-400 before:uppercase before:tracking-wider before:mb-0.5">
+                              {item.quantity}
+                            </td>
+                            <td className="py-1 md:py-2 md:text-right font-bold block md:table-cell before:content-['Value:'] before:block before:md:hidden before:text-[10px] before:font-bold before:text-gray-400 before:uppercase before:tracking-wider before:mb-0.5">
+                              ${item.unitValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </td>
+                            <td className="py-1 md:py-2 md:text-right text-gray-400 italic block md:table-cell before:content-['Method:'] before:block before:md:hidden before:text-[10px] before:font-bold before:text-gray-400 before:uppercase before:tracking-wider before:mb-0.5">
+                              {item.valuationMethod}
+                            </td>
                           </tr>
                         ))}
                       </tbody>

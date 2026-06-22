@@ -42,9 +42,10 @@ describe('SettingsClient', () => {
       />
     );
     
-    // The main container should have p-8 max-w-5xl mx-auto
+    // The main container should have p-4 sm:p-8 max-w-5xl mx-auto
     const mainContainer = container.firstChild;
-    expect(mainContainer).toHaveClass('p-8');
+    expect(mainContainer).toHaveClass('p-4');
+    expect(mainContainer).toHaveClass('sm:p-8');
     expect(mainContainer).toHaveClass('max-w-5xl');
     expect(mainContainer).toHaveClass('mx-auto');
     

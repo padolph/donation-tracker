@@ -92,7 +92,7 @@ export default function TaxImpactWidget({
   };
 
   return (
-    <div className="bg-accent/10 border border-accent/20 rounded-2xl p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+    <div className="bg-accent/10 border border-accent/20 rounded-2xl p-4 sm:p-8 flex flex-col md:flex-row justify-between items-center gap-6">
       <div className="flex flex-col gap-1 w-full text-center md:text-left">
         <h3 className="text-sm font-bold uppercase tracking-widest text-accent mb-1">
           Estimated Tax Savings

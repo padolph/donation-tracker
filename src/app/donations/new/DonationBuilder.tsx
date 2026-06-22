@@ -319,10 +319,10 @@ export default function DonationBuilder({
   );
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto">
       <header className="mb-10">
         <h1 className="text-3xl font-bold mb-1">{initialDonation ? 'Edit Donation' : 'Add New Donation'}</h1>
-        <p className="text-white/50 text-sm">{initialDonation ? 'Update an existing charitable contribution' : 'Record a new charitable contribution'}</p>
+        <p className="text-white/55 text-sm">{initialDonation ? 'Update an existing charitable contribution' : 'Record a new charitable contribution'}</p>
       </header>
 
       <div className="space-y-8">
@@ -369,7 +369,7 @@ export default function DonationBuilder({
               <select
                 id="organization"
                 aria-label="organization name"
-                className="flex-1 px-4 py-3 rounded-xl bg-black/20 border border-white/10 text-white"
+                className="flex-1 min-w-0 px-4 py-3 rounded-xl bg-black/20 border border-white/10 text-white"
                 value={organizationId}
                 onChange={(e) => setOrganizationId(e.target.value === '' ? '' : parseInt(e.target.value))}
               >
@@ -380,7 +380,7 @@ export default function DonationBuilder({
               </select>
               <button
                 onClick={() => setIsAddingOrg(true)}
-                className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors whitespace-nowrap text-sm font-bold"
+                className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors whitespace-nowrap text-sm font-bold shrink-0"
                 aria-label="Create New Organization"
               >
                 + New
@@ -431,15 +431,15 @@ export default function DonationBuilder({
             {/* Staged Items List */}
             <div className="space-y-4">
               {stagedItems.map((item, index) => (
-                <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 flex justify-between items-center animate-in fade-in slide-in-from-top-2">
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-1">Item {index + 1}</h4>
-                    <div className="flex items-baseline gap-4">
-                      <span className="text-lg font-bold">{item.description}</span>
+                <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 animate-in fade-in slide-in-from-top-2">
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-white/40">Item {index + 1}</h4>
+                    <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+                      <span className="text-lg font-bold break-all">{item.description}</span>
                       <span className="text-sm text-white/50">{item.condition} · Qty: {item.quantity}</span>
                     </div>
                   </div>
-                  <div className="text-2xl font-black text-accent">
+                  <div className="text-2xl font-black text-accent shrink-0">
                     ${item.totalValue.toFixed(2)}
                   </div>
                 </div>
