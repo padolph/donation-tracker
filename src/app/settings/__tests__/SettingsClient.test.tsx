@@ -105,6 +105,28 @@ describe('SettingsClient', () => {
     });
   });
 
+  it('should not display a leading zero when numeric inputs (tax rate, AGI) are cleared and edited', async () => {
+    render(<SettingsClient initialSettings={mockSettings} databasePath="/mock/path/dev.db" storagePath="/mock/path/storage" />);
+    
+    const taxRateInput = screen.getByLabelText(/Marginal Tax Rate/i);
+    // Simulate user backspacing/clearing the input
+    fireEvent.change(taxRateInput, { target: { value: '' } });
+    expect(taxRateInput).toHaveValue(null);
+
+    // Simulate user typing a new number
+    fireEvent.change(taxRateInput, { target: { value: '5' } });
+    expect(taxRateInput).toHaveValue(5);
+
+    const agiInput = screen.getByLabelText(/Estimated AGI/i);
+    // Simulate user backspacing/clearing the AGI input
+    fireEvent.change(agiInput, { target: { value: '' } });
+    expect(agiInput).toHaveValue(null);
+
+    // Simulate user typing a new AGI number
+    fireEvent.change(agiInput, { target: { value: '80000' } });
+    expect(agiInput).toHaveValue(80000);
+  });
+
   describe('Data Sync UI', () => {
     it('renders the data sync panel controls', () => {
       render(<SettingsClient initialSettings={mockSettings} databasePath="/mock/path/dev.db" storagePath="/mock/path/storage" />);

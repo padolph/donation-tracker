@@ -20,8 +20,8 @@ export default function SettingsClient({
   databasePath: string;
   storagePath: string;
 }) {
-  const [taxRate, setTaxRate] = useState(initialSettings.marginalTaxRate * 100);
-  const [estimatedAGI, setEstimatedAGI] = useState(initialSettings.estimatedAGI);
+  const [taxRate, setTaxRate] = useState<number | ''>(initialSettings.marginalTaxRate * 100);
+  const [estimatedAGI, setEstimatedAGI] = useState<number | ''>(initialSettings.estimatedAGI);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -48,8 +48,8 @@ export default function SettingsClient({
     setMessage(null);
 
     const result = await updateSettings({
-      marginalTaxRate: taxRate / 100,
-      estimatedAGI: estimatedAGI,
+      marginalTaxRate: taxRate === '' ? 0 : taxRate / 100,
+      estimatedAGI: estimatedAGI === '' ? 0 : estimatedAGI,
     });
 
     if (result.success) {
@@ -130,7 +130,7 @@ export default function SettingsClient({
                 step="0.1"
                 className="w-full px-4 py-3 rounded-xl font-bold pr-10"
                 value={taxRate}
-                onChange={(e) => setTaxRate(parseFloat(e.target.value) || 0)}
+                onChange={(e) => setTaxRate(e.target.value === '' ? '' : parseFloat(e.target.value))}
               />
               <span className="absolute right-4 top-3 text-white/40">%</span>
             </div>
@@ -151,7 +151,7 @@ export default function SettingsClient({
                 step="1"
                 className="w-full px-4 py-3 rounded-xl font-bold pr-10"
                 value={estimatedAGI}
-                onChange={(e) => setEstimatedAGI(parseFloat(e.target.value) || 0)}
+                onChange={(e) => setEstimatedAGI(e.target.value === '' ? '' : parseFloat(e.target.value))}
               />
               <span className="absolute right-4 top-3 text-white/40">$</span>
             </div>
