@@ -25,7 +25,7 @@ RUN npm run build
 
 # Stage 3: Runtime runner
 FROM node:alpine AS runner
-RUN apk add --no-cache libc6-compat openssl
+RUN apk add --no-cache libc6-compat openssl sqlite
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -33,7 +33,7 @@ ENV AUTH_TRUST_HOST=true
 ENV CONFIG_PATH="/app/data/config.json"
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
-ENV DATABASE_URL="file:/app/data/production.db"
+ENV DATABASE_URL="file:/app/data/production.db?connection_limit=1&socket_timeout=5000&busy_timeout=5000"
 ENV IMAGE_STORAGE_PATH="/app/data/donations"
 
 # Set up runtime user and directories for security/permissions

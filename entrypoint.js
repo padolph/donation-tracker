@@ -40,6 +40,22 @@ try {
   process.exit(1);
 }
 
+// 4.5 Enable SQLite Write-Ahead Logging (WAL) mode
+console.log('Enabling WAL mode on SQLite database...');
+try {
+  const dbUrl = process.env.DATABASE_URL || 'file:/app/data/production.db';
+  if (dbUrl.startsWith('file:')) {
+    const dbPath = dbUrl.replace(/^file:/, '').split('?')[0];
+    execSync(`sqlite3 "${dbPath}" "PRAGMA journal_mode=WAL;"`, { stdio: 'inherit' });
+    console.log('WAL mode enabled successfully.');
+  } else {
+    console.warn(`DATABASE_URL "${dbUrl}" does not start with "file:", skipping WAL mode configuration.`);
+  }
+} catch (error) {
+  console.error('Failed to enable WAL mode:', error);
+  process.exit(1);
+}
+
 // 5. Run database seed
 console.log('Running database seed...');
 try {
