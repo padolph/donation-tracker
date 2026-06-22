@@ -4,7 +4,7 @@ import { DonationEvent } from '../../DonationsClient';
 
 const mockItemsDonation: DonationEvent = {
   id: 1,
-  date: '2026-05-12T10:00:00.000Z',
+  date: '2026-05-12T00:00:00.000Z',
   organizationId: 1,
   type: 'ITEMS',
   cashAmount: null,
@@ -59,6 +59,7 @@ describe('DonationDetailsClient', () => {
     expect(screen.getByText('Goodwill')).toBeInTheDocument();
     expect(screen.getByText('ITEMS')).toBeInTheDocument();
     expect(screen.getByText('These are test notes for the donation.')).toBeInTheDocument();
+    expect(screen.getByText(/Date: 5\/12\/2026/)).toBeInTheDocument();
 
     // Check items table content
     expect(screen.getByText('Shirt')).toBeInTheDocument();

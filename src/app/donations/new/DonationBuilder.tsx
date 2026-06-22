@@ -177,9 +177,16 @@ export default function DonationBuilder({
   const [organizationId, setOrganizationId] = useState<number | ''>(initialDonation ? initialDonation.organizationId : '');
   const [isAddingOrg, setIsAddingOrg] = useState(false);
   
-  const [date, setDate] = useState(
-    initialDonation ? new Date(initialDonation.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
-  );
+  const [date, setDate] = useState(() => {
+    if (initialDonation) {
+      return new Date(initialDonation.date).toISOString().split('T')[0];
+    }
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
   const [notes, setNotes] = useState(initialDonation?.notes || '');
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [isAddingCustom, setIsAddingCustom] = useState(false);

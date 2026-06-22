@@ -58,7 +58,7 @@ export default function DonationDetailsClient({ donation }: { donation: Donation
           <div>
             <h2 className="text-2xl font-bold text-white">{donation.organization.name}</h2>
             <p className="text-white/55 text-sm">
-              Date: {new Date(donation.date).toLocaleDateString()}
+              Date: {new Date(donation.date).toLocaleDateString(undefined, { timeZone: 'UTC' })}
             </p>
           </div>
           <div className="text-right">

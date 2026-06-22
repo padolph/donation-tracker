@@ -29,7 +29,7 @@ export default function ReportClient({ initialData }: ReportClientProps) {
           rows.push([
             initialData.year.toString(),
             org.name,
-            new Date(donation.date).toLocaleDateString(),
+            new Date(donation.date).toLocaleDateString(undefined, { timeZone: 'UTC' }),
             donation.type,
             item.description,
             item.category,
@@ -110,7 +110,7 @@ export default function ReportClient({ initialData }: ReportClientProps) {
                   <div key={donation.id} className="ml-0 sm:ml-4">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
                       <p className="text-sm font-black bg-gray-100 px-2 py-1 rounded">
-                        {new Date(donation.date).toLocaleDateString()}
+                        {new Date(donation.date).toLocaleDateString(undefined, { timeZone: 'UTC' })}
                       </p>
                       <p className="text-xs font-bold text-gray-500">
                         Donation Subtotal: ${donation.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

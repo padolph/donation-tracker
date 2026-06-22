@@ -13,7 +13,7 @@ const mockReportData: YearlyReportData = {
       donations: [
         {
           id: 1,
-          date: new Date('2025-05-10T10:00:00Z'),
+          date: new Date('2025-05-10T00:00:00Z'),
           type: 'ITEMS',
           totalValue: 20,
           items: [
@@ -43,6 +43,7 @@ describe('ReportClient', () => {
     render(<ReportClient initialData={mockReportData} />);
     expect(screen.getByText('Goodwill')).toBeInTheDocument();
     expect(screen.getByText('Annual Tax Report: 2025')).toBeInTheDocument();
+    expect(screen.getByText('5/10/2025')).toBeInTheDocument();
   });
 
   it('has print and export buttons', () => {
