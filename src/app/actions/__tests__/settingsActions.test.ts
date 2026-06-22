@@ -82,6 +82,22 @@ describe('settingsActions', () => {
       process.env.DATABASE_URL = originalEnv;
     });
 
+    it('should strip query parameters from databasePath if present in DATABASE_URL', async () => {
+      const originalEnv = process.env.DATABASE_URL;
+      process.env.DATABASE_URL = 'file:/mock/path/production.db?connection_limit=1&busy_timeout=5000';
+      
+      (prisma.appSettings.findUnique as jest.Mock).mockResolvedValue({
+        id: 1,
+        marginalTaxRate: 0.32,
+      });
+
+      const result = await getSettings();
+      expect(result.success).toBe(true);
+      expect(result.databasePath).toBe('/mock/path/production.db');
+      
+      process.env.DATABASE_URL = originalEnv;
+    });
+
     it('should resolve databasePath as absolute if relative in env var', async () => {
       const originalEnv = process.env.DATABASE_URL;
       process.env.DATABASE_URL = 'file:./prisma/dev.db';
