@@ -132,4 +132,30 @@ describe('Sidebar', () => {
     render(<Sidebar />);
     expect(screen.getByText(`v${version}`)).toBeInTheDocument();
   });
+
+  it('renders the mobile menu toggle button and opens/closes the mobile menu drawer', () => {
+    render(<Sidebar />);
+    const toggleButton = screen.getByRole('button', { name: /toggle navigation/i });
+    expect(toggleButton).toBeInTheDocument();
+
+    // The container that wraps the navigation links has the class 'hidden' by default
+    // We target the ancestor element with the layout class names
+    const dashboardLink = screen.getByText('Dashboard');
+    const navContainer = dashboardLink.closest('div')?.parentElement;
+    expect(navContainer).toHaveClass('hidden');
+
+    // Click toggle button to open the mobile menu
+    fireEvent.click(toggleButton);
+
+    // The container should now have the class 'fixed' and NOT 'hidden'
+    expect(navContainer).toHaveClass('fixed');
+    expect(navContainer).not.toHaveClass('hidden');
+
+    // Click a navigation link in the mobile drawer
+    fireEvent.click(dashboardLink);
+
+    // Clicking the link should close the mobile drawer (container has 'hidden' class again)
+    expect(navContainer).toHaveClass('hidden');
+    expect(navContainer).not.toHaveClass('fixed');
+  });
 });

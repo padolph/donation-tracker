@@ -29,11 +29,11 @@ export default function DonationDetailsClient({ donation }: { donation: Donation
   const totalValue = calculateTotalValue();
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
-      <header className="flex justify-between items-center">
+    <div className="p-4 sm:p-8 max-w-5xl mx-auto space-y-8">
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold mb-1">Donation Details</h1>
-          <p className="text-white/50 text-sm">Detailed breakdown of this contribution</p>
+          <p className="text-white/55 text-sm">Detailed breakdown of this contribution</p>
         </div>
         <div className="flex gap-3">
           <Link
@@ -53,7 +53,7 @@ export default function DonationDetailsClient({ donation }: { donation: Donation
       </header>
 
       {/* Main card - Dark/glassmorphism theme */}
-      <div className="bg-white/5 border border-white/10 rounded-2xl p-8 space-y-6">
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-8 space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center pb-6 border-b border-white/10 gap-4">
           <div>
             <h2 className="text-2xl font-bold text-white">{donation.organization.name}</h2>
@@ -81,9 +81,9 @@ export default function DonationDetailsClient({ donation }: { donation: Donation
             <h3 className="text-xs font-bold uppercase tracking-widest text-white/40">Line Items</h3>
             {/* Scrollable Container with max height and compact style */}
             <div className="max-h-[400px] overflow-y-auto border border-white/10 bg-black/20 rounded-xl">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse block md:table">
                 <thead>
-                  <tr className="border-b border-white/10 bg-white/[0.02] sticky top-0 backdrop-blur-md">
+                  <tr className="border-b border-white/10 bg-white/[0.02] sticky top-0 backdrop-blur-md hidden md:table-row">
                     <th className="p-3 text-xs font-bold uppercase tracking-widest text-white/40">Description</th>
                     <th className="p-3 text-xs font-bold uppercase tracking-widest text-white/40 text-center">Qty</th>
                     <th className="p-3 text-xs font-bold uppercase tracking-widest text-white/40 text-center">Condition</th>
@@ -91,22 +91,22 @@ export default function DonationDetailsClient({ donation }: { donation: Donation
                     <th className="p-3 text-xs font-bold uppercase tracking-widest text-white/40 text-right font-black">Total</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="block md:table-row-group">
                   {donation.items.map((item, idx) => (
-                    <tr key={idx} className="border-b border-white/5 hover:bg-white/5 transition-colors text-sm">
-                      <td className="p-3 font-bold text-white">
+                    <tr key={idx} className="border-b border-white/5 hover:bg-white/5 transition-colors text-sm block md:table-row p-3 md:p-0">
+                      <td className="p-2 md:p-3 font-bold text-white block md:table-cell before:content-['Description:'] before:block before:md:hidden before:text-[10px] before:font-black before:uppercase before:tracking-widest before:text-white/40 before:mb-1">
                         {item.item.description}
                       </td>
-                      <td className="p-3 text-center text-white/60">
+                      <td className="p-2 md:p-3 text-left md:text-center text-white/60 block md:table-cell before:content-['Qty:'] before:block before:md:hidden before:text-[10px] before:font-black before:uppercase before:tracking-widest before:text-white/40 before:mb-1">
                         {item.quantity}
                       </td>
-                      <td className="p-3 text-center text-white/60">
+                      <td className="p-2 md:p-3 text-left md:text-center text-white/60 block md:table-cell before:content-['Condition:'] before:block before:md:hidden before:text-[10px] before:font-black before:uppercase before:tracking-widest before:text-white/40 before:mb-1">
                         {item.condition}
                       </td>
-                      <td className="p-3 text-right text-white/60">
+                      <td className="p-2 md:p-3 text-left md:text-right text-white/60 block md:table-cell before:content-['Value_(ea.):'] before:block before:md:hidden before:text-[10px] before:font-black before:uppercase before:tracking-widest before:text-white/40 before:mb-1">
                         {formatCurrency(item.lockedValue)}
                       </td>
-                      <td className="p-3 text-right font-black text-accent">
+                      <td className="p-2 md:p-3 text-left md:text-right font-black text-accent block md:table-cell before:content-['Total:'] before:block before:md:hidden before:text-[10px] before:font-black before:uppercase before:tracking-widest before:text-white/40 before:mb-1">
                         {formatCurrency(item.quantity * item.lockedValue)}
                       </td>
                     </tr>

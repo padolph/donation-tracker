@@ -44,7 +44,7 @@ export default function CustomItemForm({ onItemCreated, onCancel }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-8 border border-accent rounded-xl bg-white/5 space-y-6 animate-in zoom-in-95 duration-200">
+    <form onSubmit={handleSubmit} className="p-4 sm:p-8 border border-accent rounded-xl bg-white/5 space-y-6 animate-in zoom-in-95 duration-200">
       <h3 className="text-xl font-bold">Add Custom Item</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
