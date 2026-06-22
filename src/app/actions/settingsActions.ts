@@ -23,6 +23,7 @@ export async function getSettings() {
     if (dbPath.startsWith('file:')) {
       dbPath = dbPath.slice(5);
     }
+    dbPath = dbPath.split('?')[0];
     if (!path.isAbsolute(dbPath)) {
       dbPath = path.resolve(process.cwd(), dbPath);
     }
