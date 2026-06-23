@@ -93,7 +93,12 @@
     "wait-on": "^9.0.10"
   },
   "overrides": {
-    "postcss": "^8.5.10"
+    "postcss": "^8.5.10",
+    "js-yaml": "^4.2.0",
+    "@babel/traverse": "^7.29.4",
+    "@electron/get": {
+      "undici": "^7.28.0"
+    }
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
