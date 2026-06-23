@@ -92,6 +92,7 @@
     "typescript": "^6",
     "wait-on": "^9.0.10"
   },
+  "overrides-comment": "These overrides resolve vulnerabilities in undici, js-yaml, @babel/traverse, and postcss without breaking top-level pinned dependencies.",
   "overrides": {
     "postcss": "^8.5.10",
     "js-yaml": "^4.2.0",
