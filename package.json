@@ -92,14 +92,16 @@
     "typescript": "^6",
     "wait-on": "^9.0.10"
   },
-  "overrides-comment": "These overrides resolve vulnerabilities in undici, js-yaml, @babel/traverse, and postcss without breaking top-level pinned dependencies.",
+  "overrides-comment": "These overrides resolve vulnerabilities in undici, js-yaml, @babel/traverse, @babel/core, ws, and postcss without breaking top-level pinned dependencies.",
   "overrides": {
     "postcss": "^8.5.10",
     "js-yaml": "^4.2.0",
     "@babel/traverse": "^7.29.4",
     "@electron/get": {
       "undici": "^7.28.0"
-    }
+    },
+    "@babel/core": "^7.29.6",
+    "ws": "^8.21.0"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
