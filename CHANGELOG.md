@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.5.5](https://github.com/padolph/donation-tracker/compare/v1.5.4...v1.5.5) (2026-06-23)
+
+
+### Bug Fixes
+
+* 122 bug configure sqlite to utilize write ahead logging wal mode for docker environment ([f8e14f1](https://github.com/padolph/donation-tracker/commit/f8e14f15eef432401ee424b040910dc65a8f46c3)), closes [#122](https://github.com/padolph/donation-tracker/issues/122)
+* 123 prevent leading zero when editing Settings numeric inputs ([e487695](https://github.com/padolph/donation-tracker/commit/e4876953b8eecec6b0b1ce8b2598ef838edac91c)), closes [#123](https://github.com/padolph/donation-tracker/issues/123)
+* 125 bug editing donation date records incorrect date ([121007e](https://github.com/padolph/donation-tracker/commit/121007e48e499eb5f93e422d341bc528867b6359)), closes [#125](https://github.com/padolph/donation-tracker/issues/125)
+* 131 bug fix dependency security vulnerabilities found by dependabot ([b51734d](https://github.com/padolph/donation-tracker/commit/b51734da2f8f30625396cd136ca81116c2298615))
+* configure sqlite to utilize write-ahead logging (wal) mode for docker ([3126725](https://github.com/padolph/donation-tracker/commit/3126725b1bbbbcc0929af9e853f241233204648a))
+* **deps:** resolve additional @babel/core and ws security audit vulnerabilities ([351c31d](https://github.com/padolph/donation-tracker/commit/351c31dd68797199382278e779594feaa1612cda))
+* **deps:** resolve undici, js-yaml, and babel security vulnerabilities ([efbe294](https://github.com/padolph/donation-tracker/commit/efbe29463c658ab630165dc7682d72296a6e2974))
+* enforce utc formatting for donation dates to prevent timezone shifting ([ad13c7c](https://github.com/padolph/donation-tracker/commit/ad13c7c698867a952819713b3f141f1c026fb597))
+* **mobile:** improve layout responsiveness on mobile viewports ([fedc99c](https://github.com/padolph/donation-tracker/commit/fedc99caab4b8f716af4425d28e82220e3df2110)), closes [#124](https://github.com/padolph/donation-tracker/issues/124)
+* **mobile:** improve layout responsiveness on mobile viewports ([c549f4e](https://github.com/padolph/donation-tracker/commit/c549f4ea9622c66836be5c707a03be8ec51afc06))
+* prevent leading zero when editing Settings numeric inputs ([26b097f](https://github.com/padolph/donation-tracker/commit/26b097f324e922f0aa6ccbb3713d1f125e129ef3))
+* strip query parameters from database path on settings page ([5d616c8](https://github.com/padolph/donation-tracker/commit/5d616c8b04c73e9e193bb1629ffd4034f7e513d3))
+
 ## [1.5.4](https://github.com/padolph/donation-tracker/compare/v1.5.3...v1.5.4) (2026-06-20)
 
 
