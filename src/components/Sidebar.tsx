@@ -12,6 +12,7 @@ const navItems = [
   { name: 'Add Donation', href: '/donations/new', icon: '➕' },
   { name: 'Organizations', href: '/organizations', icon: '🏢' },
   { name: 'Tax Reports', href: '/reports', icon: '🧾' },
+  { name: 'Export/Import', href: '/sync', icon: '🔄' },
   { name: 'Settings', href: '/settings', icon: '⚙️' },
 ];
 
