@@ -48,24 +48,40 @@ describe('SettingsClient', () => {
     expect(form).toHaveClass('max-w-2xl');
   });
 
-  it('renders the database path as read-only', () => {
+  it('renders the database path', () => {
     const testPath = '/path/to/my/dev.db';
     render(<SettingsClient initialSettings={mockSettings} databasePath={testPath} storagePath="/mock/path/storage" />);
     
-    const dbInput = screen.getByLabelText(/Database Path/i);
-    expect(dbInput).toBeInTheDocument();
-    expect(dbInput).toHaveValue(testPath);
-    expect(dbInput).toHaveAttribute('readonly');
+    expect(screen.getByText(/Database Path:/i)).toBeInTheDocument();
+    expect(screen.getByText(testPath)).toBeInTheDocument();
   });
 
-  it('renders the image storage path as read-only', () => {
+  it('renders the image storage path', () => {
     const testStoragePath = '/path/to/my/storage/donations';
     render(<SettingsClient initialSettings={mockSettings} databasePath="/mock/path/dev.db" storagePath={testStoragePath} />);
     
-    const storageInput = screen.getByLabelText(/Image Storage Path/i);
-    expect(storageInput).toBeInTheDocument();
-    expect(storageInput).toHaveValue(testStoragePath);
-    expect(storageInput).toHaveAttribute('readonly');
+    expect(screen.getByText(/Image Storage Path:/i)).toBeInTheDocument();
+    expect(screen.getByText(testStoragePath)).toBeInTheDocument();
+  });
+
+  it('renders the database and image storage paths outside of the form', () => {
+    const testPath = '/mock/path/dev.db';
+    const testStoragePath = '/mock/path/storage';
+    const { container } = render(
+      <SettingsClient
+        initialSettings={mockSettings}
+        databasePath={testPath}
+        storagePath={testStoragePath}
+      />
+    );
+    const form = container.querySelector('form');
+    expect(form).toBeInTheDocument();
+
+    const dbElement = screen.getByText(testPath);
+    const storageElement = screen.getByText(testStoragePath);
+
+    expect(form).not.toContainElement(dbElement);
+    expect(form).not.toContainElement(storageElement);
   });
 
   it('updates the settings when form is submitted', async () => {
