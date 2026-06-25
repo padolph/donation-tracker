@@ -23,11 +23,11 @@ describe('SyncClient', () => {
 
     // Export panel checks
     expect(screen.getByRole('heading', { name: /Export Package/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Export Sync Package/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Export Package/i })).toBeInTheDocument();
     
     // Import panel checks
     expect(screen.getByRole('heading', { name: /Import Package/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/Select Sync Package/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Select Package to Import/i)).toBeInTheDocument();
   });
 
   it('applies correct responsive container styling matching other pages', () => {
@@ -65,7 +65,7 @@ describe('SyncClient', () => {
     render(<SyncClient />);
     
     const file = new File(['mock content'], 'sync.dtpack', { type: 'application/octet-stream' });
-    const input = screen.getByLabelText(/Select Sync Package/i);
+    const input = screen.getByLabelText(/Select Package to Import/i);
     
     fireEvent.change(input, { target: { files: [file] } });
 
@@ -89,7 +89,7 @@ describe('SyncClient', () => {
     render(<SyncClient />);
     
     const file = new File(['mock content'], 'bad.dtpack', { type: 'application/octet-stream' });
-    const input = screen.getByLabelText(/Select Sync Package/i);
+    const input = screen.getByLabelText(/Select Package to Import/i);
     
     fireEvent.change(input, { target: { files: [file] } });
 
@@ -115,7 +115,7 @@ describe('SyncClient', () => {
     render(<SyncClient />);
     
     const file = new File(['mock content'], 'sync.dtpack', { type: 'application/octet-stream' });
-    const input = screen.getByLabelText(/Select Sync Package/i);
+    const input = screen.getByLabelText(/Select Package to Import/i);
     
     fireEvent.change(input, { target: { files: [file] } });
 
@@ -151,7 +151,7 @@ describe('SyncClient', () => {
     render(<SyncClient />);
     
     const file = new File(['mock content'], 'sync.dtpack', { type: 'application/octet-stream' });
-    const input = screen.getByLabelText(/Select Sync Package/i);
+    const input = screen.getByLabelText(/Select Package to Import/i);
     
     fireEvent.change(input, { target: { files: [file] } });
 

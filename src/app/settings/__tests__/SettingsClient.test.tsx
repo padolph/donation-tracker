@@ -126,8 +126,8 @@ describe('SettingsClient', () => {
       render(<SettingsClient initialSettings={mockSettings} databasePath="/mock/path/dev.db" storagePath="/mock/path/storage" />);
       
       expect(screen.queryByRole('heading', { name: /Data Sync/i })).not.toBeInTheDocument();
-      expect(screen.queryByRole('link', { name: /Export Sync Package/i })).not.toBeInTheDocument();
-      expect(screen.queryByLabelText(/Select Sync Package/i)).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: /Export Package/i })).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/Select Package to Import/i)).not.toBeInTheDocument();
     });
   });
 });

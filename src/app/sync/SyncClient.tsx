@@ -81,7 +81,7 @@ export default function SyncClient() {
         <div className="max-w-2xl bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-8">
           <header className="mb-6">
             <h2 className="text-xl font-bold mb-1">Export Package</h2>
-            <p className="text-white/50 text-xs">Generate and download a compressed `.dtpack` file containing categories, items, organizations, events, and receipts.</p>
+            <p className="text-white/50 text-xs">Generate and download a compressed `.dtpack` file package containing donation events and receipts, organizations, and the item database.</p>
           </header>
 
           <a
@@ -89,7 +89,7 @@ export default function SyncClient() {
             download
             className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-4 rounded-xl transition-all text-sm uppercase tracking-widest text-center w-full"
           >
-            Export Sync Package
+            Export Package
           </a>
         </div>
 
@@ -97,13 +97,13 @@ export default function SyncClient() {
         <div className="max-w-2xl bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-8">
           <header className="mb-6">
             <h2 className="text-xl font-bold mb-1">Import Package</h2>
-            <p className="text-white/50 text-xs">Select and import a `.dtpack` file exported from a secondary machine. The engine will merge new records and deduplicate matching entries.</p>
+            <p className="text-white/50 text-xs">Select and import a `.dtpack` file exported from another machine, to merge with the existing database.</p>
           </header>
 
           <div className="space-y-6">
             <div className="flex flex-col gap-3">
               <label htmlFor="sync-file-input" className="text-xs font-bold uppercase tracking-widest text-white/40">
-                Select Sync Package
+                Select Package to Import
               </label>
               <input
                 id="sync-file-input"
