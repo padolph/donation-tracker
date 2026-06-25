@@ -160,41 +160,6 @@ export default function SettingsClient({
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 pt-6 border-t border-white/10">
-            <label htmlFor="databasePath" className="text-xs font-bold uppercase tracking-widest text-white/40">
-              Database Path
-            </label>
-            <div className="relative w-full">
-              <input
-                id="databasePath"
-                type="text"
-                readOnly
-                className="w-full px-4 py-3 rounded-xl font-mono text-xs bg-[#151518] border-[#252528] text-white/30 cursor-not-allowed select-all focus:border-[#252528] focus:ring-0 focus:outline-none"
-                value={databasePath}
-              />
-            </div>
-            <p className="text-xs text-white/30">
-              The full absolute path to the SQLite database file in use by this application.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-2 pt-6 border-t border-white/10">
-            <label htmlFor="storagePath" className="text-xs font-bold uppercase tracking-widest text-white/40">
-              Image Storage Path
-            </label>
-            <div className="relative w-full">
-              <input
-                id="storagePath"
-                type="text"
-                readOnly
-                className="w-full px-4 py-3 rounded-xl font-mono text-xs bg-[#151518] border-[#252528] text-white/30 cursor-not-allowed select-all focus:border-[#252528] focus:ring-0 focus:outline-none"
-                value={storagePath}
-              />
-            </div>
-            <p className="text-xs text-white/30">
-              The full absolute path to the folder where receipt and donation images are stored.
-            </p>
-          </div>
         </section>
 
         {message && (
@@ -213,6 +178,17 @@ export default function SettingsClient({
           {isSaving ? 'Saving...' : 'Save Settings'}
         </button>
       </form>
+
+      {/* System Information Card */}
+      <div className="max-w-2xl mt-8 bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-8 text-white/50 text-xs space-y-3">
+        <h2 className="text-sm font-bold text-white uppercase tracking-widest mb-1">System Information</h2>
+        <p>
+          <span className="font-bold">Database Path:</span> <code className="font-mono break-all">{databasePath}</code>
+        </p>
+        <p>
+          <span className="font-bold">Image Storage Path:</span> <code className="font-mono break-all">{storagePath}</code>
+        </p>
+      </div>
 
       {/* Data Sync Panel */}
       <div className="max-w-2xl mt-8 space-y-8 bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-8">
