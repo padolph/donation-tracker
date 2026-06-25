@@ -71,8 +71,20 @@ describe('Sidebar', () => {
     expect(screen.getByText('Add Donation')).toBeInTheDocument();
     expect(screen.getByText('Organizations')).toBeInTheDocument();
     expect(screen.getByText('Tax Reports')).toBeInTheDocument();
+    expect(screen.getByText('Export/Import')).toBeInTheDocument();
     expect(screen.getByText('Settings')).toBeInTheDocument();
     expect(screen.getByText('Sign Out')).toBeInTheDocument();
+  });
+
+  it('renders navigation links in the correct order', () => {
+    render(<Sidebar />);
+    const links = screen.getAllByRole('link');
+    const linkTexts = links.map(link => link.textContent?.trim());
+    
+    // Extracting letters/slashes to avoid differences in emoji formats or spaces
+    const cleanedTexts = linkTexts.map(t => t?.replace(/[^a-zA-Z0-9/]/g, ''));
+    const expectedCleaned = ['Dashboard', 'AllDonations', 'AddDonation', 'Organizations', 'TaxReports', 'Export/Import', 'Settings'];
+    expect(cleanedTexts).toEqual(expectedCleaned);
   });
 
   it('renders the custom logo image instead of the generic heart character', () => {
