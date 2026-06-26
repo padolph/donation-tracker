@@ -5,6 +5,14 @@ A secure, local-first application for tracking charitable donations, designed as
 ## 🚀 The Vibe
 This application was "vibe-coded" into existence as a personal response to the retirement of ItsDeductible. It aims to provide the same ease of use for tracking non-cash, cash, and asset donations while adhering to modern security standards and keeping your financial data exactly where it belongs: **on your own machine.**
 
+## 📖 User Guide & Documentation
+
+We have compiled a comprehensive, multi-part User Guide to help you set up and get the most out of Donation Tracker:
+
+1. **[Getting Started](docs/getting-started.md)**: Platform installation, database and receipt photo storage locations, tax profile setup, and understanding OBBBA regulatory calculations (0.5% AGI Floor, benefit caps, and ceilings).
+2. **[Using Donation Tracker](docs/user-guide.md)**: Navigating the dashboard states, recording physical items (catalog search & custom items), cash, stock donations, and managing history.
+3. **[Reports & Sync](docs/reports-and-sync.md)**: Generating annual tax reports (Form 8283 prep), print-friendly pages, CSV flat exports, and multi-machine sync procedures.
+
 ## ✨ Features
 
 - **Item Catalog:** A searchable directory of over 1,700 items with Fair Market Values (FMV) pre-seeded from industry-standard data. Easily add and save your own custom items if they aren't in the default catalog.
