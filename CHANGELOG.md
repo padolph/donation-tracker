@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.6.0](https://github.com/padolph/donation-tracker/compare/v1.5.5...v1.6.0) (2026-06-26)
+
+
+### Features
+
+* 133 add separate export/import page and remove data sync from settings ([23a6a70](https://github.com/padolph/donation-tracker/commit/23a6a70d2f3f599377f3734db1df8389b0e31742)), closes [#133](https://github.com/padolph/donation-tracker/issues/133)
+* add separate export/import page and remove data sync from settings ([c7bd347](https://github.com/padolph/donation-tracker/commit/c7bd347be0a2d43c684dce5612555761a9f57bfe))
+
+
+### Bug Fixes
+
+* **settings:** 134 move read-only paths outside the settings form to a dedicated system information section ([c47b5e8](https://github.com/padolph/donation-tracker/commit/c47b5e844a6fdb8b7f4691c08c2d8833701183d6))
+* **settings:** move read-only paths outside the settings form to a dedicated system information section ([5015467](https://github.com/padolph/donation-tracker/commit/5015467ecf00bb93a5bff0c8cc2d65e23b832134))
+
 ## [1.5.5](https://github.com/padolph/donation-tracker/compare/v1.5.4...v1.5.5) (2026-06-23)
 
 
