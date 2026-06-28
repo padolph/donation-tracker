@@ -49,7 +49,7 @@ Item donations use the built-in valuation engine to calculate Fair Market Value 
 * **Browse Categories:** Click through the hierarchical category browser to find items manually.
 * **Select Condition:** Choose either **High** (excellent condition) or **Medium** (good condition). The default prices for that catalog item will automatically populate.
 * **Add Custom Items:** If your item is unique or not present in the catalog, click **Add Custom Item**. Enter a description, set default values for High/Medium conditions, and save it. It will be added to your database and will appear in searches going forward.
-* **Staging List:** Enter the quantity and click **Add Item**. The item is added to the "Current Session" staging table. You can add multiple items to a single donation event. A running total shows the session value in real-time.
+* **Staging List:** Enter the quantity and click **Add Item**. The item is added to the staging table. You can add multiple items to a single donation. A running total shows the cumulative donation value in real-time.
 
 #### 2. Cash Donations
 For direct cash, check, or online monetary donations:
@@ -60,13 +60,13 @@ For direct cash, check, or online monetary donations:
 For transfers of stock or other securities:
 * **Stock Ticker:** Enter the public market ticker symbol (e.g., `MSFT`, `AAPL`).
 * **Shares:** Enter the number of shares transferred (this is stored as informational metadata).
-* **Value on Transfer Date:** Enter the total Fair Market Value of the transferred security on the date of the donation.
+* **Value on Transfer Date:** Enter the total Fair Market Value of the transferred securities on the date of the donation.
 
 ### Step 3: Attach Receipts & Photos
 For physical proof of your donation (e.g., a paper receipt or photo of the items):
 * Click the file upload button on the donation builder page.
-* Select an image file (PNG, JPG/JPEG).
-* The application copies the photo to a secure local folder and stores its relative path. 
+* Select an image file (PNG, JPG/JPEG, PDF).
+* The application copies the image to a secure local folder and stores its relative path. 
 
 ### Step 4: Save Donation
 Click **Save Donation** to commit the event to the ledger. This permanently locks in the item valuation and saves all attached photo paths.
@@ -75,13 +75,13 @@ Click **Save Donation** to commit the event to the ledger. This permanently lock
 
 ## Managing Your Ledger & History
 
-All recorded donations are listed in the central **Donation Ledger**.
+Navigate to **All Donations** in the sidebar to show the central *Donation Ledger*, where all recorded donations are listed.
 
 * **Viewing past donations:** The ledger table lists events chronologically with details (Date, Organization, Type, and Total Value).
-* **Filtering:** Use the filters at the top of the ledger to filter by **Date Range** (e.g., specific tax year) or **Organization**.
-* **Expanding Details:** Click on any donation row to expand it. This shows the line-item breakdown (for physical items) and displays clickable previews of any attached receipt photos.
-* **Editing a Donation:** To change an entry, click the **Edit** icon next to a donation. It reloads the event into the donation builder where you can modify items, adjust values, add/remove attachments, or change the charity, then save the updates.
-* **Deleting a Donation:** Click the delete icon. If deleted, the database record is removed. The application also automatically deletes any attached local files from your storage directory to prevent clutter.
+* **Filtering:** Use the filters at the top of the ledger to filter by tax year or receiving organization.
+* **Expanding Details:** Click the *Expand* button on any donation row to expand it. This shows the line-item breakdown (for physical items) and displays clickable previews of any attached receipt image.
+* **Editing a Donation:** To change an entry, click the **Edit Donation** button in the expanded view. This opens a view where you can change the donation data, including modifying items, adjusting values, adding or removing attachments, or changing the receiving organization.
+* **Deleting a Donation:** Click the delete icon in the ledger. If deleted, the database record is removed. The application also automatically deletes any image files associated with the donation.
 
 ![Expanded Donation Ledger](images/donation-details.png)
 
@@ -92,4 +92,4 @@ All recorded donations are listed in the central **Donation Ledger**.
 To keep your organization data clean, go to **Organizations** in the sidebar.
 * **View list:** Displays all saved charities, their details (address, Tax ID), and the cumulative total you have donated to each.
 * **Add / Edit:** Update details like the charity’s address or Employer Identification Number (EIN) for tax filing.
-* **Delete:** Remove a charity from your directory. If you try to delete an organization with active donations in your ledger, the system will display a warning to prevent accidental loss of historical records.
+* **Delete:** Remove a charity from your directory. If you try to delete an organization with active donations in your ledger, the system will display a warning to prevent accidental loss of data.

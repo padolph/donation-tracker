@@ -167,11 +167,16 @@ Multi-architecture container images (supporting both `linux/amd64` and `linux/ar
    docker run -d \
      --name donation-tracker \
      -p 3000:3000 \
-     -e APP_PASSWORD=your_secure_password \
-     -v /path/to/host/data:/app/data \
-     ghcr.io/padolph/donation-tracker:latest
-   ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
+     -e APP_PASSWORD="your_secure_password" \
+     -e NEXTAUTH_URL="http://<YOUR_SERVER_IP>:3000" \
+     -v </path/to/local/storage>:/app/data \
+     ghcr.io/padolph/donation-tracker:main
+   ```   
+   * **`APP_PASSWORD`**: The master password you will use to log into the application.
+   * **`NEXTAUTH_URL`**: **(Required for Network Access)** Replace `<YOUR_SERVER_IP>` with the local IP address of the machine running Docker (e.g., `192.168.1.100`). NextAuth uses this to securely sign tokens and handle internal redirects. If you only intend to access the app on the same machine running Docker, you can use `http://localhost:3000`.
+   * **`-v` (Volume Mount)**: Replace `</path/to/local/storage>` with the absolute path to a folder on your host machine where you want your SQLite database and uploaded attachments to live permanently.   
+
+Open [http://<YOUR_SERVER_IP>:3000](http://localhost:3000) in your browser.
 
 ### Building the Image Locally
 If you want to build the container from source locally:

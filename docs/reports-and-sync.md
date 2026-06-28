@@ -20,10 +20,10 @@ The report is designed specifically to match the requirements for transcribing d
 
 For each item, the report displays all IRS-required details:
 * **Category/Description**
-* **Condition** (High/Medium/Custom)
+* **Condition** (High or Medium)
 * **Quantity**
 * **Fair Market Value (FMV)** (individual and total)
-* **Valuation Method** (defaults to "Thrift Shop Value")
+* **Valuation Method** (IRS approved labels)
 
 ### Subtotals & Totals
 The calculator automatically computes and displays:
@@ -46,19 +46,19 @@ For digital backup or spreadsheet analysis (e.g., in Excel or Google Sheets):
 
 ## Multi-Machine Synchronization (Export & Import)
 
-If you use Donation Tracker on multiple devices (for example, logging donations on a laptop when out and about, and maintaining a primary ledger on an iMac), you can merge your records using the **Data Sync** tool.
+If you use Donation Tracker on multiple devices (for example, logging donations on a laptop when out and about, and maintaining a primary ledger on a desktop machine or server), you can merge your records using the **Export/Import** tool.
 
 ### Scenario 1: Exporting from a Secondary Device
-1. On the secondary machine, navigate to **Settings / Sync**.
-2. Under the synchronization panel, click **Export Sync Package**.
+1. On the secondary machine, navigate to **Export/Import**.
+2. Under the synchronization panel, click **Export Package**.
 3. The system bundles:
    * A JSON representation of your SQLite database tables (charities, events, items, photos, and custom catalog descriptions).
    * All physical receipt photos stored in your local directory.
 4. It compresses these files into a single archive named `donation_tracker_sync_[date]_[hash].dtpack` (which is a standard zip container). Save this file to an external drive or transfer it to your primary machine.
 
 ### Scenario 2: Importing on the Primary Device
-1. On your primary machine, go to the **Settings / Sync** page.
-2. Click **Import Sync Package** and select the `.dtpack` file you transferred.
+1. On your primary machine, go to the **Export/Import** page.
+2. Click **Import Package** and select the `.dtpack` file you transferred.
 3. The application will analyze the package and display a **Pre-import Summary** showing the counts of found donation events, organizations, and receipt photos.
 4. Review the summary and click **Confirm Merge** to run the import.
 

@@ -21,21 +21,26 @@ If you need to configure or update your password in the packaged app, launch it 
 
 ### 2. Self-Hosted / Docker
 For a lightweight standalone setup (ideal for home servers or NAS), you can use Docker:
-```bash
-docker run -d \
-  --name donation-tracker \
-  -p 3000:3000 \
-  -e APP_PASSWORD=your_secure_password \
-  -v /path/to/host/data:/app/data \
-  ghcr.io/padolph/donation-tracker:latest
-```
-Then navigate to `http://localhost:3000` in any web browser.
+   ```bash
+   docker run -d \
+     --name donation-tracker \
+     -p 3000:3000 \
+     -e APP_PASSWORD="your_secure_password" \
+     -e NEXTAUTH_URL="http://<YOUR_SERVER_IP>:3000" \
+     -v </path/to/local/storage>:/app/data \
+     ghcr.io/padolph/donation-tracker:main
+   ```   
+   * **`APP_PASSWORD`**: The master password you will use to log into the application.
+   * **`NEXTAUTH_URL`**: **(Required for Network Access)** Replace `<YOUR_SERVER_IP>` with the local IP address of the machine running Docker (e.g., `192.168.1.100`). NextAuth uses this to securely sign tokens and handle internal redirects. If you only intend to access the app on the same machine running Docker, you can use `http://localhost:3000`.
+   * **`-v` (Volume Mount)**: Replace `</path/to/local/storage>` with the absolute path to a folder on your host machine where you want your SQLite database and uploaded attachments to live permanently.
+
+Then navigate to `http://<YOUR_SERVER_IP>:3000` in any web browser.
 
 ---
 
 ## Local Storage Locations
 
-Because Donation Tracker is offline-first, your database and uploaded receipts are stored directly on your hard drive. 
+Because Donation Tracker is offline-first, your database and uploaded receipts and photos are stored directly on your hard drive. 
 
 ### Database & Configuration Paths
 The local SQLite database and configuration files are stored in the following platform-standard directories:
@@ -73,7 +78,9 @@ Donation Tracker features a decoupled, year-specific tax calculator architecture
 
 ### 1. The 0.5% AGI Floor
 Under OBBBA rules, tax-deductible giving only begins *after* your cumulative contributions exceed a baseline floor of **0.5% of your AGI**:
-$$\text{Floor} = \text{Estimated AGI} \times 0.005$$
+
+**Floor** = Estimated AGI × 0.005
+
 * *Example:* If your AGI is \$100,000, your floor is \$500. The first \$500 of your total annual giving is not tax-deductible. The tax savings are calculated only on the portion of giving that *exceeds* this floor.
 
 ### 2. The 35% High-Earner Benefit Cap
