@@ -13,6 +13,9 @@ jest.mock('@/lib/prisma', () => ({
       delete: jest.fn(),
       count: jest.fn(),
     },
+    donationEvent: {
+      count: jest.fn(),
+    },
   },
 }));
 
@@ -63,7 +66,9 @@ describe('organizationActions', () => {
 
       expect(result).toHaveLength(2);
       expect(result[0].totalDonated).toBe(70); // (1*10) + (2*5) + 50
+      expect(result[0].donationCount).toBe(2);
       expect(result[1].totalDonated).toBe(0);
+      expect(result[1].donationCount).toBe(0);
       expect(prisma.organization.findMany).toHaveBeenCalledWith(expect.objectContaining({
         include: {
           donations: {
@@ -112,15 +117,29 @@ describe('organizationActions', () => {
 
   describe('deleteOrganization', () => {
     it('should delete an organization if no donations exist', async () => {
+      (prisma.donationEvent.count as jest.Mock).mockResolvedValue(0);
       (prisma.organization.delete as jest.Mock).mockResolvedValue({ id: 3 });
       const result = await deleteOrganization(3);
 
       expect(result.success).toBe(true);
+      expect(prisma.donationEvent.count).toHaveBeenCalledWith({ where: { organizationId: 3 } });
       expect(prisma.organization.delete).toHaveBeenCalledWith({ where: { id: 3 } });
       expect(revalidatePath).toHaveBeenCalledWith('/organizations');
     });
 
+    it('should return validation error if donations exist', async () => {
+      (prisma.donationEvent.count as jest.Mock).mockResolvedValue(1);
+      const result = await deleteOrganization(3);
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Cannot delete organization because it has associated donations. Please delete all donations to this organization first.');
+      expect(prisma.donationEvent.count).toHaveBeenCalledWith({ where: { organizationId: 3 } });
+      expect(prisma.organization.delete).not.toHaveBeenCalled();
+      expect(revalidatePath).not.toHaveBeenCalled();
+    });
+
     it('should return an error if delete fails', async () => {
+      (prisma.donationEvent.count as jest.Mock).mockResolvedValue(0);
       (prisma.organization.delete as jest.Mock).mockRejectedValue(new Error('Foreign key constraint'));
       const result = await deleteOrganization(3);
       expect(result.success).toBe(false);

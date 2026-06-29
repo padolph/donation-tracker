@@ -4,12 +4,13 @@ import React, { useState } from 'react';
 import OrganizationForm from '@/components/OrganizationForm';
 import { deleteOrganization } from '@/app/actions/organizationActions';
 
-type Organization = {
+export type Organization = {
   id: number;
   name: string;
   address?: string | null;
   taxId?: string | null;
   totalDonated: number;
+  donationCount: number;
 };
 
 export default function OrganizationsClient({ initialOrganizations }: { initialOrganizations: Organization[] }) {
@@ -26,9 +27,14 @@ export default function OrganizationsClient({ initialOrganizations }: { initialO
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: number, name: string) => {
-    if (window.confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
-      const result = await deleteOrganization(id);
+  const handleDelete = async (org: Organization) => {
+    if (org.donationCount > 0) {
+      alert(`Cannot delete organization "${org.name}" because it has associated donations. Please delete all donations to this organization first.`);
+      return;
+    }
+
+    if (window.confirm(`Are you sure you want to delete "${org.name}"? This action cannot be undone.`)) {
+      const result = await deleteOrganization(org.id);
       if (!result.success) {
         alert(result.error || 'Failed to delete organization.');
       }
@@ -97,7 +103,7 @@ export default function OrganizationsClient({ initialOrganizations }: { initialO
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(org.id, org.name)}
+                      onClick={() => handleDelete(org)}
                       className="text-xs font-bold uppercase tracking-widest text-red-500 hover:bg-red-500/20 px-3 py-1 bg-red-500/10 rounded-lg transition-colors inline-block"
                       aria-label={`Delete ${org.name}`}
                     >
