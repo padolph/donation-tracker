@@ -87,7 +87,7 @@ export default function SyncClient() {
           <a
             href="/api/sync/export"
             download
-            className="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-4 rounded-xl transition-all text-sm uppercase tracking-widest text-center w-full"
+            className="inline-flex items-center justify-center bg-accent hover:bg-yellow-500 text-black font-bold py-3 px-4 rounded-xl transition-all text-sm uppercase tracking-widest text-center w-full"
           >
             Export Package
           </a>
@@ -111,7 +111,7 @@ export default function SyncClient() {
                 accept=".dtpack"
                 onChange={handleFileChange}
                 disabled={isParsing || isImporting}
-                className="w-full text-sm text-white/50 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-widest file:bg-white/10 file:text-white hover:file:bg-white/20 file:transition-all cursor-pointer disabled:opacity-50"
+                className="w-full text-sm text-white/50 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-widest file:bg-accent file:text-black hover:file:bg-yellow-500 file:transition-all cursor-pointer disabled:opacity-50"
               />
             </div>
 
