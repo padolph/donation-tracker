@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.6.1](https://github.com/padolph/donation-tracker/compare/v1.6.0...v1.6.1) (2026-06-29)
+
+
+### Bug Fixes
+
+* **orgs:** prevent deletion of organizations with existing donations ([f7f13d8](https://github.com/padolph/donation-tracker/commit/f7f13d811954b840a56ccb363714f7c2e2f85d18))
+* **orgs:** prevent deletion of organizations with existing donations ([c3a6e71](https://github.com/padolph/donation-tracker/commit/c3a6e7195af5ca0927d896a583f17957507f99b2))
+* **sync:** style export and choose file buttons with accent yellow ([f05af54](https://github.com/padolph/donation-tracker/commit/f05af543809a00fb6b97d262195a31f90ebb2e1f))
+* **sync:** style export and choose file buttons with accent yellow ([7977b38](https://github.com/padolph/donation-tracker/commit/7977b386f85f23b6f59b89460b401a30fcb6091e))
+
 ## [1.6.0](https://github.com/padolph/donation-tracker/compare/v1.5.5...v1.6.0) (2026-06-26)
 
 
