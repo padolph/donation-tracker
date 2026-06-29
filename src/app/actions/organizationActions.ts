@@ -36,8 +36,12 @@ export async function getOrganizations() {
     }
 
     return {
-      ...org,
+      id: org.id,
+      name: org.name,
+      address: org.address,
+      taxId: org.taxId,
       totalDonated,
+      donationCount: org.donations.length,
     };
   });
 }
@@ -87,6 +91,17 @@ export async function updateOrganization(id: number, data: OrganizationData) {
 
 export async function deleteOrganization(id: number) {
   try {
+    const donationCount = await prisma.donationEvent.count({
+      where: { organizationId: id },
+    });
+
+    if (donationCount > 0) {
+      return {
+        success: false,
+        error: 'Cannot delete organization because it has associated donations. Please delete all donations to this organization first.',
+      };
+    }
+
     await prisma.organization.delete({
       where: { id },
     });
