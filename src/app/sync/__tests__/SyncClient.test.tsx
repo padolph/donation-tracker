@@ -14,7 +14,7 @@ describe('SyncClient', () => {
     jest.clearAllMocks();
   });
 
-  it('renders the export/import controls', () => {
+  it('renders the export/import controls with correct yellow/accent styling', () => {
     render(<SyncClient />);
     
     // Page header checks
@@ -23,11 +23,19 @@ describe('SyncClient', () => {
 
     // Export panel checks
     expect(screen.getByRole('heading', { name: /Export Package/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Export Package/i })).toBeInTheDocument();
+    const exportButton = screen.getByRole('link', { name: /Export Package/i });
+    expect(exportButton).toBeInTheDocument();
+    expect(exportButton).toHaveClass('bg-accent');
+    expect(exportButton).toHaveClass('text-black');
+    expect(exportButton).toHaveClass('hover:bg-yellow-500');
     
     // Import panel checks
     expect(screen.getByRole('heading', { name: /Import Package/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/Select Package to Import/i)).toBeInTheDocument();
+    const fileInput = screen.getByLabelText(/Select Package to Import/i);
+    expect(fileInput).toBeInTheDocument();
+    expect(fileInput).toHaveClass('file:bg-accent');
+    expect(fileInput).toHaveClass('file:text-black');
+    expect(fileInput).toHaveClass('hover:file:bg-yellow-500');
   });
 
   it('applies correct responsive container styling matching other pages', () => {
