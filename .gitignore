@@ -60,3 +60,7 @@ dist-electron/
 # Compiled Prisma seed script
 prisma/seed.js
 
+# Docker persistent storage
+/local-data/
+
+
