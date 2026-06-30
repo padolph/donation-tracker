@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.0](https://github.com/padolph/donation-tracker/compare/v1.6.1...v1.7.0) (2026-06-30)
+
+
+### Features
+
+* **auth:** implement secure scrypt password hashing and auto-migration ([d009f9b](https://github.com/padolph/donation-tracker/commit/d009f9b600f507693bdce733956abcf07ca1b305))
+* secure password hashing ([803cabf](https://github.com/padolph/donation-tracker/commit/803cabf7f255c48eebaf8dc8aaf980cf8dea5885))
+
 ## [1.6.1](https://github.com/padolph/donation-tracker/compare/v1.6.0...v1.6.1) (2026-06-29)
 
 
