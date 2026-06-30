@@ -20,7 +20,23 @@ If you need to configure or update your password in the packaged app, launch it 
 * **Linux:** `APP_PASSWORD=your_password donation-tracker`
 
 ### 2. Self-Hosted / Docker
-For a lightweight standalone setup (ideal for home servers or NAS), you can use Docker:
+For a lightweight standalone setup (ideal for home servers or NAS), you can use Docker.
+
+#### Option A: Using Docker Compose (Recommended)
+If you have cloned the repository, you can start the application using the preconfigured `docker-compose.yml` file:
+
+1. **Start the container:**
+   ```bash
+   docker compose up -d
+   ```
+2. **Configure:**
+   You can customize the following variables directly inside the `docker-compose.yml` file:
+   * **`APP_PASSWORD`**: The master password used to log in. Change `your_secure_password` to your own password.
+   * **`NEXTAUTH_URL`**: Set to `http://localhost:3000` by default. For network access from other machines, change `localhost` to the host's local IP address (e.g. `http://192.168.1.100:3000`).
+   * **`volumes`**: Mounts `./local-data` in the host directory to `/app/data` inside the container, preserving your database and uploads.
+
+#### Option B: Running via Docker CLI
+If you prefer running a single ad-hoc command:
    ```bash
    docker run -d \
      --name donation-tracker \
@@ -34,7 +50,7 @@ For a lightweight standalone setup (ideal for home servers or NAS), you can use 
    * **`NEXTAUTH_URL`**: **(Required for Network Access)** Replace `<YOUR_SERVER_IP>` with the local IP address of the machine running Docker (e.g., `192.168.1.100`). NextAuth uses this to securely sign tokens and handle internal redirects. If you only intend to access the app on the same machine running Docker, you can use `http://localhost:3000`.
    * **`-v` (Volume Mount)**: Replace `</path/to/local/storage>` with the absolute path to a folder on your host machine where you want your SQLite database and uploaded attachments to live permanently.
 
-Then navigate to `http://<YOUR_SERVER_IP>:3000` in any web browser.
+Then navigate to `http://<YOUR_SERVER_IP>:3000` (or `http://localhost:3000`) in any web browser.
 
 ---
 

@@ -153,7 +153,32 @@ As an alternative to running the Electron packaged desktop application, you can 
 ### Prerequisites
 - Docker installed on your host system.
 
-### Downloading the Pre-built Image from GHCR
+### Using Docker Compose (Recommended)
+
+To run the application using Docker Compose:
+
+1. **Start the service:**
+   Run the following command from the root of the repository to start the container in the background:
+   ```bash
+   docker compose up -d
+   ```
+   This will pull the latest pre-built container image and launch the service.
+
+2. **Configure (Optional):**
+   Open the `docker-compose.yml` file to configure:
+   * **`APP_PASSWORD`**: The master password used to log in. Change `your_secure_password` to your own password.
+   * **`NEXTAUTH_URL`**: Set to `http://localhost:3000` by default. For network access from other machines, change `localhost` to the host's local IP address (e.g. `http://192.168.1.100:3000`).
+   * **`volumes`**: Mounts `./local-data` in the host directory to `/app/data` inside the container, preserving your database and uploads.
+
+3. **Manage the container:**
+   * **Stop:** `docker compose down`
+   * **Logs:** `docker compose logs -f`
+
+---
+
+### Running via Docker CLI (Manual)
+
+#### Downloading the Pre-built Image from GHCR
 Multi-architecture container images (supporting both `linux/amd64` and `linux/arm64` / Apple Silicon) are automatically built and published to GitHub Container Registry (GHCR).
 
 1. **Pull the latest image:**

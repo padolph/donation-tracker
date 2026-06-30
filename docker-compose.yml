@@ -1,0 +1,14 @@
+services:
+  donation-tracker:
+    image: ghcr.io/padolph/donation-tracker:main
+    # To build the image locally from source, uncomment the line below:
+    # build: .
+    container_name: donation-tracker
+    ports:
+      - "3000:3000"
+    environment:
+      - APP_PASSWORD=your_secure_password
+      - NEXTAUTH_URL=http://localhost:3000
+    volumes:
+      - ./local-data:/app/data
+    restart: unless-stopped
