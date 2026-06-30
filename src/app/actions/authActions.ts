@@ -4,6 +4,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import { hashPassword } from '../../utils/crypto';
 
 export async function setupPassword(password: string) {
   // Prevent overwriting if password is already set
@@ -17,9 +18,10 @@ export async function setupPassword(password: string) {
 
   try {
     const trimmedPassword = password.trim();
+    const hashedPassword = hashPassword(trimmedPassword);
 
     // 1. Update the environment variable for the current process immediately
-    process.env.APP_PASSWORD = trimmedPassword;
+    process.env.APP_PASSWORD = hashedPassword;
 
     // 2. Persist the password
     const configPath = process.env.CONFIG_PATH;
@@ -34,7 +36,7 @@ export async function setupPassword(password: string) {
           console.error('Failed to parse config file', e);
         }
       }
-      config.APP_PASSWORD = trimmedPassword;
+      config.APP_PASSWORD = hashedPassword;
       fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
     } else {
       // Development mode - write to .env.local
@@ -45,9 +47,9 @@ export async function setupPassword(password: string) {
       }
 
       if (envContent.includes('APP_PASSWORD=')) {
-        envContent = envContent.replace(/APP_PASSWORD=.*/, `APP_PASSWORD=${trimmedPassword}`);
+        envContent = envContent.replace(/APP_PASSWORD=.*/, `APP_PASSWORD=${hashedPassword}`);
       } else {
-        envContent += `\nAPP_PASSWORD=${trimmedPassword}\n`;
+        envContent += `\nAPP_PASSWORD=${hashedPassword}\n`;
       }
       fs.writeFileSync(envLocalPath, envContent, 'utf8');
     }

@@ -51,10 +51,10 @@ describe('authActions - setupPassword', () => {
     const result = await setupPassword('my_new_pass');
 
     expect(result.success).toBe(true);
-    expect(process.env.APP_PASSWORD).toBe('my_new_pass');
+    expect(process.env.APP_PASSWORD).toMatch(/^scrypt:[0-9a-f]+:[0-9a-f]+$/);
     expect(fs.writeFileSync).toHaveBeenCalledWith(
       '/mock/user/data/config.json',
-      expect.stringContaining('"APP_PASSWORD": "my_new_pass"'),
+      expect.stringMatching(/"APP_PASSWORD": "scrypt:[0-9a-f]+:[0-9a-f]+"/),
       'utf8'
     );
   });
@@ -69,10 +69,10 @@ describe('authActions - setupPassword', () => {
     const result = await setupPassword('my_dev_pass');
 
     expect(result.success).toBe(true);
-    expect(process.env.APP_PASSWORD).toBe('my_dev_pass');
+    expect(process.env.APP_PASSWORD).toMatch(/^scrypt:[0-9a-f]+:[0-9a-f]+$/);
     expect(fs.writeFileSync).toHaveBeenCalledWith(
       path.join(process.cwd(), '.env.local'),
-      expect.stringContaining('APP_PASSWORD=my_dev_pass'),
+      expect.stringMatching(/APP_PASSWORD=scrypt:[0-9a-f]+:[0-9a-f]+/),
       'utf8'
     );
   });

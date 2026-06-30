@@ -20,6 +20,12 @@ function getFreePort(): Promise<number> {
   });
 }
 
+function hashPassword(password: string): string {
+  const salt = crypto.randomBytes(16).toString('hex');
+  const hash = crypto.scryptSync(password, salt, 64).toString('hex');
+  return `scrypt:${salt}:${hash}`;
+}
+
 async function startNextServer(port: number) {
   const isPackaged = app.isPackaged;
   const appPath = app.getAppPath();
@@ -61,9 +67,27 @@ async function startNextServer(port: number) {
   if (!appPassword) {
     appPassword = persistentConfig.APP_PASSWORD || persistentConfig.PASSWORD;
   } else {
-    // If provided in env, update the persistent config
+    // If provided in env, hash it (if not already hashed) and update the persistent config
+    if (appPassword && !appPassword.startsWith('scrypt:')) {
+      appPassword = hashPassword(appPassword);
+    }
     persistentConfig.APP_PASSWORD = appPassword;
     fs.writeFileSync(configPath, JSON.stringify(persistentConfig), 'utf8');
+  }
+
+  // Also migrate existing persistent config password if it is plaintext
+  if (persistentConfig.APP_PASSWORD && !persistentConfig.APP_PASSWORD.startsWith('scrypt:')) {
+    persistentConfig.APP_PASSWORD = hashPassword(persistentConfig.APP_PASSWORD);
+    appPassword = persistentConfig.APP_PASSWORD;
+    delete persistentConfig.PASSWORD;
+    fs.writeFileSync(configPath, JSON.stringify(persistentConfig), 'utf8');
+    console.log('Successfully upgraded persistent config password to secure scrypt hash.');
+  } else if (persistentConfig.PASSWORD) {
+    persistentConfig.APP_PASSWORD = hashPassword(persistentConfig.PASSWORD);
+    appPassword = persistentConfig.APP_PASSWORD;
+    delete persistentConfig.PASSWORD;
+    fs.writeFileSync(configPath, JSON.stringify(persistentConfig), 'utf8');
+    console.log('Successfully migrated legacy password to secure scrypt hash.');
   }
 
   // Handle AUTH_SECRET

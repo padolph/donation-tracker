@@ -73,9 +73,9 @@ The item database is seeded using data historically provided by Intuit's ItsDedu
 4. **Set Access Password:**
    Start the development server (see below). On your first launch in the browser, you will be automatically prompted by a setup wizard to configure your local access password.
 
-   The Setup Wizard automatically generates a secure `AUTH_SECRET` and writes it along with your chosen `APP_PASSWORD` to a `.env.local` file in your root folder (which is ignored by Git).
+   The Setup Wizard automatically generates a secure `AUTH_SECRET` and writes it along with your chosen `APP_PASSWORD` (securely hashed using `scrypt`) to a `.env.local` file in your root folder (which is ignored by Git).
    
-   *Tip: If you want to bypass the wizard or pre-configure these manually, you can copy the `.env.sample` file to `.env.local` and define them there before running.*
+   *Tip: If you want to bypass the wizard or pre-configure these manually, you can copy the `.env.sample` file to `.env.local` and define them there before running. If you specify your password in plaintext, the application will automatically hash it and overwrite `.env.local` on first boot for enhanced security.*
 
 ### Running the App
 
@@ -131,10 +131,10 @@ When running the packaged desktop application, environment variables from `.env.
 - **Windows:** `%APPDATA%\Donation Tracker` (e.g., `C:\Users\<username>\AppData\Roaming\Donation Tracker`)
 - **Linux:** `~/.config/Donation Tracker`
 
-An `AUTH_SECRET` is automatically generated if missing, and a Setup Wizard will guide you to configure your `APP_PASSWORD` on first launch (saving it to `config.json`).
+An `AUTH_SECRET` is automatically generated if missing, and a Setup Wizard will guide you to configure your `APP_PASSWORD` on first launch (saving it as a secure `scrypt` hash in `config.json`).
 
 #### Setting the Access Password manually
-Alternatively, if you prefer to bypass the setup GUI, you can set your password for the first time by launching the app once from the terminal with the `APP_PASSWORD` environment variable. This will persist the password in `config.json` for all subsequent GUI launches:
+Alternatively, if you prefer to bypass the setup GUI, you can set your password for the first time by launching the app once from the terminal with the `APP_PASSWORD` environment variable. This will automatically hash the password and persist the hash in `config.json` for all subsequent GUI launches:
 
 - **macOS:**
   ```bash
