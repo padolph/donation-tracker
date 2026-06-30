@@ -34,12 +34,18 @@ We have compiled a comprehensive, multi-part User Guide to help you set up and g
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
 - **Runtime:** Node.js
 
-## 🔒 Security & Privacy
+## 🔒 Security, Privacy & Threat Model
 
-- **Local-First:** All data, including your donation history and receipt photos, is stored locally on your machine.
-- **Offline Capable:** No internet connection is required for core functionality.
-- **Password Protected:** Access to the application is secured via a simple password check.
-- **No Cloud Sync:** Your sensitive financial data is never uploaded to any cloud service.
+Donation Tracker is designed around a single-user, offline-first architectural model. Please review our security guarantees and threat model to understand how your data is protected:
+
+### Core Security Controls
+- **Access Control:** Access to the application user interface is protected by a master password check. Multiple user accounts or remote roles are not supported.
+- **Credential Storage:** The application password is never stored in plaintext on the local disk. It is securely hashed using the memory-hard `scrypt` key derivation function with a unique, cryptographically secure salt.
+- **Local-First & Offline:** All donation ledger data and uploaded receipt photos reside on your local disk. The application does not upload or sync any sensitive financial data to the cloud.
+
+### Storage & Threat Model
+- **No At-Rest Encryption:** The SQLite database (`production.db`) and uploaded receipt image files are stored in plaintext on the local storage directory and are not encrypted at rest by the application.
+- **Threat Actor Exclusions:** The application's threat model assumes a secure local host environment. It **does not protect against** a malicious local actor who has physical or administrator-level access to the host machine's disk. If storage-level encryption is required, users are encouraged to use native OS disk encryption tools (e.g., FileVault on macOS, BitLocker on Windows, or dm-crypt on Linux).
 
 ## 📦 Data Seeding
 
