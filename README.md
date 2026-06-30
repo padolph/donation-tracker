@@ -60,21 +60,22 @@ The item database is seeded using data historically provided by Intuit's ItsDedu
    ```bash
    npm install
    ```
-3. Set up your environment variables for development:
-   Create a `.env.local` file in the root directory. You can generate a secure `AUTH_SECRET` using `npx auth secret`.
-   ```env
-   # Optional: Can also be set during first-run setup wizard in browser
-   APP_PASSWORD=your_secure_password
-   AUTH_SECRET=your_generated_secret
-   DATABASE_URL="file:./prisma/dev.db"
-   ```
-4. Initialize the database and seed the catalog:
+3. Initialize the development database and seed the catalog:
    ```bash
    npx prisma migrate dev --name init
    npx prisma db seed
    ```
-5. **Set Access Password:**
-   On your first launch in the browser, you will be automatically prompted by a setup wizard to configure your local access password. Alternatively, pre-configure it via `APP_PASSWORD` in `.env.local`.
+   > [!NOTE]
+   > **How Database Environments Work:**
+   > - **`dev.db`** (stored in `prisma/dev.db`) is the local sandbox database for development and testing. The default path is set in `.env` (which is tracked by Git) so that Prisma CLI commands (`migrate`, `seed`, etc.) work out of the box.
+   > - **`production.db`** is the database used when running the packaged application (Electron desktop or Docker). This separation ensures developer activity never alters your real tax data.
+
+4. **Set Access Password:**
+   Start the development server (see below). On your first launch in the browser, you will be automatically prompted by a setup wizard to configure your local access password.
+
+   The Setup Wizard automatically generates a secure `AUTH_SECRET` and writes it along with your chosen `APP_PASSWORD` to a `.env.local` file in your root folder (which is ignored by Git).
+   
+   *Tip: If you want to bypass the wizard or pre-configure these manually, you can copy the `.env.sample` file to `.env.local` and define them there before running.*
 
 ### Running the App
 
@@ -124,14 +125,16 @@ The output will be generated in the `dist/` directory.
 
 ### 🖥️ Desktop Configuration (Production)
 
-When running the packaged desktop application, environment variables from `.env.local` are not loaded. The app uses a persistent configuration system where the database (`production.db`) and configuration (`config.json`) are stored in the platform's standard user data directory:
+When running the packaged desktop application, environment variables from `.env.local` are not loaded. The app uses an automated configuration system where the database (`production.db`) and configuration (`config.json`) are stored in the platform's standard user data directory:
 
 - **macOS:** `~/Library/Application Support/Donation Tracker`
 - **Windows:** `%APPDATA%\Donation Tracker` (e.g., `C:\Users\<username>\AppData\Roaming\Donation Tracker`)
 - **Linux:** `~/.config/Donation Tracker`
 
-#### Setting the Access Password
-Access is protected by a password. To set your password for the first time in the packaged app, launch it once from the terminal with the `APP_PASSWORD` environment variable. This will persist the password for all subsequent GUI launches:
+An `AUTH_SECRET` is automatically generated if missing, and a Setup Wizard will guide you to configure your `APP_PASSWORD` on first launch (saving it to `config.json`).
+
+#### Setting the Access Password manually
+Alternatively, if you prefer to bypass the setup GUI, you can set your password for the first time by launching the app once from the terminal with the `APP_PASSWORD` environment variable. This will persist the password in `config.json` for all subsequent GUI launches:
 
 - **macOS:**
   ```bash

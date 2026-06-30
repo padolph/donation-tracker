@@ -23,14 +23,14 @@ Please review this document to understand our development workflow, standards, a
    ```bash
    npm install
    ```
-3. **Configure Environment Variables**:
-   Create a `.env.local` file in the root of the project:
-   ```env
-   APP_PASSWORD=your_secure_password
-   AUTH_SECRET=your_generated_secret
-   DATABASE_URL="file:./prisma/dev.db"
-   ```
-   *Tip: You can generate a secure `AUTH_SECRET` using `npx auth secret`.*
+3. **Configure Environment Variables (Optional)**:
+   By default, local development does not require you to pre-configure any environment variables. The default development database path (`prisma/dev.db`) is preconfigured in `.env` (which is tracked by Git) so Prisma CLI commands work out of the box.
+
+   When starting the development server, a first-run Setup Wizard in the browser will guide you to configure your password and automatically create the `.env.local` file for you.
+
+   If you prefer to pre-configure these manually:
+   - Copy `.env.sample` to `.env.local`: `cp .env.sample .env.local`
+   - Set your preferred `APP_PASSWORD` and `AUTH_SECRET` (generate a secure random secret using `npx auth secret`) in `.env.local`.
 
 4. **Initialize the SQLite Database & Seed Catalog**:
    ```bash
