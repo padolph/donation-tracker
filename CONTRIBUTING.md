@@ -26,11 +26,11 @@ Please review this document to understand our development workflow, standards, a
 3. **Configure Environment Variables (Optional)**:
    By default, local development does not require you to pre-configure any environment variables. The default development database path (`prisma/dev.db`) is preconfigured in `.env` (which is tracked by Git) so Prisma CLI commands work out of the box.
 
-   When starting the development server, a first-run Setup Wizard in the browser will guide you to configure your password and automatically create the `.env.local` file for you.
+   When starting the development server, a first-run Setup Wizard in the browser will guide you to configure your password and automatically create the `.env.local` file for you (with your password securely hashed using `scrypt`).
 
    If you prefer to pre-configure these manually:
    - Copy `.env.sample` to `.env.local`: `cp .env.sample .env.local`
-   - Set your preferred `APP_PASSWORD` and `AUTH_SECRET` (generate a secure random secret using `npx auth secret`) in `.env.local`.
+   - Set your preferred `APP_PASSWORD` and `AUTH_SECRET` (generate a secure random secret using `npx auth secret`) in `.env.local`. If you specify your password in plaintext, the app will automatically convert it to a secure `scrypt` hash and overwrite `.env.local` on first boot.
 
 4. **Initialize the SQLite Database & Seed Catalog**:
    ```bash

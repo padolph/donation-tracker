@@ -31,6 +31,37 @@ if (!config.AUTH_SECRET) {
 // 3. Export to env
 process.env.AUTH_SECRET = config.AUTH_SECRET;
 
+// 3.5 Ensure APP_PASSWORD is secure and exported
+let appPassword = config.APP_PASSWORD || config.PASSWORD;
+if (appPassword) {
+  if (!appPassword.startsWith('scrypt:')) {
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.scryptSync(appPassword, salt, 64).toString('hex');
+    appPassword = `scrypt:${salt}:${hash}`;
+    config.APP_PASSWORD = appPassword;
+    delete config.PASSWORD;
+    try {
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+      console.log('Successfully upgraded persistent config password to secure scrypt hash.');
+    } catch (e) {
+      console.error('Failed to write persistent config during password migration:', e);
+    }
+  } else if (config.PASSWORD) {
+    config.APP_PASSWORD = appPassword;
+    delete config.PASSWORD;
+    try {
+      fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+    } catch (e) {}
+  }
+  process.env.APP_PASSWORD = appPassword;
+}
+
+if (process.env.APP_PASSWORD && !process.env.APP_PASSWORD.startsWith('scrypt:')) {
+  const salt = crypto.randomBytes(16).toString('hex');
+  const hash = crypto.scryptSync(process.env.APP_PASSWORD, salt, 64).toString('hex');
+  process.env.APP_PASSWORD = `scrypt:${salt}:${hash}`;
+}
+
 // 4. Run database migrations
 console.log('Running database migrations...');
 try {

@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import { hashPassword } from '../utils/crypto';
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
@@ -12,6 +13,29 @@ if (process.env.NODE_ENV === 'development') {
     const rawPath = process.env.DATABASE_URL.replace(/^file:/, '');
     if (!path.isAbsolute(rawPath)) {
       process.env.DATABASE_URL = 'file:' + path.resolve(rawPath);
+    }
+  }
+
+  // One-time Dev Password Migration
+  const devPassword = process.env.APP_PASSWORD;
+  if (devPassword && !devPassword.startsWith('scrypt:')) {
+    const hashed = hashPassword(devPassword);
+    process.env.APP_PASSWORD = hashed;
+
+    const envLocalPath = path.join(process.cwd(), '.env.local');
+    try {
+      if (fs.existsSync(envLocalPath)) {
+        let envContent = fs.readFileSync(envLocalPath, 'utf8');
+        if (envContent.includes('APP_PASSWORD=')) {
+          envContent = envContent.replace(/APP_PASSWORD=.*/, `APP_PASSWORD=${hashed}`);
+        } else {
+          envContent += `\nAPP_PASSWORD=${hashed}\n`;
+        }
+        fs.writeFileSync(envLocalPath, envContent, 'utf8');
+        console.log('Successfully upgraded dev password in .env.local to secure scrypt hash.');
+      }
+    } catch (e) {
+      console.error('Failed to auto-migrate dev password in .env.local:', e);
     }
   }
 }

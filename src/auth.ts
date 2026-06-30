@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import { verifyPassword } from "./utils/crypto";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -20,7 +21,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
-        if (credentials.password === appPassword) {
+        if (verifyPassword(credentials.password, appPassword)) {
           // Return a dummy user object to indicate successful authentication
           return { id: "1", name: "User" };
         }

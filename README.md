@@ -34,12 +34,18 @@ We have compiled a comprehensive, multi-part User Guide to help you set up and g
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
 - **Runtime:** Node.js
 
-## 🔒 Security & Privacy
+## 🔒 Security, Privacy & Threat Model
 
-- **Local-First:** All data, including your donation history and receipt photos, is stored locally on your machine.
-- **Offline Capable:** No internet connection is required for core functionality.
-- **Password Protected:** Access to the application is secured via a simple password check.
-- **No Cloud Sync:** Your sensitive financial data is never uploaded to any cloud service.
+Donation Tracker is designed around a single-user, offline-first architectural model. Please review our security guarantees and threat model to understand how your data is protected:
+
+### Core Security Controls
+- **Access Control:** Access to the application user interface is protected by a master password check. Multiple user accounts or remote roles are not supported.
+- **Credential Storage:** The application password is never stored in plaintext on the local disk. It is securely hashed using the memory-hard `scrypt` key derivation function with a unique, cryptographically secure salt.
+- **Local-First & Offline:** All donation ledger data and uploaded receipt photos reside on your local disk. The application does not upload or sync any sensitive financial data to the cloud.
+
+### Storage & Threat Model
+- **No At-Rest Encryption:** The SQLite database (`production.db`) and uploaded receipt image files are stored in plaintext on the local storage directory and are not encrypted at rest by the application.
+- **Threat Actor Exclusions:** The application's threat model assumes a secure local host environment. It **does not protect against** a malicious local actor who has physical or administrator-level access to the host machine's disk. If storage-level encryption is required, users are encouraged to use native OS disk encryption tools (e.g., FileVault on macOS, BitLocker on Windows, or dm-crypt on Linux).
 
 ## 📦 Data Seeding
 
@@ -73,9 +79,9 @@ The item database is seeded using data historically provided by Intuit's ItsDedu
 4. **Set Access Password:**
    Start the development server (see below). On your first launch in the browser, you will be automatically prompted by a setup wizard to configure your local access password.
 
-   The Setup Wizard automatically generates a secure `AUTH_SECRET` and writes it along with your chosen `APP_PASSWORD` to a `.env.local` file in your root folder (which is ignored by Git).
+   The Setup Wizard automatically generates a secure `AUTH_SECRET` and writes it along with your chosen `APP_PASSWORD` (securely hashed using `scrypt`) to a `.env.local` file in your root folder (which is ignored by Git).
    
-   *Tip: If you want to bypass the wizard or pre-configure these manually, you can copy the `.env.sample` file to `.env.local` and define them there before running.*
+   *Tip: If you want to bypass the wizard or pre-configure these manually, you can copy the `.env.sample` file to `.env.local` and define them there before running. If you specify your password in plaintext, the application will automatically hash it and overwrite `.env.local` on first boot for enhanced security.*
 
 ### Running the App
 
@@ -131,10 +137,10 @@ When running the packaged desktop application, environment variables from `.env.
 - **Windows:** `%APPDATA%\Donation Tracker` (e.g., `C:\Users\<username>\AppData\Roaming\Donation Tracker`)
 - **Linux:** `~/.config/Donation Tracker`
 
-An `AUTH_SECRET` is automatically generated if missing, and a Setup Wizard will guide you to configure your `APP_PASSWORD` on first launch (saving it to `config.json`).
+An `AUTH_SECRET` is automatically generated if missing, and a Setup Wizard will guide you to configure your `APP_PASSWORD` on first launch (saving it as a secure `scrypt` hash in `config.json`).
 
 #### Setting the Access Password manually
-Alternatively, if you prefer to bypass the setup GUI, you can set your password for the first time by launching the app once from the terminal with the `APP_PASSWORD` environment variable. This will persist the password in `config.json` for all subsequent GUI launches:
+Alternatively, if you prefer to bypass the setup GUI, you can set your password for the first time by launching the app once from the terminal with the `APP_PASSWORD` environment variable. This will automatically hash the password and persist the hash in `config.json` for all subsequent GUI launches:
 
 - **macOS:**
   ```bash
