@@ -160,13 +160,13 @@ jobs:
         with:
           path: release-artifacts
 
-      - name: Force update 'latest' tag
+      - name: Force update 'rolling' tag
         if: github.ref == 'refs/heads/main'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const tagName = 'latest';
+            const tagName = 'rolling';
             const sha = context.sha;
             try {
               await github.rest.git.createRef({
@@ -193,8 +193,8 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: latest
-          name: "Latest Pre-release Build"
+          tag_name: rolling
+          name: "Rolling Pre-release Build"
           body: |
             Automated rolling pre-release build from the `main` branch.
             
