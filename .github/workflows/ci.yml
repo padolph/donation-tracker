@@ -82,27 +82,21 @@ jobs:
 
     - name: Package Desktop Application (macOS)
       if: matrix.os == 'macos-latest'
-      run: npx electron-builder --mac --x64 --arm64
+      run: npx electron-builder --mac --x64 --arm64 --publish never
       env:
         CSC_IDENTITY_AUTO_DISCOVERY: false
-        # This references GitHub's built-in cryptographic token automatically
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Package Desktop Application (Linux)
       if: matrix.os == 'ubuntu-latest'
-      run: npx electron-builder --linux
+      run: npx electron-builder --linux --publish never
       env:
         CSC_IDENTITY_AUTO_DISCOVERY: false
-        # This references GitHub's built-in cryptographic token automatically
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Package Desktop Application (Windows)
       if: matrix.os == 'windows-latest'
-      run: npx electron-builder --win
+      run: npx electron-builder --win --publish never
       env:
         CSC_IDENTITY_AUTO_DISCOVERY: false
-        # This references GitHub's built-in cryptographic token automatically
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload Desktop Installer
       uses: actions/upload-artifact@v7
