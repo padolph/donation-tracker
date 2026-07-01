@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.1](https://github.com/padolph/donation-tracker/compare/donation-tracker-v1.8.0...donation-tracker-v1.8.1) (2026-07-01)
+
+
+### Bug Fixes
+
+* Merge pull request [#162](https://github.com/padolph/donation-tracker/issues/162) from padolph/fix/rename-rolling-tag ([5a51cb3](https://github.com/padolph/donation-tracker/commit/5a51cb3576ac0fdcdd64b906f0ee8be2397fc70f))
+* rename rolling pre-release tag to rolling ([5a51cb3](https://github.com/padolph/donation-tracker/commit/5a51cb3576ac0fdcdd64b906f0ee8be2397fc70f))
+
 ## [1.8.0](https://github.com/padolph/donation-tracker/compare/donation-tracker-v1.7.0...donation-tracker-v1.8.0) (2026-07-01)
 
 
