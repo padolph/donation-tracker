@@ -25,7 +25,7 @@ interface Props {
 
 interface HierarchyNode {
   name: string;
-  subcategories: Record<string, HierarchyNode>;
+  subcategories: Map<string, HierarchyNode>;
   items: Item[];
 }
 
@@ -52,20 +52,22 @@ export default function CatalogBrowse({ onSelectItem, className }: Props) {
         const data = await getItemsByCategory(selectedCategoryId);
         
         // Build hierarchy
-        const root: HierarchyNode = { name: 'root', subcategories: {}, items: [] };
+        const root: HierarchyNode = { name: 'root', subcategories: new Map(), items: [] };
         data.forEach((item) => {
           const parts = item.description.split(':').map(p => p.trim());
           let current = root;
           
           const categoryName = item.category.name;
-          const startIdx = parts[0] === categoryName ? 1 : 0;
+          const startIdx = parts.at(0) === categoryName ? 1 : 0;
           
           for (let i = startIdx; i < parts.length - 1; i++) {
-            const part = parts[i];
-            if (!current.subcategories[part]) {
-              current.subcategories[part] = { name: part, subcategories: {}, items: [] };
+            const part = parts.at(i)!;
+            let next = current.subcategories.get(part);
+            if (!next) {
+              next = { name: part, subcategories: new Map(), items: [] };
+              current.subcategories.set(part, next);
             }
-            current = current.subcategories[part];
+            current = next;
           }
           current.items.push(item as unknown as Item);
         });
@@ -81,8 +83,9 @@ export default function CatalogBrowse({ onSelectItem, className }: Props) {
     if (!hierarchy) return null;
     let current = hierarchy;
     for (const part of path) {
-      if (current.subcategories[part]) {
-        current = current.subcategories[part];
+      const next = current.subcategories.get(part);
+      if (next) {
+        current = next;
       } else {
         break;
       }
@@ -178,7 +181,7 @@ export default function CatalogBrowse({ onSelectItem, className }: Props) {
         {!isLoading && currentNode && (
           <div className="space-y-1">
             {/* Subcategories */}
-            {Object.keys(currentNode.subcategories).sort().map((name) => (
+            {Array.from(currentNode.subcategories.keys()).sort().map((name) => (
               <button
                 key={name}
                 onClick={() => setPath([...path, name])}
@@ -209,7 +212,7 @@ export default function CatalogBrowse({ onSelectItem, className }: Props) {
               );
             })}
 
-            {Object.keys(currentNode.subcategories).length === 0 && currentNode.items.length === 0 && (
+            {currentNode.subcategories.size === 0 && currentNode.items.length === 0 && (
               <div className="p-8 text-center text-white/40 italic text-sm">
                 No items found in this section.
               </div>

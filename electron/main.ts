@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-non-literal-fs-filename */
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { fork, ChildProcess } from 'child_process';

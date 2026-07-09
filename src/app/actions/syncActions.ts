@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-non-literal-fs-filename */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 

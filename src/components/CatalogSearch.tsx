@@ -56,7 +56,10 @@ export default function CatalogSearch({ onSelectItem, className }: Props) {
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (highlightedIndex >= 0) {
-        selectItem(results[highlightedIndex]);
+        const item = results.at(highlightedIndex);
+        if (item) {
+          selectItem(item);
+        }
       }
     } else if (e.key === 'Escape') {
       setResults([]);
