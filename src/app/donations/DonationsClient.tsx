@@ -12,6 +12,9 @@ export interface DonationEvent {
   cashAmount: number | null;
   assetTicker: string | null;
   assetShares: number | null;
+  milesDriven?: number | null;
+  parkingAndTolls?: number | null;
+  mileageRate?: number | null;
   notes?: string | null;
   organization: { id: number; name: string };
   items: Array<{
@@ -78,6 +81,9 @@ export default function DonationsClient({
     if (donation.type === 'CASH' || donation.type === 'ASSETS') return donation.cashAmount || 0;
     if (donation.type === 'ITEMS') {
       return donation.items.reduce((total, item) => total + item.quantity * item.lockedValue, 0);
+    }
+    if (donation.type === 'MILEAGE') {
+      return (donation.milesDriven || 0) * (donation.mileageRate || 0.14) + (donation.parkingAndTolls || 0);
     }
     return 0;
   };

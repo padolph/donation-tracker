@@ -11,6 +11,9 @@ interface DonationData {
   cashAmount?: number;
   assetTicker?: string;
   assetShares?: number;
+  milesDriven?: number;
+  parkingAndTolls?: number;
+  mileageRate?: number;
   notes?: string;
   items: Array<{
     itemId: number;
@@ -31,6 +34,9 @@ export async function saveDonation(data: DonationData) {
         cashAmount: data.cashAmount,
         assetTicker: data.assetTicker,
         assetShares: data.assetShares,
+        milesDriven: data.milesDriven,
+        parkingAndTolls: data.parkingAndTolls,
+        mileageRate: data.mileageRate,
         notes: data.notes,
         items: {
           create: data.items.map((item) => ({
@@ -182,7 +188,20 @@ export async function getDonationById(id: number) {
       return { success: false, error: 'Donation not found' };
     }
 
-    return { success: true, donation };
+    const relatedDonations = await prisma.donationEvent.findMany({
+      where: {
+        organizationId: donation.organizationId,
+        date: donation.date,
+        id: { not: donation.id },
+      },
+      include: {
+        items: {
+          include: { item: true },
+        },
+      },
+    });
+
+    return { success: true, donation, relatedDonations };
   } catch (error) {
     console.error('CRITICAL: getDonationById failed', error);
     let message = 'An unexpected error occurred while fetching the donation.';
@@ -202,6 +221,9 @@ export async function updateDonation(id: number, data: DonationData) {
       cashAmount: data.cashAmount,
       assetTicker: data.assetTicker,
       assetShares: data.assetShares,
+      milesDriven: data.milesDriven,
+      parkingAndTolls: data.parkingAndTolls,
+      mileageRate: data.mileageRate,
       notes: data.notes,
       items: {
         deleteMany: {},

@@ -26,6 +26,7 @@ export default async function DonationDetailsPage({
   return (
     <DonationDetailsClient 
       donation={result.donation as unknown as DonationEvent}
+      relatedDonations={result.relatedDonations as unknown as DonationEvent[]}
     />
   );
 }

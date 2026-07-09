@@ -5,13 +5,22 @@ import Link from 'next/link';
 import ImageOverlay from '@/components/ImageOverlay';
 import { DonationEvent } from '../DonationsClient';
 
-export default function DonationDetailsClient({ donation }: { donation: DonationEvent }) {
+export default function DonationDetailsClient({ 
+  donation,
+  relatedDonations = []
+}: { 
+  donation: DonationEvent;
+  relatedDonations?: DonationEvent[];
+}) {
   const [overlayImage, setOverlayImage] = useState<{ src: string; alt: string } | null>(null);
 
   const calculateTotalValue = () => {
     if (donation.type === 'CASH' || donation.type === 'ASSETS') return donation.cashAmount || 0;
     if (donation.type === 'ITEMS') {
       return donation.items.reduce((total, item) => total + item.quantity * item.lockedValue, 0);
+    }
+    if (donation.type === 'MILEAGE') {
+      return (donation.milesDriven || 0) * (donation.mileageRate || 0.14) + (donation.parkingAndTolls || 0);
     }
     return 0;
   };
@@ -144,6 +153,26 @@ export default function DonationDetailsClient({ donation }: { donation: Donation
           </div>
         )}
 
+        {donation.type === 'MILEAGE' && (
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-white/40">Trip Breakdown</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-black/20 p-4 rounded-xl border border-white/5">
+                <span className="text-[10px] font-black uppercase tracking-widest text-white/40 block mb-1">Miles Driven</span>
+                <span className="text-white text-lg font-bold">{(donation.milesDriven || 0).toFixed(1)} mi</span>
+              </div>
+              <div className="bg-black/20 p-4 rounded-xl border border-white/5">
+                <span className="text-[10px] font-black uppercase tracking-widest text-white/40 block mb-1">IRS Charitable Rate</span>
+                <span className="text-white text-lg font-bold">{formatCurrency(donation.mileageRate || 0.14)}/mi</span>
+              </div>
+              <div className="bg-black/20 p-4 rounded-xl border border-white/5">
+                <span className="text-[10px] font-black uppercase tracking-widest text-white/40 block mb-1">Parking & Tolls</span>
+                <span className="text-white text-lg font-bold">{formatCurrency(donation.parkingAndTolls || 0)}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Attachments / Photos */}
         {donation.photos.length > 0 && (
           <div className="space-y-3 pt-4">
@@ -185,6 +214,65 @@ export default function DonationDetailsClient({ donation }: { donation: Donation
                     )}
                   </button>
                 );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Related Donations Section */}
+        {relatedDonations && relatedDonations.length > 0 && (
+          <div className="space-y-3 pt-4 border-t border-white/10 animate-in fade-in">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-white/40">Related Donations (Same Date & Organization)</h3>
+            <div className="space-y-3">
+              {relatedDonations.map((related) => {
+                const relatedVal =
+                  related.type === 'CASH' || related.type === 'ASSETS'
+                    ? related.cashAmount || 0
+                    : related.type === 'ITEMS'
+                      ? related.items.reduce((sum, item) => sum + item.quantity * item.lockedValue, 0)
+                      : related.type === 'MILEAGE'
+                        ? (related.milesDriven || 0) * (related.mileageRate || 0.14) + (related.parkingAndTolls || 0)
+                        : 0;
+
+                if (donation.type === 'ITEMS' && related.type === 'MILEAGE') {
+                  return (
+                    <div key={related.id} className="bg-black/20 p-4 rounded-xl border border-white/5 flex justify-between items-center text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">🚗</span>
+                        <span className="text-white/80">
+                          Related trip: <strong className="text-white">{related.milesDriven || 0} miles</strong> logged ({formatCurrency(relatedVal)})
+                        </span>
+                      </div>
+                      <Link 
+                        href={`/donations/${related.id}`}
+                        className="text-xs font-bold uppercase tracking-widest text-accent hover:underline font-mono"
+                      >
+                        View Details
+                      </Link>
+                    </div>
+                  );
+                }
+
+                if (donation.type === 'MILEAGE' && related.type === 'ITEMS') {
+                  return (
+                    <div key={related.id} className="bg-black/20 p-4 rounded-xl border border-white/5 flex justify-between items-center text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">📦</span>
+                        <span className="text-white/80">
+                          Related items donated: <strong className="text-white">Physical Items Donation</strong> ({formatCurrency(relatedVal)})
+                        </span>
+                      </div>
+                      <Link 
+                        href={`/donations/${related.id}`}
+                        className="text-xs font-bold uppercase tracking-widest text-accent hover:underline font-mono"
+                      >
+                        View Details
+                      </Link>
+                    </div>
+                  );
+                }
+
+                return null;
               })}
             </div>
           </div>

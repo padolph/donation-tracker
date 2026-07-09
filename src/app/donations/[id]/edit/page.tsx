@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { getOrganizations } from '@/app/actions/organizationActions';
 import { getDonationById } from '@/app/actions/donationActions';
 import DonationBuilder from '@/app/donations/new/DonationBuilder';
@@ -25,9 +26,11 @@ export default async function EditDonationPage({
   }
 
   return (
-    <DonationBuilder 
-      initialOrganizations={orgResult}
-      initialDonation={donationResult.donation}
-    />
+    <Suspense fallback={<div className="p-4 sm:p-8 max-w-5xl mx-auto text-white/50">Loading form...</div>}>
+      <DonationBuilder 
+        initialOrganizations={orgResult}
+        initialDonation={donationResult.donation}
+      />
+    </Suspense>
   );
 }

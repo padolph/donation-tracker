@@ -43,6 +43,9 @@ export async function getDashboardStats(year: number) {
         cashTotal += donation.cashAmount ?? 0;
       } else if (donation.type === 'ASSETS') {
         assetsTotal += donation.cashAmount ?? 0;
+      } else if (donation.type === 'MILEAGE') {
+        const mileageVal = (donation.milesDriven || 0) * (donation.mileageRate || 0.14) + (donation.parkingAndTolls || 0);
+        cashTotal += mileageVal;
       }
     });
 

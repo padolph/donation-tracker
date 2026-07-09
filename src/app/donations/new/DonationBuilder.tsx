@@ -7,7 +7,7 @@ import CustomItemForm from '@/components/CustomItemForm';
 import OrganizationForm from '@/components/OrganizationForm';
 import { saveDonation, updateDonation } from '@/app/actions/donationActions';
 import { savePhoto } from '@/app/actions/photoActions';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { DonationEvent } from '../DonationsClient';
 
 interface Organization {
@@ -39,6 +39,7 @@ const donationTypes = [
   { id: 'items', title: 'Items', description: 'Clothing, furniture, etc.', icon: '👕' },
   { id: 'assets', title: 'Stock/Asset', description: 'Stock shares', icon: '📈' },
   { id: 'cash', title: 'Cash', description: 'Money donation', icon: '💰' },
+  { id: 'mileage', title: 'Mileage', description: 'Volunteer driving & parking', icon: '🚗' },
 ];
 
 function AttachmentPreview({ file, onRemove }: { file: File; onRemove: () => void }) {
@@ -171,22 +172,55 @@ export default function DonationBuilder({
   initialDonation?: DonationEvent;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get('type');
+  const orgParam = searchParams.get('orgId');
+  const dateParam = searchParams.get('date');
+
   const [organizations, setOrganizations] = useState<Organization[]>(initialOrganizations);
   
-  const [activeType, setActiveType] = useState(initialDonation ? initialDonation.type.toLowerCase() : 'items');
-  const [organizationId, setOrganizationId] = useState<number | ''>(initialDonation ? initialDonation.organizationId : '');
+  const [activeType, setActiveType] = useState(() => {
+    if (initialDonation) return initialDonation.type.toLowerCase();
+    if (typeParam) return typeParam.toLowerCase();
+    return 'items';
+  });
+
+  const [organizationId, setOrganizationId] = useState<number | ''>(() => {
+    if (initialDonation) return initialDonation.organizationId;
+    if (orgParam) {
+      const parsed = parseInt(orgParam, 10);
+      return isNaN(parsed) ? '' : parsed;
+    }
+    return '';
+  });
+
   const [isAddingOrg, setIsAddingOrg] = useState(false);
   
   const [date, setDate] = useState(() => {
     if (initialDonation) {
       return new Date(initialDonation.date).toISOString().split('T')[0];
     }
+    if (dateParam) return dateParam;
     const d = new Date();
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   });
+
+  const [milesDriven, setMilesDriven] = useState<string>(
+    initialDonation?.milesDriven?.toString() || ''
+  );
+  const [parkingAndTolls, setParkingAndTolls] = useState<string>(
+    initialDonation?.parkingAndTolls?.toString() || ''
+  );
+  const [mileageRate] = useState<string>(
+    initialDonation?.mileageRate?.toString() || '0.14'
+  );
+
+  const [showMileagePrompt, setShowMileagePrompt] = useState(false);
+  const [savedOrgId, setSavedOrgId] = useState<number | ''>('');
+  const [savedDate, setSavedDate] = useState('');
   const [notes, setNotes] = useState(initialDonation?.notes || '');
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [isAddingCustom, setIsAddingCustom] = useState(false);
@@ -214,6 +248,21 @@ export default function DonationBuilder({
   const [photos, setPhotos] = useState<File[]>([]);
   const [existingPhotos, setExistingPhotos] = useState<{filePath: string}[]>(initialDonation?.photos || []);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (typeParam) {
+      setActiveType(typeParam.toLowerCase());
+    }
+    if (orgParam) {
+      const parsed = parseInt(orgParam, 10);
+      if (!isNaN(parsed)) {
+        setOrganizationId(parsed);
+      }
+    }
+    if (dateParam) {
+      setDate(dateParam);
+    }
+  }, [typeParam, orgParam, dateParam]);
 
   const handleSelectItem = (item: Item) => {
     setSelectedItem(item);
@@ -275,7 +324,8 @@ export default function DonationBuilder({
       const typeMap: Record<string, string> = {
         items: 'ITEMS',
         cash: 'CASH',
-        assets: 'ASSETS'
+        assets: 'ASSETS',
+        mileage: 'MILEAGE',
       };
 
       // 2. Save donation
@@ -290,9 +340,15 @@ export default function DonationBuilder({
           condition: item.condition,
           lockedValue: item.value,
         })) : [],
-        cashAmount: activeType === 'cash' ? parseFloat(cashAmount) || undefined : activeType === 'assets' ? parseFloat(assetValue) || undefined : undefined,
+        cashAmount: activeType === 'cash' ? parseFloat(cashAmount) || undefined : 
+                    activeType === 'assets' ? parseFloat(assetValue) || undefined : 
+                    activeType === 'mileage' ? (parseFloat(milesDriven) || 0) * (parseFloat(mileageRate) || 0.14) + (parseFloat(parkingAndTolls) || 0) : 
+                    undefined,
         assetTicker: activeType === 'assets' ? assetTicker : undefined,
         assetShares: activeType === 'assets' ? parseFloat(assetShares) || undefined : undefined,
+        milesDriven: activeType === 'mileage' ? parseFloat(milesDriven) || undefined : undefined,
+        parkingAndTolls: activeType === 'mileage' ? parseFloat(parkingAndTolls) || 0 : undefined,
+        mileageRate: activeType === 'mileage' ? parseFloat(mileageRate) || 0.14 : undefined,
         photos: [...existingPhotos.map(p => p.filePath), ...photoPaths],
       };
 
@@ -301,7 +357,13 @@ export default function DonationBuilder({
         : await saveDonation(dataPayload);
 
       if (result.success) {
-        router.push('/donations');
+        if (activeType === 'items') {
+          setSavedOrgId(typeof organizationId === 'string' ? parseInt(organizationId) : organizationId);
+          setSavedDate(date);
+          setShowMileagePrompt(true);
+        } else {
+          router.push('/donations');
+        }
       } else {
         alert(result.error);
       }
@@ -317,12 +379,17 @@ export default function DonationBuilder({
     ? stagedItems.reduce((acc, item) => acc + item.totalValue, 0)
     : activeType === 'cash' 
       ? parseFloat(cashAmount) || 0
-      : parseFloat(assetValue) || 0;
+      : activeType === 'assets'
+        ? parseFloat(assetValue) || 0
+        : activeType === 'mileage'
+          ? (parseFloat(milesDriven) || 0) * (parseFloat(mileageRate) || 0.14) + (parseFloat(parkingAndTolls) || 0)
+          : 0;
 
   const isSaveDisabled = isSaving || !organizationId || (
     activeType === 'items' ? stagedItems.length === 0 :
     activeType === 'cash' ? (parseFloat(cashAmount) || 0) <= 0 :
-    activeType === 'assets' ? (!assetTicker || (parseFloat(assetShares) || 0) <= 0 || (parseFloat(assetValue) || 0) <= 0) : true
+    activeType === 'assets' ? (!assetTicker || (parseFloat(assetShares) || 0) <= 0 || (parseFloat(assetValue) || 0) <= 0) :
+    activeType === 'mileage' ? (!milesDriven || parseFloat(milesDriven) <= 0) : true
   );
 
   return (
@@ -336,7 +403,7 @@ export default function DonationBuilder({
         {/* Donation Type */}
         <section>
           <h2 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-4">Donation Type</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {donationTypes.map((type) => (
               <button
                 key={type.id}
@@ -625,6 +692,59 @@ export default function DonationBuilder({
           </section>
         )}
 
+        {activeType === 'mileage' && (
+          <section className="space-y-6">
+            <div className="flex justify-between items-center border-b border-white/10 pb-4">
+              <h2 className="text-lg font-bold">Mileage Details</h2>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-8 space-y-6 animate-in fade-in slide-in-from-top-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <label htmlFor="milesDriven" className="text-[10px] font-black uppercase tracking-widest text-white/40">Miles Driven</label>
+                  <input
+                    id="milesDriven"
+                    type="number"
+                    min="0.1"
+                    step="any"
+                    placeholder="0.0"
+                    className="w-full px-4 py-3 rounded-xl bg-black/20 border border-white/10 text-white"
+                    value={milesDriven}
+                    onChange={(e) => setMilesDriven(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="mileageRate" className="text-[10px] font-black uppercase tracking-widest text-white/40">Standard Mileage Rate ($)</label>
+                  <input
+                    id="mileageRate"
+                    type="number"
+                    disabled
+                    readOnly
+                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white/40 cursor-not-allowed"
+                    value={mileageRate}
+                  />
+                  <p className="text-[10px] text-white/40">IRS 2026 Statutory Charitable Rate</p>
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="parkingAndTolls" className="text-[10px] font-black uppercase tracking-widest text-white/40">Parking & Tolls ($)</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-3 text-white/50">$</span>
+                    <input
+                      id="parkingAndTolls"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      className="w-full pl-8 pr-4 py-3 rounded-xl bg-black/20 border border-white/10 text-white"
+                      value={parkingAndTolls}
+                      onChange={(e) => setParkingAndTolls(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Total and Save */}
         <section className="pt-10 border-t border-white/10">
           <div className="flex justify-between items-center mb-10">
@@ -685,6 +805,38 @@ export default function DonationBuilder({
           </button>
         </section>
       </div>
+
+      {showMileagePrompt && (
+        <div className="fixed inset-0 bg-black/85 flex items-center justify-center p-4 z-50 animate-in fade-in">
+          <div className="bg-[#1e1e21] border border-white/10 p-8 rounded-2xl max-w-md w-full space-y-6 text-center shadow-2xl">
+            <div className="text-4xl">🚗</div>
+            <h3 className="text-xl font-bold text-white">Donation Saved successfully!</h3>
+            <p className="text-sm text-white/60">
+              Would you like to log the volunteer mileage driven for this donation?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => {
+                  setShowMileagePrompt(false);
+                  router.push(`/donations/new?type=mileage&orgId=${savedOrgId}&date=${savedDate}`);
+                }}
+                className="flex-1 px-4 py-3 bg-accent text-black font-bold rounded-xl hover:bg-yellow-500 transition-colors uppercase tracking-widest text-xs"
+              >
+                Yes, Log Mileage
+              </button>
+              <button
+                onClick={() => {
+                  setShowMileagePrompt(false);
+                  router.push('/donations');
+                }}
+                className="flex-1 px-4 py-3 bg-white/10 text-white font-bold rounded-xl hover:bg-white/20 transition-colors uppercase tracking-widest text-xs"
+              >
+                No, Go to Ledger
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
