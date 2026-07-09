@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import DonationBuilder from '../DonationBuilder';
-import { searchItems, createCustomItem, getCategories, getItemsByCategory } from '@/app/actions/itemActions';
+import { searchItems, createCustomItem, getCategories } from '@/app/actions/itemActions';
 import { saveDonation } from '@/app/actions/donationActions';
 import { savePhoto } from '@/app/actions/photoActions';
 
@@ -19,9 +19,14 @@ jest.mock('@/app/actions/photoActions', () => ({
   savePhoto: jest.fn(),
 }));
 
+const mockPush = jest.fn();
+const mockGet = jest.fn();
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn(),
+    push: mockPush,
+  }),
+  useSearchParams: () => ({
+    get: mockGet,
   }),
 }));
 
@@ -38,6 +43,7 @@ const mockOrganizations = [
 describe('DonationBuilder Page', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGet.mockReturnValue(null);
     (saveDonation as jest.Mock).mockResolvedValue({ success: true, donation: { id: 1 } });
     (savePhoto as jest.Mock).mockImplementation(async (file: File) => `/mock/path/${file.name}`);
     (getCategories as jest.Mock).mockResolvedValue([]);
@@ -357,6 +363,140 @@ describe('DonationBuilder Page', () => {
 
     createObjectURLMock.mockRestore();
     revokeObjectURLMock.mockRestore();
+  });
+
+  it('renders mileage form fields when Mileage type is selected', async () => {
+    renderComponent();
+
+    // Click Mileage donation type button
+    const mileageTypeBtn = screen.getByText('Mileage');
+    fireEvent.click(mileageTypeBtn);
+
+    // Verify fields appear
+    expect(screen.getByLabelText('Miles Driven')).toBeInTheDocument();
+    expect(screen.getByLabelText('Standard Mileage Rate ($)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Parking & Tolls ($)')).toBeInTheDocument();
+  });
+
+  it('performs correct real-time preview calculations for mileage donations', async () => {
+    renderComponent();
+
+    const mileageTypeBtn = screen.getByText('Mileage');
+    fireEvent.click(mileageTypeBtn);
+
+    const milesInput = screen.getByLabelText('Miles Driven');
+    const parkingInput = screen.getByLabelText('Parking & Tolls ($)');
+
+    // 100 miles, $10 parking -> 100 * 0.14 + 10 = $24.00
+    fireEvent.change(milesInput, { target: { value: '100' } });
+    fireEvent.change(parkingInput, { target: { value: '10' } });
+
+    expect(screen.getByText('$24.00')).toBeInTheDocument();
+  });
+
+  it('pre-populates activeType, organizationId, and date from URL search parameters on initialization', async () => {
+    // Mock get search params:
+    mockGet.mockImplementation((param) => {
+      if (param === 'type') return 'mileage';
+      if (param === 'orgId') return '2';
+      if (param === 'date') return '2026-07-07';
+      return null;
+    });
+
+    renderComponent();
+
+    // Verify activeType is Mileage (checking for trip breakdown / mileage rate label)
+    expect(screen.getByLabelText('Miles Driven')).toBeInTheDocument();
+
+    // Verify organization select pre-populated to '2'
+    const orgSelect = screen.getByRole('combobox', { name: /organization/i });
+    expect(orgSelect).toHaveValue('2');
+
+    // Verify date pre-populated to '2026-07-07'
+    const dateInput = screen.getByLabelText('Donation Date');
+    expect(dateInput).toHaveValue('2026-07-07');
+  });
+
+  it('displays post-save confirmation prompt after saving/updating an ITEMS donation', async () => {
+    (saveDonation as jest.Mock).mockResolvedValue({ success: true, donation: { id: 100 } });
+
+    renderComponent();
+
+    // Set date explicitly for determinism
+    const dateInput = screen.getByLabelText('Donation Date');
+    fireEvent.change(dateInput, { target: { value: '2026-07-08' } });
+
+    // Fill Info
+    fireEvent.change(screen.getByRole('combobox', { name: /organization/i }), { target: { value: '3' } });
+    
+    // Add item (need to mock searchItems)
+    const mockItems = [
+      { id: 1, description: 'Winter Coat', category: { name: 'Clothing' }, defaultHigh: 50, defaultMedium: 25 },
+    ];
+    (searchItems as jest.Mock).mockResolvedValue(mockItems);
+
+    const searchInput = screen.getByPlaceholderText(/e\.g\. Men's Suit/i);
+    fireEvent.change(searchInput, { target: { value: 'Winter' } });
+    const resultItem = await screen.findByText(/Winter Coat/i);
+    fireEvent.click(resultItem);
+    fireEvent.click(screen.getByRole('button', { name: /confirm item/i }));
+
+    // Click Save
+    const saveButton = screen.getByRole('button', { name: /add donation/i });
+    fireEvent.click(saveButton);
+
+    // Wait for the modal prompt to appear
+    await waitFor(() => {
+      expect(screen.getByText('Donation Saved successfully!')).toBeInTheDocument();
+      expect(screen.getByText('Would you like to log the volunteer mileage driven for this donation?')).toBeInTheDocument();
+    });
+
+    // Clicking "Yes, Log Mileage" should route correctly
+    const yesButton = screen.getByRole('button', { name: /yes, log mileage/i });
+    fireEvent.click(yesButton);
+    expect(mockPush).toHaveBeenCalledWith('/donations/new?type=mileage&orgId=3&date=2026-07-08');
+  });
+
+  it('resets form states when search parameters change', async () => {
+    let mockParams: Record<string, string | null> = {
+      type: null,
+      orgId: null,
+      date: null,
+    };
+    mockGet.mockImplementation((param) => {
+      if (param === 'type') return mockParams.type;
+      if (param === 'orgId') return mockParams.orgId;
+      if (param === 'date') return mockParams.date;
+      return null;
+    });
+
+    const { rerender } = renderComponent();
+
+    // Verify initial is items (since params are null)
+    expect(screen.queryByLabelText('Miles Driven')).not.toBeInTheDocument();
+
+    // Now change mock search params and rerender
+    mockParams = {
+      type: 'mileage',
+      orgId: '3',
+      date: '2026-07-09',
+    };
+
+    rerender(
+      <DonationBuilder 
+        key="new-key"
+        initialOrganizations={mockOrganizations} 
+      />
+    );
+
+    // Verify it switched to mileage and pre-populated the values
+    expect(screen.getByLabelText('Miles Driven')).toBeInTheDocument();
+    
+    const orgSelect = screen.getByRole('combobox', { name: /organization/i });
+    expect(orgSelect).toHaveValue('3');
+
+    const dateInput = screen.getByLabelText('Donation Date');
+    expect(dateInput).toHaveValue('2026-07-09');
   });
 });
 

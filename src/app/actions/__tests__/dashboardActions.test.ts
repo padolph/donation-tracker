@@ -162,5 +162,29 @@ describe('dashboardActions', () => {
       expect(result.stats?.taxSavings).toBe(550);
       expect(result.stats?.calculationState).toBe('active');
     });
+
+    it('should aggregate mileage donations into cashTotal in getDashboardStats', async () => {
+      const year = 2026;
+      const mockDonations = [
+        {
+          type: 'MILEAGE',
+          items: [],
+          cashAmount: 24.00,
+          milesDriven: 100,
+          parkingAndTolls: 10,
+          mileageRate: 0.14,
+          organizationId: 1,
+        },
+      ];
+
+      (prisma.donationEvent.findMany as jest.Mock).mockResolvedValue(mockDonations);
+      (prisma.appSettings.findUnique as jest.Mock).mockResolvedValue({ marginalTaxRate: 0.22, estimatedAGI: 100000 });
+
+      const result = await getDashboardStats(year);
+
+      expect(result.success).toBe(true);
+      expect(result.stats?.cashTotal).toBe(24.00); // 100 * 0.14 + 10 = 24.00
+      expect(result.stats?.totalDonated).toBe(24.00);
+    });
   });
 });

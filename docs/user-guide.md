@@ -62,6 +62,13 @@ For transfers of stock or other securities:
 * **Shares:** Enter the number of shares transferred (this is stored as informational metadata).
 * **Value on Transfer Date:** Enter the total Fair Market Value of the transferred securities on the date of the donation.
 
+#### 4. Mileage Donations
+For volunteer driving services:
+* **Miles Driven:** Enter the number of miles driven for volunteer services.
+* **Standard Mileage Rate:** The statutory charitable mileage rate is pre-set to **$0.14 per mile** (the IRS standard rate for charitable volunteer driving).
+* **Parking & Tolls:** Enter any additional out-of-pocket parking fees or tolls incurred during the trip.
+* The total valuation of the donation is computed as: `(Miles Driven * $0.14) + Parking & Tolls`.
+
 ### Step 3: Attach Receipts & Photos
 For physical proof of your donation (e.g., a paper receipt or photo of the items):
 * Click the file upload button on the donation builder page.
@@ -70,6 +77,12 @@ For physical proof of your donation (e.g., a paper receipt or photo of the items
 
 ### Step 4: Save Donation
 Click **Save Donation** to commit the event to the ledger. This permanently locks in the item valuation and saves all attached photo paths.
+
+### Step 5: Post-Save Mileage Prompt
+After successfully saving or updating a physical **Physical Items (Non-Cash)** donation, the application will display a prompt asking if you drove to drop off the items. Clicking **"Yes, Log Mileage"** will automatically redirect you to the mileage creation form pre-populated with the same date and organization.
+
+### Related Donations Navigation
+When viewing the expanded details of an item donation, the application will automatically scan for related volunteer mileage trips logged on that same date for that organization and display a quick link to inspect the trip details. Similarly, when viewing mileage details, a link is displayed pointing to any corresponding physical item donations.
 
 ---
 

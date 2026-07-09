@@ -1,7 +1,6 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
 
 export interface ReportItem {
   id: number;
@@ -132,6 +131,21 @@ export async function getReportData(year: number) {
           unitValue: totalAssetValue,
           totalValue: totalAssetValue,
           valuationMethod: 'Market Quotations',
+        });
+      } else if (event.type === 'MILEAGE') {
+        const miles = event.milesDriven || 0;
+        const rate = event.mileageRate || 0.14;
+        const parking = event.parkingAndTolls || 0;
+        eventTotal = miles * rate + parking;
+        reportItems.push({
+          id: event.id,
+          description: `Volunteer Mileage: ${miles} miles @ $${rate}/mi`,
+          category: 'Mileage',
+          condition: 'N/A',
+          quantity: miles,
+          unitValue: rate,
+          totalValue: eventTotal,
+          valuationMethod: 'Standard Mileage Rate',
         });
       }
 

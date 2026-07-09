@@ -16,14 +16,14 @@ To view your report:
 The report is designed specifically to match the requirements for transcribing data onto **IRS Form 8283** (or entering details into tax prep software like TurboTax). The page organizes information into a clear tree layout:
 * **Level 1: Organization:** Grouped by charity. Shows the organization name and its calculated subtotal.
 * **Level 2: Donation Date:** Displays individual donation events under each charity.
-* **Level 3: Donated Items:** Lists the items in that donation event.
+* **Level 3: Donated Items / Trip Details:** Lists the items in that donation event (or trip details for mileage donations).
 
-For each item, the report displays all IRS-required details:
-* **Category/Description**
-* **Condition** (High or Medium)
-* **Quantity**
-* **Fair Market Value (FMV)** (individual and total)
-* **Valuation Method** (IRS approved labels)
+For each item (or trip details), the report displays:
+* **Category/Description** (e.g. item description, or `"Volunteer Mileage: X miles @ $0.14/mi"`)
+* **Condition** (High/Medium, or `"N/A"` for Cash, Assets, and Mileage)
+* **Quantity** (e.g. number of items, or miles driven)
+* **Fair Market Value (FMV)** (total value, including parking/tolls for mileage)
+* **Valuation Method** (e.g. `"Thrift Shop Value"`, `"Face Value"`, `"Market Quotations"`, or `"Standard Mileage Rate"`)
 
 ### Subtotals & Totals
 The calculator automatically computes and displays:

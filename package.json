@@ -10,7 +10,7 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "test": "jest --forceExit",
+    "test": "jest",
     "test:watch": "jest --watch",
     "electron:tsc": "tsc -p tsconfig.electron.json",
     "desktop:dev": "npx prisma generate && concurrently \"npm run dev\" \"npm run electron:tsc -- --watch\" \"wait-on tcp:3000 || wait-on tcp:3001 && electron .\"",

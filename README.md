@@ -16,7 +16,7 @@ We have compiled a comprehensive, multi-part User Guide to help you set up and g
 ## ✨ Features
 
 - **Item Catalog:** A searchable directory of over 1,700 items with Fair Market Values (FMV) pre-seeded from industry-standard data. Easily add and save your own custom items if they aren't in the default catalog.
-- **Donation Ledger:** Track physical items, cash contributions, and asset transfers (stocks/securities) in one central place.
+- **Donation Ledger:** Track physical items, cash contributions, asset transfers (stocks/securities), and volunteer mileage driven in one central place.
 - **Organization Management:** Maintain a directory of your favorite charities, including Tax IDs and addresses.
 - **Receipt & Photo Attachments:** Securely attach local images and receipts to your donation events. Photos are copied to a private local storage directory, with automatic cleanup of image files when events are deleted to prevent storage leaks.
 - **Interactive Dashboard:** View annual summaries of your giving, broken down by type and organization.

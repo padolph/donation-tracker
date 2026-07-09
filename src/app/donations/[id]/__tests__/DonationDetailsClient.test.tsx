@@ -138,4 +138,61 @@ describe('DonationDetailsClient', () => {
     expect(screen.getByTitle(/Attachment 2/i)).toBeInTheDocument();
     expect(screen.getByTitle(/Attachment 2/i).tagName).toBe('IFRAME');
   });
+
+  it('renders Mileage details card when donation type is MILEAGE', () => {
+    const mockMileageDonation: DonationEvent = {
+      id: 4,
+      date: '2026-05-16T00:00:00.000Z',
+      organizationId: 1,
+      type: 'MILEAGE',
+      cashAmount: 24.00,
+      assetTicker: null,
+      assetShares: null,
+      notes: 'Volunteer trip',
+      organization: { id: 1, name: 'Goodwill' },
+      items: [],
+      photos: [],
+      milesDriven: 100,
+      parkingAndTolls: 10,
+      mileageRate: 0.14,
+    };
+
+    render(<DonationDetailsClient donation={mockMileageDonation} />);
+
+    expect(screen.getByText('Goodwill')).toBeInTheDocument();
+    expect(screen.getByText('MILEAGE')).toBeInTheDocument();
+    expect(screen.getByText('Trip Breakdown')).toBeInTheDocument();
+    expect(screen.getByText('100.0 mi')).toBeInTheDocument();
+    expect(screen.getByText('$0.14/mi')).toBeInTheDocument();
+    expect(screen.getByText('$10.00')).toBeInTheDocument();
+    expect(screen.getByText('$24.00')).toBeInTheDocument();
+  });
+
+  it('renders related donations section when matching events are present', () => {
+    const mockRelated = [
+      {
+        id: 42,
+        date: '2026-05-12T00:00:00.000Z',
+        organizationId: 1,
+        type: 'MILEAGE',
+        cashAmount: 14.00,
+        assetTicker: null,
+        assetShares: null,
+        milesDriven: 100,
+        parkingAndTolls: 0,
+        mileageRate: 0.14,
+        organization: { id: 1, name: 'Goodwill' },
+        items: [],
+        photos: [],
+      }
+    ];
+
+    render(<DonationDetailsClient donation={mockItemsDonation} relatedDonations={mockRelated as unknown as DonationEvent[]} />);
+
+    expect(screen.getByText('Related Donations (Same Date & Organization)')).toBeInTheDocument();
+    expect(screen.getByText(/Related trip:/)).toBeInTheDocument();
+    expect(screen.getByText('100 miles')).toBeInTheDocument();
+    expect(screen.getByText(/14.00/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /view details/i })).toHaveAttribute('href', '/donations/42');
+  });
 });

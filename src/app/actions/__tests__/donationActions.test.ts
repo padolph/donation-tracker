@@ -333,12 +333,13 @@ describe('donationActions', () => {
     });
 
     it('should fetch a single donation by id', async () => {
-      const mockDonation = { id: 1, type: 'ITEMS' };
+      const mockDonation = { id: 1, type: 'ITEMS', organizationId: 1, date: new Date('2026-05-12') };
       (prisma.donationEvent.findUnique as jest.Mock).mockResolvedValue(mockDonation);
+      (prisma.donationEvent.findMany as jest.Mock).mockResolvedValue([]);
 
       const result = await getDonationById(1);
 
-      expect(result).toEqual({ success: true, donation: mockDonation });
+      expect(result).toEqual({ success: true, donation: mockDonation, relatedDonations: [] });
       expect(prisma.donationEvent.findUnique).toHaveBeenCalledWith({
         where: { id: 1 },
         include: {
@@ -425,6 +426,68 @@ describe('donationActions', () => {
 
       expect(result).toEqual({ success: false, error: 'Update failed' });
       consoleSpy.mockRestore();
+    });
+
+    it('should correctly save a MILEAGE donation with milesDriven, parkingAndTolls, and mileageRate', async () => {
+      const mockData = {
+        organizationId: 1,
+        date: new Date('2026-05-12'),
+        type: 'MILEAGE',
+        milesDriven: 50.5,
+        parkingAndTolls: 5.5,
+        mileageRate: 0.14,
+        items: [],
+        photos: [],
+      };
+
+      (prisma.donationEvent.create as jest.Mock).mockResolvedValue({ id: 103 });
+
+      const result = await saveDonation(mockData);
+
+      expect(result).toEqual({
+        success: true,
+        donation: { id: 103 },
+      });
+      expect(prisma.donationEvent.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            type: 'MILEAGE',
+            milesDriven: 50.5,
+            parkingAndTolls: 5.5,
+            mileageRate: 0.14,
+          })
+        })
+      );
+    });
+
+    it('should correctly update an existing MILEAGE donation', async () => {
+      const mockData = {
+        organizationId: 1,
+        date: new Date('2026-05-12'),
+        type: 'MILEAGE',
+        milesDriven: 60,
+        parkingAndTolls: 10,
+        mileageRate: 0.14,
+        items: [],
+        photos: [],
+      };
+
+      (prisma.donationEvent.update as jest.Mock).mockResolvedValue({ id: 1 });
+
+      const result = await updateDonation(1, mockData);
+
+      expect(result).toEqual({ success: true, donation: { id: 1 } });
+      expect(prisma.donationEvent.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 1 },
+          data: expect.objectContaining({
+            type: 'MILEAGE',
+            milesDriven: 60,
+            parkingAndTolls: 10,
+            mileageRate: 0.14,
+          }),
+        })
+      );
     });
   });
 });

@@ -147,5 +147,39 @@ describe('reportActions', () => {
       expect(item?.totalValue).toBe(1500);
       expect(item?.valuationMethod).toBe('Market Quotations');
     });
+
+    it('correctly formats mileage donation in reports', async () => {
+      const mockDonations = [
+        {
+          id: 5,
+          date: new Date('2025-08-01T10:00:00Z'),
+          organizationId: 4,
+          type: 'MILEAGE',
+          milesDriven: 100,
+          parkingAndTolls: 10,
+          mileageRate: 0.14,
+          organization: { id: 4, name: 'Food Bank' },
+          items: [],
+        },
+      ];
+
+      (prisma.donationEvent.findMany as jest.Mock).mockResolvedValue(mockDonations);
+
+      const result = await getReportData(2025);
+
+      expect(result.success).toBe(true);
+      const mileageReport = result.data?.organizations.find(o => o.name === 'Food Bank');
+      
+      expect(mileageReport?.totalValue).toBe(24);
+      
+      const item = mileageReport?.donations[0].items[0];
+      expect(item?.description).toBe('Volunteer Mileage: 100 miles @ $0.14/mi');
+      expect(item?.category).toBe('Mileage');
+      expect(item?.condition).toBe('N/A');
+      expect(item?.quantity).toBe(100);
+      expect(item?.unitValue).toBe(0.14);
+      expect(item?.totalValue).toBe(24);
+      expect(item?.valuationMethod).toBe('Standard Mileage Rate');
+    });
   });
 });
