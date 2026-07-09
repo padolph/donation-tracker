@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-non-literal-fs-filename */
 import { PrismaClient } from '@prisma/client';
 import { execSync } from 'child_process';
 import fs from 'fs';

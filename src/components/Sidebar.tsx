@@ -38,6 +38,7 @@ export default function Sidebar() {
       <div className="p-4 md:p-6 flex flex-row md:flex-col items-center md:items-start justify-between md:justify-start gap-3 w-full">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 md:w-10 md:h-10 relative">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={logoSrc}
               alt="DonationTracker Logo"

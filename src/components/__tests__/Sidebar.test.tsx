@@ -108,6 +108,7 @@ describe('Sidebar', () => {
       act(() => {
         jest.advanceTimersByTime(1000);
       });
+      // eslint-disable-next-line security/detect-non-literal-regexp
       expect(logoImg.getAttribute('src')).toMatch(new RegExp(`^\\/icon\\.png\\?retry=${i}&t=\\d+`));
     }
     

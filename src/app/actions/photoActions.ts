@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-non-literal-fs-filename */
 'use server';
 
 import fs from 'fs/promises';

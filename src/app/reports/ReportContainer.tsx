@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import YearSelector from '@/components/YearSelector';
 import ReportClient from './ReportClient';
 import { getReportData, YearlyReportData } from '@/app/actions/reportActions';
@@ -14,20 +14,20 @@ export default function ReportContainer({ initialData }: ReportContainerProps) {
   const [reportData, setReportData] = useState<YearlyReportData>(initialData);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchReportData = async () => {
-      if (year === initialData.year && reportData === initialData) return;
-      
-      setIsLoading(true);
-      const result = await getReportData(year);
-      if (result.success && result.data) {
-        setReportData(result.data);
-      }
-      setIsLoading(false);
-    };
+  const handleYearChange = async (newYear: number) => {
+    setYear(newYear);
+    if (newYear === initialData.year) {
+      setReportData(initialData);
+      return;
+    }
 
-    fetchReportData();
-  }, [year, initialData]);
+    setIsLoading(true);
+    const result = await getReportData(newYear);
+    if (result.success && result.data) {
+      setReportData(result.data);
+    }
+    setIsLoading(false);
+  };
 
   return (
     <div className="space-y-10">
@@ -36,7 +36,7 @@ export default function ReportContainer({ initialData }: ReportContainerProps) {
           <h1 className="text-3xl font-bold mb-1">Tax Reports</h1>
           <p className="text-white/50 text-sm">Review and export your annual donation data</p>
         </div>
-        <YearSelector currentYear={year} onChange={setYear} />
+        <YearSelector currentYear={year} onChange={handleYearChange} />
       </header>
 
       {isLoading ? (
