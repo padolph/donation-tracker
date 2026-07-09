@@ -20,6 +20,8 @@ updates:
       # Next.js does not yet support ESLint 10
       - dependency-name: "eslint"
         versions: [">= 10.0.0"]
+      - dependency-name: "typescript"
+        versions: [">= 7.0.0"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
