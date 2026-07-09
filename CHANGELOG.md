@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.9.0](https://github.com/padolph/donation-tracker/compare/v1.8.1...v1.9.0) (2026-07-09)
+
+
+### Features
+
+* 173 implement volunteer mileage donation type ([1788942](https://github.com/padolph/donation-tracker/commit/17889428a544e015aec9a329da55b4194455d1ee))
+* implement volunteer mileage donation type and resolve jest open handles ([8301e06](https://github.com/padolph/donation-tracker/commit/8301e06e7530ace0ab511c587bd36d721ad1c48e))
+
+
+### Bug Fixes
+
+* **lint:** fix react-hooks set-state-in-effect and typescript any eslint errors ([aaab985](https://github.com/padolph/donation-tracker/commit/aaab985a8a6b195e166f22cb14528ff53b879562))
+
 ## [1.8.1](https://github.com/padolph/donation-tracker/compare/donation-tracker-v1.8.0...donation-tracker-v1.8.1) (2026-07-01)
 
 
