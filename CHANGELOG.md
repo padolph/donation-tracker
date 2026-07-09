@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.1](https://github.com/padolph/donation-tracker/compare/v1.9.0...v1.9.1) (2026-07-09)
+
+
+### Bug Fixes
+
+* resolve all ESLint warnings and errors ([4dbfda4](https://github.com/padolph/donation-tracker/commit/4dbfda4a136e815b544423dea501888730cfb06e))
+* resolve all ESLint warnings and errors ([e8ffb4e](https://github.com/padolph/donation-tracker/commit/e8ffb4e9b62da749bbca189928191405f1178b4d))
+
 ## [1.9.0](https://github.com/padolph/donation-tracker/compare/v1.8.1...v1.9.0) (2026-07-09)
 
 
