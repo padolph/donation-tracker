@@ -463,7 +463,12 @@ describe('DonationBuilder Page', () => {
       orgId: null,
       date: null,
     };
-    mockGet.mockImplementation((param) => mockParams[param]);
+    mockGet.mockImplementation((param) => {
+      if (param === 'type') return mockParams.type;
+      if (param === 'orgId') return mockParams.orgId;
+      if (param === 'date') return mockParams.date;
+      return null;
+    });
 
     const { rerender } = renderComponent();
 
@@ -479,6 +484,7 @@ describe('DonationBuilder Page', () => {
 
     rerender(
       <DonationBuilder 
+        key="new-key"
         initialOrganizations={mockOrganizations} 
       />
     );

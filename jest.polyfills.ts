@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TextEncoder, TextDecoder } from 'util';
 import { ReadableStream as NodeReadableStream } from 'node:stream/web';
 

@@ -249,21 +249,6 @@ export default function DonationBuilder({
   const [existingPhotos, setExistingPhotos] = useState<{filePath: string}[]>(initialDonation?.photos || []);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (typeParam) {
-      setActiveType(typeParam.toLowerCase());
-    }
-    if (orgParam) {
-      const parsed = parseInt(orgParam, 10);
-      if (!isNaN(parsed)) {
-        setOrganizationId(parsed);
-      }
-    }
-    if (dateParam) {
-      setDate(dateParam);
-    }
-  }, [typeParam, orgParam, dateParam]);
-
   const handleSelectItem = (item: Item) => {
     setSelectedItem(item);
     setQuantity(1);
@@ -321,18 +306,11 @@ export default function DonationBuilder({
         }
       }
 
-      const typeMap: Record<string, string> = {
-        items: 'ITEMS',
-        cash: 'CASH',
-        assets: 'ASSETS',
-        mileage: 'MILEAGE',
-      };
-
       // 2. Save donation
       const dataPayload = {
         organizationId: typeof organizationId === 'string' ? parseInt(organizationId) : organizationId,
         date: new Date(date),
-        type: typeMap[activeType] || 'ITEMS',
+        type: activeType === 'cash' ? 'CASH' : activeType === 'assets' ? 'ASSETS' : activeType === 'mileage' ? 'MILEAGE' : 'ITEMS',
         notes,
         items: activeType === 'items' ? stagedItems.map(item => ({
           itemId: item.itemId,
