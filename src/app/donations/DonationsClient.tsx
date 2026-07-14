@@ -22,7 +22,14 @@ export interface DonationEvent {
     quantity: number;
     condition: string;
     lockedValue: number;
-    item: { id: number; description: string };
+    item: { 
+      id: number; 
+      description: string;
+      defaultHigh?: number | null;
+      defaultMedium?: number | null;
+      userHigh?: number | null;
+      userMedium?: number | null;
+    };
   }>;
   photos: Array<{ filePath: string }>;
 }
