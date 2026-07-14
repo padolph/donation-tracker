@@ -83,6 +83,7 @@ export default function CustomItemForm({ onItemCreated, onCancel }: Props) {
             placeholder="0.00"
             value={highValue}
             onChange={(e) => setHighValue(e.target.value)}
+            onFocus={(e) => e.target.select()}
           />
         </div>
 
@@ -97,6 +98,7 @@ export default function CustomItemForm({ onItemCreated, onCancel }: Props) {
             placeholder="0.00"
             value={mediumValue}
             onChange={(e) => setMediumValue(e.target.value)}
+            onFocus={(e) => e.target.select()}
           />
         </div>
       </div>

@@ -535,6 +535,7 @@ export default function DonationBuilder({
                         className="w-full px-4 py-2 rounded-lg"
                         value={quantity}
                         onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+                        onFocus={(e) => e.target.select()}
                       />
                     </div>
 
@@ -611,6 +612,7 @@ export default function DonationBuilder({
                     className="w-full pl-8 pr-4 py-3 rounded-xl text-lg font-bold"
                     value={cashAmount}
                     onChange={(e) => setCashAmount(e.target.value)}
+                    onFocus={(e) => e.target.select()}
                   />
                 </div>
               </div>
@@ -647,6 +649,7 @@ export default function DonationBuilder({
                     className="w-full px-4 py-3 rounded-xl"
                     value={assetShares}
                     onChange={(e) => setAssetShares(e.target.value)}
+                    onFocus={(e) => e.target.select()}
                   />
                 </div>
                 <div className="space-y-2">
@@ -662,6 +665,7 @@ export default function DonationBuilder({
                       className="w-full pl-8 pr-4 py-3 rounded-xl font-bold"
                       value={assetValue}
                       onChange={(e) => setAssetValue(e.target.value)}
+                      onFocus={(e) => e.target.select()}
                     />
                   </div>
                 </div>
@@ -688,6 +692,7 @@ export default function DonationBuilder({
                     className="w-full px-4 py-3 rounded-xl bg-black/20 border border-white/10 text-white"
                     value={milesDriven}
                     onChange={(e) => setMilesDriven(e.target.value)}
+                    onFocus={(e) => e.target.select()}
                   />
                 </div>
                 <div className="space-y-2">
@@ -715,6 +720,7 @@ export default function DonationBuilder({
                       className="w-full pl-8 pr-4 py-3 rounded-xl bg-black/20 border border-white/10 text-white"
                       value={parkingAndTolls}
                       onChange={(e) => setParkingAndTolls(e.target.value)}
+                      onFocus={(e) => e.target.select()}
                     />
                   </div>
                 </div>

@@ -137,6 +137,20 @@ describe('SettingsClient', () => {
     expect(agiInput).toHaveValue(80000);
   });
 
+  it('selects all text in taxRate and estimatedAGI numeric inputs on focus', () => {
+    render(<SettingsClient initialSettings={mockSettings} databasePath="/mock/path/dev.db" storagePath="/mock/path/storage" />);
+    
+    const taxRateInput = screen.getByLabelText(/Marginal Tax Rate/i) as HTMLInputElement;
+    const selectTaxSpy = jest.spyOn(taxRateInput, 'select');
+    taxRateInput.focus();
+    expect(selectTaxSpy).toHaveBeenCalled();
+
+    const agiInput = screen.getByLabelText(/Estimated AGI/i) as HTMLInputElement;
+    const selectAgiSpy = jest.spyOn(agiInput, 'select');
+    agiInput.focus();
+    expect(selectAgiSpy).toHaveBeenCalled();
+  });
+
   describe('Data Sync UI', () => {
     it('does not render the data sync panel controls', () => {
       render(<SettingsClient initialSettings={mockSettings} databasePath="/mock/path/dev.db" storagePath="/mock/path/storage" />);
