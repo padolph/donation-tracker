@@ -28,11 +28,17 @@ jest.mock('electron', () => {
 });
 
 jest.mock('child_process', () => {
-  return {
-    fork: jest.fn().mockReturnValue({
-      on: jest.fn(),
-      kill: jest.fn(),
+  const mockProcess = {
+    on: jest.fn().mockImplementation((event, callback) => {
+      if (event === 'exit') {
+        setTimeout(() => callback(0), 0);
+      }
+      return mockProcess;
     }),
+    kill: jest.fn(),
+  };
+  return {
+    fork: jest.fn().mockReturnValue(mockProcess),
   };
 });
 
@@ -174,7 +180,7 @@ describe('Electron Main Process', () => {
     require('../main');
 
     // Wait for async initialization
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     const path = require('path');
     // Verify fs.mkdirSync was called for userDataPath and IMAGE_STORAGE_PATH
@@ -184,12 +190,27 @@ describe('Electron Main Process', () => {
     expect(fs.mkdirSync).toHaveBeenCalledWith(path.join('/mock/user/data', 'storage', 'donations'), { recursive: true });
 
     // Verify child_process.fork is called with correct DATABASE_URL and IMAGE_STORAGE_PATH in env
-    expect(child_process.fork).toHaveBeenCalled();
-    const forkArgs = child_process.fork.mock.calls[0];
-    const forkEnv = forkArgs[2].env;
+    expect(child_process.fork).toHaveBeenCalledTimes(2);
 
-    expect(forkEnv.DATABASE_URL).toBe('file:' + path.join('/mock/user/data', 'production.db'));
-    expect(forkEnv.IMAGE_STORAGE_PATH).toBe(path.join('/mock/user/data', 'storage', 'donations'));
+    // 1st fork call: database migrations
+    const migrationForkArgs = child_process.fork.mock.calls[0];
+    expect(migrationForkArgs[0]).toBe(path.join('/mock/app/path', 'node_modules/prisma/build/index.js'));
+    expect(migrationForkArgs[1]).toEqual([
+      'migrate',
+      'deploy',
+      '--schema',
+      path.join('/mock/app/path', 'prisma/schema.prisma')
+    ]);
+    const migrationEnv = migrationForkArgs[2].env;
+    expect(migrationEnv.DATABASE_URL).toBe('file:' + path.join('/mock/user/data', 'production.db'));
+
+    // 2nd fork call: Next.js server
+    const serverForkArgs = child_process.fork.mock.calls[1];
+    expect(serverForkArgs[0]).toBe(path.join('/mock/app/path', 'node_modules/next/dist/bin/next'));
+    expect(serverForkArgs[1]).toEqual(['start', '-p', '3000']);
+    const serverEnv = serverForkArgs[2].env;
+    expect(serverEnv.DATABASE_URL).toBe('file:' + path.join('/mock/user/data', 'production.db'));
+    expect(serverEnv.IMAGE_STORAGE_PATH).toBe(path.join('/mock/user/data', 'storage', 'donations'));
     
     // Verify that process.env.DATABASE_URL itself was explicitly assigned in the main process
     expect(process.env.DATABASE_URL).toBe('file:' + path.join('/mock/user/data', 'production.db'));
