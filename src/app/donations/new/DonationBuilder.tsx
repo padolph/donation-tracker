@@ -33,6 +33,8 @@ interface StagedItem {
   condition: 'High' | 'Medium';
   value: number;
   totalValue: number;
+  defaultHigh?: number | null;
+  defaultMedium?: number | null;
 }
 
 const donationTypes = [
@@ -235,9 +237,12 @@ export default function DonationBuilder({
     condition: i.condition as 'High' | 'Medium',
     value: i.lockedValue,
     totalValue: i.lockedValue * i.quantity,
+    defaultHigh: i.item.defaultHigh ?? i.item.userHigh ?? null,
+    defaultMedium: i.item.defaultMedium ?? i.item.userMedium ?? null,
   })) || [];
 
   const [stagedItems, setStagedItems] = useState<StagedItem[]>(initialStagedItems);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [cashAmount, setCashAmount] = useState<string>(initialDonation?.cashAmount?.toString() || '');
   const [assetTicker, setAssetTicker] = useState<string>(initialDonation?.assetTicker || '');
   const [assetShares, setAssetShares] = useState<string>(initialDonation?.assetShares?.toString() || '');
@@ -253,6 +258,7 @@ export default function DonationBuilder({
     setSelectedItem(item);
     setQuantity(1);
     setCondition('Medium');
+    setEditingIndex(null);
   };
 
   const handleAddToDonation = () => {
@@ -266,10 +272,44 @@ export default function DonationBuilder({
       condition,
       value,
       totalValue: value * quantity,
+      defaultHigh: selectedItem.defaultHigh,
+      defaultMedium: selectedItem.defaultMedium,
     };
 
-    setStagedItems([...stagedItems, newStagedItem]);
+    if (editingIndex !== null) {
+      const updated = [...stagedItems];
+      updated[editingIndex] = newStagedItem;
+      setStagedItems(updated);
+      setEditingIndex(null);
+    } else {
+      setStagedItems([...stagedItems, newStagedItem]);
+    }
     setSelectedItem(null);
+  };
+
+  const handleEditStagedItem = (index: number) => {
+    const item = stagedItems[index];
+    setSelectedItem({
+      id: item.itemId,
+      description: item.description,
+      category: { name: '' },
+      defaultHigh: item.defaultHigh !== undefined ? item.defaultHigh : (item.condition === 'High' ? item.value : null),
+      defaultMedium: item.defaultMedium !== undefined ? item.defaultMedium : (item.condition === 'Medium' ? item.value : null),
+    });
+    setQuantity(item.quantity);
+    setCondition(item.condition);
+    setEditingIndex(index);
+  };
+
+  const handleDeleteStagedItem = (index: number) => {
+    alert('Please remember to delete any attachments associated with the deleted item if they are no longer needed.');
+    const updated = stagedItems.filter((_, i) => i !== index);
+    setStagedItems(updated);
+  };
+
+  const handleCloseItemForm = () => {
+    setSelectedItem(null);
+    setEditingIndex(null);
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -491,8 +531,28 @@ export default function DonationBuilder({
                       <span className="text-sm text-white/50">{item.condition} · Qty: {item.quantity}</span>
                     </div>
                   </div>
-                  <div className="text-2xl font-black text-accent shrink-0">
-                    ${item.totalValue.toFixed(2)}
+                  <div className="flex items-center gap-4 shrink-0 justify-between sm:justify-end w-full sm:w-auto">
+                    <div className="text-2xl font-black text-accent">
+                      ${item.totalValue.toFixed(2)}
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEditStagedItem(index)}
+                        className="p-2 bg-white/5 hover:bg-white/10 text-white/80 rounded-lg text-sm transition-colors"
+                        title="Edit Item"
+                        type="button"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => handleDeleteStagedItem(index)}
+                        className="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg text-sm transition-colors"
+                        title="Delete Item"
+                        type="button"
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -501,8 +561,10 @@ export default function DonationBuilder({
               {selectedItem && (
                 <div className="bg-white/5 border border-accent rounded-xl p-8 space-y-6 animate-in zoom-in-95 duration-200">
                   <div className="flex justify-between items-start">
-                    <h3 className="text-xl font-bold">Add Item to Donation</h3>
-                    <button onClick={() => setSelectedItem(null)} className="text-white/40 hover:text-white">✕</button>
+                    <h3 className="text-xl font-bold">
+                      {editingIndex !== null ? 'Edit Item in Donation' : 'Add Item to Donation'}
+                    </h3>
+                    <button onClick={handleCloseItemForm} className="text-white/40 hover:text-white" type="button">✕</button>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -550,8 +612,9 @@ export default function DonationBuilder({
                   <button
                     onClick={handleAddToDonation}
                     className="w-full bg-accent text-black font-black py-4 rounded-xl hover:bg-yellow-500 transition-colors uppercase tracking-widest text-sm"
+                    type="button"
                   >
-                    Confirm Item
+                    {editingIndex !== null ? 'Update Item' : 'Confirm Item'}
                   </button>
                 </div>
               )}

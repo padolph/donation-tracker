@@ -548,5 +548,84 @@ describe('DonationBuilder Page', () => {
     parkingTollsInput.focus();
     expect(selectParkingSpy).toHaveBeenCalled();
   });
+
+  it('allows editing an existing staged item (changing quantity and condition)', async () => {
+    renderComponent();
+
+    // 1. Search and select an item
+    const mockItems = [
+      { id: 1, description: 'Winter Coat', category: { name: 'Clothing' }, defaultHigh: 50, defaultMedium: 25 },
+    ];
+    (searchItems as jest.Mock).mockResolvedValue(mockItems);
+
+    const searchInput = screen.getByPlaceholderText(/e\.g\. Men's Suit/i);
+    fireEvent.change(searchInput, { target: { value: 'Winter' } });
+    const resultItem = await screen.findByText(/Winter Coat/i);
+    fireEvent.click(resultItem);
+
+    // 2. Confirm the item with initial defaults (Qty: 1, Condition: Medium)
+    fireEvent.click(screen.getByRole('button', { name: /confirm item/i }));
+
+    // 3. Verify it is staged with value $25.00
+    expect(screen.getByText(/Qty: 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/Medium/i)).toBeInTheDocument();
+    expect(screen.getAllByText('$25.00').length).toBeGreaterThan(0);
+
+    // 4. Click the Edit button (✏️)
+    const editButton = screen.getByTitle('Edit Item');
+    fireEvent.click(editButton);
+
+    // 5. Verify the edit form is loaded with correct values
+    expect(screen.getByText('Edit Item in Donation')).toBeInTheDocument();
+    const qtyInput = screen.getByLabelText(/Quantity/i) as HTMLInputElement;
+    expect(qtyInput.value).toBe('1');
+    const conditionSelect = screen.getByLabelText(/Condition/i) as HTMLSelectElement;
+    expect(conditionSelect.value).toBe('Medium');
+
+    // 6. Update the quantity and condition
+    fireEvent.change(qtyInput, { target: { value: '2' } });
+    fireEvent.change(conditionSelect, { target: { value: 'High' } });
+
+    // 7. Click Update Item
+    fireEvent.click(screen.getByRole('button', { name: /update item/i }));
+
+    // 8. Verify the item in the list has been updated (Qty: 2, Condition: High, Total: $100.00)
+    expect(screen.getByText(/Qty: 2/i)).toBeInTheDocument();
+    expect(screen.getByText(/High/i)).toBeInTheDocument();
+    expect(screen.getAllByText('$100.00').length).toBeGreaterThan(0);
+  });
+
+  it('allows deleting an existing staged item and pops up an alert reminder', async () => {
+    renderComponent();
+
+    // 1. Search and select an item
+    const mockItems = [
+      { id: 1, description: 'Winter Coat', category: { name: 'Clothing' }, defaultHigh: 50, defaultMedium: 25 },
+    ];
+    (searchItems as jest.Mock).mockResolvedValue(mockItems);
+
+    const searchInput = screen.getByPlaceholderText(/e\.g\. Men's Suit/i);
+    fireEvent.change(searchInput, { target: { value: 'Winter' } });
+    const resultItem = await screen.findByText(/Winter Coat/i);
+    fireEvent.click(resultItem);
+    fireEvent.click(screen.getByRole('button', { name: /confirm item/i }));
+
+    // Verify it is staged
+    expect(screen.getByText('Winter Coat')).toBeInTheDocument();
+    expect(screen.getAllByText('$25.00').length).toBeGreaterThan(0);
+
+    // 2. Mock window.alert and click Delete button (🗑️)
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    const deleteButton = screen.getByTitle('Delete Item');
+    fireEvent.click(deleteButton);
+
+    // 3. Verify alert is triggered with correct text
+    expect(alertMock).toHaveBeenCalledWith('Please remember to delete any attachments associated with the deleted item if they are no longer needed.');
+    alertMock.mockRestore();
+
+    // 4. Verify item is removed and total is updated
+    expect(screen.queryByText('Winter Coat')).not.toBeInTheDocument();
+    expect(screen.getByText('$0.00')).toBeInTheDocument();
+  });
 });
 
