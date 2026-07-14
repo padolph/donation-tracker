@@ -50,14 +50,14 @@ describe('DonationBuilder Page', () => {
     HTMLCanvasElement.prototype.getContext = jest.fn().mockReturnValue({
       drawImage: jest.fn(),
     }) as any;
-    HTMLCanvasElement.prototype.toBlob = function (callback) {
+    HTMLCanvasElement.prototype.toBlob = function (callback: (arg0: Blob) => void) {
       callback(new Blob(['compressed-image'], { type: 'image/jpeg' }));
     } as any;
 
     // Setup a Mock Image class that triggers onload immediately on src assignment
     class MockImage {
-      onload: () => void = () => {};
-      onerror: () => void = () => {};
+      onload: () => void = () => { };
+      onerror: () => void = () => { };
       width: number = 4000;
       height: number = 3000;
       _src: string = '';
@@ -161,7 +161,7 @@ describe('DonationBuilder Page', () => {
     fireEvent.change(screen.getByLabelText(/category/i), { target: { value: 'Electronics' } });
     fireEvent.change(screen.getByLabelText(/high value/i), { target: { value: '40' } });
     fireEvent.change(screen.getByLabelText(/medium value/i), { target: { value: '20' } });
-    
+
     // 3. Save Custom Item
     fireEvent.click(screen.getByRole('button', { name: /save custom item/i }));
 
@@ -300,7 +300,7 @@ describe('DonationBuilder Page', () => {
     const resultItem = await screen.findByText(/Winter Coat/i);
     fireEvent.click(resultItem);
     fireEvent.click(screen.getByRole('button', { name: /confirm item/i }));
-    
+
     // Dynamic text change
     expect(screen.getByRole('button', { name: /enter organization/i })).toBeDisabled();
 
@@ -311,15 +311,15 @@ describe('DonationBuilder Page', () => {
 
   it('shows an alert when a photo exceeds the 10MB limit', async () => {
     // Mock window.alert
-    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
-    
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => { });
+
     renderComponent();
 
     // In RTL, we find the hidden input by its presence or the label
     const input = document.querySelector('input[type="file"]') as HTMLInputElement;
 
     const largeFile = new File(['a'.repeat(11 * 1024 * 1024)], 'too-big.pdf', { type: 'application/pdf' });
-    
+
     fireEvent.change(input, { target: { files: [largeFile] } });
 
     await waitFor(() => {
@@ -354,7 +354,7 @@ describe('DonationBuilder Page', () => {
 
   it('renders a preview image when a valid photo is uploaded', async () => {
     const createObjectURLMock = jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-photo-url');
-    const revokeObjectURLMock = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+    const revokeObjectURLMock = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { });
 
     renderComponent();
 
@@ -386,7 +386,7 @@ describe('DonationBuilder Page', () => {
 
   it('does not render a preview image if the created object URL is invalid (not starting with blob:)', async () => {
     const createObjectURLMock = jest.spyOn(URL, 'createObjectURL').mockReturnValue('http://malicious-site.com/xss.jpg');
-    const revokeObjectURLMock = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+    const revokeObjectURLMock = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { });
 
     renderComponent();
 
@@ -466,7 +466,7 @@ describe('DonationBuilder Page', () => {
 
     // Fill Info
     fireEvent.change(screen.getByRole('combobox', { name: /organization/i }), { target: { value: '3' } });
-    
+
     // Add item (need to mock searchItems)
     const mockItems = [
       { id: 1, description: 'Winter Coat', category: { name: 'Clothing' }, defaultHigh: 50, defaultMedium: 25 },
@@ -521,15 +521,15 @@ describe('DonationBuilder Page', () => {
     };
 
     rerender(
-      <DonationBuilder 
+      <DonationBuilder
         key="new-key"
-        initialOrganizations={mockOrganizations} 
+        initialOrganizations={mockOrganizations}
       />
     );
 
     // Verify it switched to mileage and pre-populated the values
     expect(screen.getByLabelText('Miles Driven')).toBeInTheDocument();
-    
+
     const orgSelect = screen.getByRole('combobox', { name: /organization/i });
     expect(orgSelect).toHaveValue('3');
 
@@ -653,7 +653,7 @@ describe('DonationBuilder Page', () => {
     expect(screen.getAllByText('$25.00').length).toBeGreaterThan(0);
 
     // 2. Mock window.alert and click Delete button (🗑️)
-    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => { });
     const deleteButton = screen.getByTitle('Delete Item');
     fireEvent.click(deleteButton);
 
@@ -675,7 +675,7 @@ describe('DonationBuilder Page', () => {
       HTMLCanvasElement.prototype.getContext = jest.fn().mockReturnValue({
         drawImage: jest.fn(),
       }) as any;
-      HTMLCanvasElement.prototype.toBlob = function (callback) {
+      HTMLCanvasElement.prototype.toBlob = function (callback: (arg0: Blob) => void) {
         callback(new Blob(['compressed-image'], { type: 'image/jpeg' }));
       } as any;
     });
@@ -687,8 +687,8 @@ describe('DonationBuilder Page', () => {
     beforeEach(() => {
       // Setup a Mock Image class that triggers onload
       class MockImage {
-        onload: () => void = () => {};
-        onerror: () => void = () => {};
+        onload: () => void = () => { };
+        onerror: () => void = () => { };
         width: number = 4000;
         height: number = 3000;
         _src: string = '';
@@ -702,7 +702,7 @@ describe('DonationBuilder Page', () => {
       }
       window.Image = MockImage as any;
       jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url');
-      jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+      jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { });
     });
 
     afterEach(() => {
