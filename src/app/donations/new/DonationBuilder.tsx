@@ -438,7 +438,7 @@ export default function DonationBuilder({
 
     if (editingIndex !== null) {
       const updated = [...stagedItems];
-      updated[editingIndex] = newStagedItem;
+      updated.splice(editingIndex, 1, newStagedItem);
       setStagedItems(updated);
       setEditingIndex(null);
     } else {
@@ -448,7 +448,8 @@ export default function DonationBuilder({
   };
 
   const handleEditStagedItem = (index: number) => {
-    const item = stagedItems[index];
+    const item = stagedItems.find((_, i) => i === index);
+    if (!item) return;
     setSelectedItem({
       id: item.itemId,
       description: item.description,
