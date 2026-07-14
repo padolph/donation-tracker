@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.9.2](https://github.com/padolph/donation-tracker/compare/v1.9.1...v1.9.2) (2026-07-14)
+
+
+### Bug Fixes
+
+* 187 Fix/mobile camera oom ([fd9ab47](https://github.com/padolph/donation-tracker/commit/fd9ab473655034404a77459d49d2290fd3c0429c))
+* **desktop:** run prisma migrations programmatically on startup in packaged mode ([cbca555](https://github.com/padolph/donation-tracker/commit/cbca555e312e8c12a36dfd241f8b2c7d8d6c1a4f))
+* **desktop:** run prisma migrations programmatically on startup in packaged mode ([ed1c108](https://github.com/padolph/donation-tracker/commit/ed1c1081703a0f77ae1f6221ce30a0913d3bd3b5))
+* **mobile:** resolve camera hang and OOM via client-side compression and form persistence ([bb64347](https://github.com/padolph/donation-tracker/commit/bb6434796408fe2d0ebd3958e32d561f67134ffc))
+* **mobile:** resolve implicit any errors in page.test.tsx ([f149040](https://github.com/padolph/donation-tracker/commit/f1490407c733b12216420a28f8128470c6c0c407))
+* **mobile:** resolve security object injection sink warnings in DonationBuilder ([cfd57e5](https://github.com/padolph/donation-tracker/commit/cfd57e52c3f77bb243524dc5da3e32952fd65c41))
+* **ui:** 182 select all text on focus for numeric input fields ([500fb0b](https://github.com/padolph/donation-tracker/commit/500fb0b2c0f94b943d3daa847c1b338244c6d7f6))
+* **ui:** 185 support editing and deleting individual items within an item donation ([a86b2c8](https://github.com/padolph/donation-tracker/commit/a86b2c8a5924e4b5736ec657df549a931351f448))
+* **ui:** select all text on focus for numeric input fields ([77f136d](https://github.com/padolph/donation-tracker/commit/77f136d70349d7fafb87b62d3b6df21293a1e281))
+* **ui:** support editing and deleting individual items within an item donation ([1b2b727](https://github.com/padolph/donation-tracker/commit/1b2b7276a402b06fdc8bb4797c07efa3a1d65f12))
+
 ## [1.9.1](https://github.com/padolph/donation-tracker/compare/v1.9.0...v1.9.1) (2026-07-09)
 
 
