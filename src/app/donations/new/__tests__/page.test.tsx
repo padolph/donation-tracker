@@ -498,5 +498,55 @@ describe('DonationBuilder Page', () => {
     const dateInput = screen.getByLabelText('Donation Date');
     expect(dateInput).toHaveValue('2026-07-09');
   });
+
+  it('selects all text in numeric input fields on focus', async () => {
+    renderComponent();
+
+    // 1. Test quantity input (must add an item first to render this input)
+    const mockItems = [
+      { id: 1, description: 'Winter Coat', category: { name: 'Clothing' }, defaultHigh: 50, defaultMedium: 25 },
+    ];
+    (searchItems as jest.Mock).mockResolvedValue(mockItems);
+    const searchInput = screen.getByPlaceholderText(/e\.g\. Men's Suit/i);
+    fireEvent.change(searchInput, { target: { value: 'Winter' } });
+    const resultItem = await screen.findByText(/Winter Coat/i);
+    fireEvent.click(resultItem);
+
+    const qtyInput = screen.getByLabelText(/Quantity/i) as HTMLInputElement;
+    const selectQtySpy = jest.spyOn(qtyInput, 'select');
+    qtyInput.focus();
+    expect(selectQtySpy).toHaveBeenCalled();
+
+    // 2. Test cash input
+    fireEvent.click(screen.getByText(/Cash/i, { selector: 'span' }));
+    const cashInput = screen.getByLabelText(/Cash Amount/i) as HTMLInputElement;
+    const selectCashSpy = jest.spyOn(cashInput, 'select');
+    cashInput.focus();
+    expect(selectCashSpy).toHaveBeenCalled();
+
+    // 3. Test asset inputs
+    fireEvent.click(screen.getByText(/Stock\/Asset/i, { selector: 'span' }));
+    const assetSharesInput = screen.getByLabelText(/Number of Shares/i) as HTMLInputElement;
+    const selectSharesSpy = jest.spyOn(assetSharesInput, 'select');
+    assetSharesInput.focus();
+    expect(selectSharesSpy).toHaveBeenCalled();
+
+    const assetValueInput = screen.getByLabelText(/Total Value/i) as HTMLInputElement;
+    const selectValSpy = jest.spyOn(assetValueInput, 'select');
+    assetValueInput.focus();
+    expect(selectValSpy).toHaveBeenCalled();
+
+    // 4. Test mileage inputs
+    fireEvent.click(screen.getByText(/Mileage/i, { selector: 'span' }));
+    const milesDrivenInput = screen.getByLabelText(/Miles Driven/i) as HTMLInputElement;
+    const selectMilesSpy = jest.spyOn(milesDrivenInput, 'select');
+    milesDrivenInput.focus();
+    expect(selectMilesSpy).toHaveBeenCalled();
+
+    const parkingTollsInput = screen.getByLabelText(/Parking & Tolls/i) as HTMLInputElement;
+    const selectParkingSpy = jest.spyOn(parkingTollsInput, 'select');
+    parkingTollsInput.focus();
+    expect(selectParkingSpy).toHaveBeenCalled();
+  });
 });
 

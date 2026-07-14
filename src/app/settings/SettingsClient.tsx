@@ -65,6 +65,7 @@ export default function SettingsClient({
                 className="w-full px-4 py-3 rounded-xl font-bold pr-10"
                 value={taxRate}
                 onChange={(e) => setTaxRate(e.target.value === '' ? '' : parseFloat(e.target.value))}
+                onFocus={(e) => e.target.select()}
               />
               <span className="absolute right-4 top-3 text-white/40">%</span>
             </div>
@@ -86,6 +87,7 @@ export default function SettingsClient({
                 className="w-full px-4 py-3 rounded-xl font-bold pr-10"
                 value={estimatedAGI}
                 onChange={(e) => setEstimatedAGI(e.target.value === '' ? '' : parseFloat(e.target.value))}
+                onFocus={(e) => e.target.select()}
               />
               <span className="absolute right-4 top-3 text-white/40">$</span>
             </div>
