@@ -27,6 +27,44 @@ function hashPassword(password: string): string {
   return `scrypt:${salt}:${hash}`;
 }
 
+function runMigrations(
+  unpackedPath: string,
+  dbPath: string,
+  env: Record<string, string | undefined>
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const prismaCliPath = path.join(unpackedPath, 'node_modules/prisma/build/index.js');
+    const schemaPath = path.join(unpackedPath, 'prisma/schema.prisma');
+
+    console.log('Running database migrations...');
+    const migrationProcess = fork(
+      prismaCliPath,
+      ['migrate', 'deploy', '--schema', schemaPath],
+      {
+        cwd: unpackedPath,
+        env: {
+          ...env,
+          DATABASE_URL: 'file:' + dbPath,
+        } as unknown as NodeJS.ProcessEnv,
+        stdio: 'inherit',
+      }
+    );
+
+    migrationProcess.on('exit', (code) => {
+      if (code === 0) {
+        console.log('Database migrations applied successfully.');
+        resolve();
+      } else {
+        reject(new Error(`Migration process exited with code ${code}`));
+      }
+    });
+
+    migrationProcess.on('error', (err) => {
+      reject(err);
+    });
+  });
+}
+
 async function startNextServer(port: number) {
   const isPackaged = app.isPackaged;
   const appPath = app.getAppPath();
@@ -130,6 +168,15 @@ async function startNextServer(port: number) {
     IMAGE_STORAGE_PATH: imageStoragePath,
     CONFIG_PATH: configPath,
   };
+
+  if (isPackaged) {
+    try {
+      await runMigrations(unpackedPath, dbPath, env);
+    } catch (error) {
+      console.error('Failed to run database migrations:', error);
+      throw error;
+    }
+  }
 
   nextServerProcess = fork(nextPath, ['start', '-p', port.toString()], {
     cwd: unpackedPath,
