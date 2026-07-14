@@ -166,6 +166,81 @@ function ExistingAttachmentPreview({ filePath, onRemove }: { filePath: string; o
   );
 }
 
+const compressImage = (file: File): Promise<File> => {
+  return new Promise((resolve) => {
+    if (!file.type.startsWith('image/')) {
+      resolve(file);
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const maxDim = 2048;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx || !canvas.toBlob) {
+          URL.revokeObjectURL(url);
+          resolve(file);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            URL.revokeObjectURL(url);
+            if (!blob) {
+              resolve(file);
+              return;
+            }
+            let name = file.name;
+            if (!/\.(jpg|jpeg)$/i.test(name)) {
+              const lastDot = name.lastIndexOf('.');
+              if (lastDot !== -1) {
+                name = name.substring(0, lastDot) + '.jpg';
+              } else {
+                name = name + '.jpg';
+              }
+            }
+            const compressedFile = new File([blob], name, {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          },
+          'image/jpeg',
+          0.85
+        );
+      } catch (err) {
+        console.error('Error during image compression:', err);
+        URL.revokeObjectURL(url);
+        resolve(file);
+      }
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(file);
+    };
+    img.src = url;
+  });
+};
+
 export default function DonationBuilder({ 
   initialOrganizations = [],
   initialDonation,
@@ -254,6 +329,91 @@ export default function DonationBuilder({
   const [existingPhotos, setExistingPhotos] = useState<{filePath: string}[]>(initialDonation?.photos || []);
   const [isSaving, setIsSaving] = useState(false);
 
+  const [isPersistedDataLoaded, setIsPersistedDataLoaded] = useState(false);
+
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    const key = initialDonation 
+      ? `donation_form_progress_edit_${initialDonation.id}`
+      : 'donation_form_progress_new';
+      
+    try {
+      const savedProgress = localStorage.getItem(key);
+      if (savedProgress) {
+        const progress = JSON.parse(savedProgress);
+        if (progress.activeType !== undefined) {
+          setActiveType(typeParam ? typeParam.toLowerCase() : progress.activeType);
+        }
+        if (progress.organizationId !== undefined) {
+          if (orgParam) {
+            const parsed = parseInt(orgParam, 10);
+            setOrganizationId(isNaN(parsed) ? '' : parsed);
+          } else {
+            setOrganizationId(progress.organizationId);
+          }
+        }
+        if (progress.date !== undefined) {
+          setDate(dateParam ? dateParam : progress.date);
+        }
+        if (progress.notes !== undefined) setNotes(progress.notes);
+        if (progress.stagedItems !== undefined) setStagedItems(progress.stagedItems);
+        if (progress.cashAmount !== undefined) setCashAmount(progress.cashAmount);
+        if (progress.assetTicker !== undefined) setAssetTicker(progress.assetTicker);
+        if (progress.assetShares !== undefined) setAssetShares(progress.assetShares);
+        if (progress.assetValue !== undefined) setAssetValue(progress.assetValue);
+        if (progress.milesDriven !== undefined) setMilesDriven(progress.milesDriven);
+        if (progress.parkingAndTolls !== undefined) setParkingAndTolls(progress.parkingAndTolls);
+      }
+    } catch (e) {
+      console.error('Failed to load form progress', e);
+    } finally {
+      setIsPersistedDataLoaded(true);
+    }
+  }, [initialDonation, typeParam, orgParam, dateParam]);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    if (!isPersistedDataLoaded) return;
+
+    const key = initialDonation 
+      ? `donation_form_progress_edit_${initialDonation.id}`
+      : 'donation_form_progress_new';
+      
+    const progress = {
+      activeType,
+      organizationId,
+      date,
+      notes,
+      stagedItems,
+      cashAmount,
+      assetTicker,
+      assetShares,
+      assetValue,
+      milesDriven,
+      parkingAndTolls,
+    };
+    
+    try {
+      localStorage.setItem(key, JSON.stringify(progress));
+    } catch (e) {
+      console.error('Failed to save form progress', e);
+    }
+  }, [
+    isPersistedDataLoaded,
+    initialDonation,
+    activeType,
+    organizationId,
+    date,
+    notes,
+    stagedItems,
+    cashAmount,
+    assetTicker,
+    assetShares,
+    assetValue,
+    milesDriven,
+    parkingAndTolls,
+  ]);
+
   const handleSelectItem = (item: Item) => {
     setSelectedItem(item);
     setQuantity(1);
@@ -278,7 +438,7 @@ export default function DonationBuilder({
 
     if (editingIndex !== null) {
       const updated = [...stagedItems];
-      updated[editingIndex] = newStagedItem;
+      updated.splice(editingIndex, 1, newStagedItem);
       setStagedItems(updated);
       setEditingIndex(null);
     } else {
@@ -288,7 +448,8 @@ export default function DonationBuilder({
   };
 
   const handleEditStagedItem = (index: number) => {
-    const item = stagedItems[index];
+    const item = stagedItems.find((_, i) => i === index);
+    if (!item) return;
     setSelectedItem({
       id: item.itemId,
       description: item.description,
@@ -312,19 +473,22 @@ export default function DonationBuilder({
     setEditingIndex(null);
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
+      const originalFiles = Array.from(e.target.files);
+      const compressedFiles: File[] = [];
       const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
-      for (const file of newFiles) {
-        if (file.size > MAX_SIZE) {
-          alert(`File "${file.name}" is too large. Max size is 10MB.`);
+      for (const file of originalFiles) {
+        const compressed = await compressImage(file);
+        if (compressed.size > MAX_SIZE) {
+          alert(`File "${compressed.name}" is too large. Max size is 10MB.`);
           return;
         }
+        compressedFiles.push(compressed);
       }
 
-      setPhotos([...photos, ...newFiles]);
+      setPhotos([...photos, ...compressedFiles]);
     }
   };
 
@@ -375,6 +539,16 @@ export default function DonationBuilder({
         : await saveDonation(dataPayload);
 
       if (result.success) {
+        // Clear persisted progress from localStorage
+        const key = initialDonation 
+          ? `donation_form_progress_edit_${initialDonation.id}`
+          : 'donation_form_progress_new';
+        try {
+          localStorage.removeItem(key);
+        } catch (e) {
+          console.error('Failed to clear form progress', e);
+        }
+
         if (activeType === 'items') {
           setSavedOrgId(typeof organizationId === 'string' ? parseInt(organizationId) : organizationId);
           setSavedDate(date);

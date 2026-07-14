@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import DonationBuilder from '../DonationBuilder';
 import { searchItems, createCustomItem, getCategories } from '@/app/actions/itemActions';
@@ -41,12 +42,47 @@ const mockOrganizations = [
 ];
 
 describe('DonationBuilder Page', () => {
+  let originalImage: typeof Image;
+
+  beforeAll(() => {
+    originalImage = window.Image;
+    // Mock HTMLCanvasElement context and toBlob globally for JSDOM
+    HTMLCanvasElement.prototype.getContext = jest.fn().mockReturnValue({
+      drawImage: jest.fn(),
+    }) as any;
+    HTMLCanvasElement.prototype.toBlob = function (callback: (arg0: Blob) => void) {
+      callback(new Blob(['compressed-image'], { type: 'image/jpeg' }));
+    } as any;
+
+    // Setup a Mock Image class that triggers onload immediately on src assignment
+    class MockImage {
+      onload: () => void = () => { };
+      onerror: () => void = () => { };
+      width: number = 4000;
+      height: number = 3000;
+      _src: string = '';
+      get src() { return this._src; }
+      set src(val: string) {
+        this._src = val;
+        if (val) {
+          setTimeout(() => this.onload(), 0);
+        }
+      }
+    }
+    window.Image = MockImage as any;
+  });
+
+  afterAll(() => {
+    window.Image = originalImage;
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockGet.mockReturnValue(null);
     (saveDonation as jest.Mock).mockResolvedValue({ success: true, donation: { id: 1 } });
     (savePhoto as jest.Mock).mockImplementation(async (file: File) => `/mock/path/${file.name}`);
     (getCategories as jest.Mock).mockResolvedValue([]);
+    localStorage.clear();
   });
 
   const renderComponent = () => render(<DonationBuilder initialOrganizations={mockOrganizations as unknown as []} />);
@@ -125,7 +161,7 @@ describe('DonationBuilder Page', () => {
     fireEvent.change(screen.getByLabelText(/category/i), { target: { value: 'Electronics' } });
     fireEvent.change(screen.getByLabelText(/high value/i), { target: { value: '40' } });
     fireEvent.change(screen.getByLabelText(/medium value/i), { target: { value: '20' } });
-    
+
     // 3. Save Custom Item
     fireEvent.click(screen.getByRole('button', { name: /save custom item/i }));
 
@@ -264,7 +300,7 @@ describe('DonationBuilder Page', () => {
     const resultItem = await screen.findByText(/Winter Coat/i);
     fireEvent.click(resultItem);
     fireEvent.click(screen.getByRole('button', { name: /confirm item/i }));
-    
+
     // Dynamic text change
     expect(screen.getByRole('button', { name: /enter organization/i })).toBeDisabled();
 
@@ -273,20 +309,22 @@ describe('DonationBuilder Page', () => {
     expect(screen.getByRole('button', { name: /add donation/i })).toBeEnabled();
   });
 
-  it('shows an alert when a photo exceeds the 10MB limit', () => {
+  it('shows an alert when a photo exceeds the 10MB limit', async () => {
     // Mock window.alert
-    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
-    
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => { });
+
     renderComponent();
 
     // In RTL, we find the hidden input by its presence or the label
     const input = document.querySelector('input[type="file"]') as HTMLInputElement;
 
-    const largeFile = new File(['a'.repeat(11 * 1024 * 1024)], 'too-big.jpg', { type: 'image/jpeg' });
-    
+    const largeFile = new File(['a'.repeat(11 * 1024 * 1024)], 'too-big.pdf', { type: 'application/pdf' });
+
     fireEvent.change(input, { target: { files: [largeFile] } });
 
-    expect(alertMock).toHaveBeenCalledWith('File "too-big.jpg" is too large. Max size is 10MB.');
+    await waitFor(() => {
+      expect(alertMock).toHaveBeenCalledWith('File "too-big.pdf" is too large. Max size is 10MB.');
+    });
     alertMock.mockRestore();
   });
 
@@ -316,7 +354,7 @@ describe('DonationBuilder Page', () => {
 
   it('renders a preview image when a valid photo is uploaded', async () => {
     const createObjectURLMock = jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-photo-url');
-    const revokeObjectURLMock = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+    const revokeObjectURLMock = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { });
 
     renderComponent();
 
@@ -348,7 +386,7 @@ describe('DonationBuilder Page', () => {
 
   it('does not render a preview image if the created object URL is invalid (not starting with blob:)', async () => {
     const createObjectURLMock = jest.spyOn(URL, 'createObjectURL').mockReturnValue('http://malicious-site.com/xss.jpg');
-    const revokeObjectURLMock = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+    const revokeObjectURLMock = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { });
 
     renderComponent();
 
@@ -428,7 +466,7 @@ describe('DonationBuilder Page', () => {
 
     // Fill Info
     fireEvent.change(screen.getByRole('combobox', { name: /organization/i }), { target: { value: '3' } });
-    
+
     // Add item (need to mock searchItems)
     const mockItems = [
       { id: 1, description: 'Winter Coat', category: { name: 'Clothing' }, defaultHigh: 50, defaultMedium: 25 },
@@ -483,15 +521,15 @@ describe('DonationBuilder Page', () => {
     };
 
     rerender(
-      <DonationBuilder 
+      <DonationBuilder
         key="new-key"
-        initialOrganizations={mockOrganizations} 
+        initialOrganizations={mockOrganizations}
       />
     );
 
     // Verify it switched to mileage and pre-populated the values
     expect(screen.getByLabelText('Miles Driven')).toBeInTheDocument();
-    
+
     const orgSelect = screen.getByRole('combobox', { name: /organization/i });
     expect(orgSelect).toHaveValue('3');
 
@@ -615,7 +653,7 @@ describe('DonationBuilder Page', () => {
     expect(screen.getAllByText('$25.00').length).toBeGreaterThan(0);
 
     // 2. Mock window.alert and click Delete button (🗑️)
-    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => { });
     const deleteButton = screen.getByTitle('Delete Item');
     fireEvent.click(deleteButton);
 
@@ -626,6 +664,154 @@ describe('DonationBuilder Page', () => {
     // 4. Verify item is removed and total is updated
     expect(screen.queryByText('Winter Coat')).not.toBeInTheDocument();
     expect(screen.getByText('$0.00')).toBeInTheDocument();
+  });
+
+  describe('Image Compression and Size Validation', () => {
+    let originalImage: typeof Image;
+
+    beforeAll(() => {
+      originalImage = window.Image;
+      // Mock HTMLCanvasElement context and toBlob
+      HTMLCanvasElement.prototype.getContext = jest.fn().mockReturnValue({
+        drawImage: jest.fn(),
+      }) as any;
+      HTMLCanvasElement.prototype.toBlob = function (callback: (arg0: Blob) => void) {
+        callback(new Blob(['compressed-image'], { type: 'image/jpeg' }));
+      } as any;
+    });
+
+    afterAll(() => {
+      window.Image = originalImage;
+    });
+
+    beforeEach(() => {
+      // Setup a Mock Image class that triggers onload
+      class MockImage {
+        onload: () => void = () => { };
+        onerror: () => void = () => { };
+        width: number = 4000;
+        height: number = 3000;
+        _src: string = '';
+        get src() { return this._src; }
+        set src(val: string) {
+          this._src = val;
+          if (val) {
+            setTimeout(() => this.onload(), 0);
+          }
+        }
+      }
+      window.Image = MockImage as any;
+      jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url');
+      jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => { });
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('compresses uploaded images and bypasses compression for PDFs', async () => {
+      renderComponent();
+      const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+
+      const imgFile = new File(['image-content'], 'test.png', { type: 'image/png' });
+      const pdfFile = new File(['pdf-content'], 'test.pdf', { type: 'application/pdf' });
+
+      // Trigger change event with both files
+      fireEvent.change(input, { target: { files: [imgFile, pdfFile] } });
+
+      // Wait for image compression and addition
+      await waitFor(() => {
+        // One of them is a compressed JPEG image (mock image name replacement test.jpg)
+        const previewImgs = screen.getAllByRole('img');
+        expect(previewImgs[0]).toHaveAttribute('alt', 'test.jpg');
+      });
+
+      // The PDF should also be in the document
+      expect(screen.getByText('PDF')).toBeInTheDocument();
+    });
+  });
+
+  describe('Form State LocalStorage Persistence', () => {
+    beforeEach(() => {
+      localStorage.clear();
+      jest.spyOn(Storage.prototype, 'setItem');
+      jest.spyOn(Storage.prototype, 'getItem');
+      jest.spyOn(Storage.prototype, 'removeItem');
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('saves form progress to localStorage when fields change', async () => {
+      renderComponent();
+
+      // Change organization
+      fireEvent.change(screen.getByRole('combobox', { name: /organization/i }), { target: { value: '2' } });
+
+      // Change notes
+      const notesInput = screen.getByLabelText(/notes/i);
+      fireEvent.change(notesInput, { target: { value: 'Persisted notes text' } });
+
+      // Verify localStorage setItem was called with the 'donation_form_progress_new' key
+      await waitFor(() => {
+        expect(localStorage.setItem).toHaveBeenCalledWith(
+          'donation_form_progress_new',
+          expect.stringContaining('"organizationId":2')
+        );
+        expect(localStorage.setItem).toHaveBeenCalledWith(
+          'donation_form_progress_new',
+          expect.stringContaining('"notes":"Persisted notes text"')
+        );
+      });
+    });
+
+    it('restores form progress from localStorage on client-side mount', async () => {
+      const savedProgress = {
+        activeType: 'cash',
+        organizationId: 3,
+        date: '2026-07-15',
+        notes: 'Restored notes text',
+        stagedItems: [],
+        cashAmount: '250',
+      };
+      localStorage.setItem('donation_form_progress_new', JSON.stringify(savedProgress));
+
+      renderComponent();
+
+      // Wait for useEffect to load state from localStorage
+      await waitFor(() => {
+        const orgSelect = screen.getByRole('combobox', { name: /organization/i });
+        expect(orgSelect).toHaveValue('3');
+      });
+
+      expect(screen.getByLabelText('Donation Date')).toHaveValue('2026-07-15');
+      expect(screen.getByLabelText(/notes/i)).toHaveValue('Restored notes text');
+
+      // Cash amount field should be restored when cash type is active
+      const cashInput = screen.getByLabelText(/Cash Amount/i);
+      expect(cashInput).toHaveValue(250);
+    });
+
+    it('clears localStorage progress upon successful donation submission', async () => {
+      (saveDonation as jest.Mock).mockResolvedValue({ success: true, donation: { id: 100 } });
+      localStorage.setItem('donation_form_progress_new', JSON.stringify({ notes: 'to clear' }));
+
+      renderComponent();
+
+      // Make the save button enabled
+      fireEvent.change(screen.getByRole('combobox', { name: /organization/i }), { target: { value: '3' } });
+      fireEvent.click(screen.getByText(/Cash/i, { selector: 'span' }));
+      fireEvent.change(screen.getByLabelText(/Cash Amount/i), { target: { value: '10' } });
+
+      const saveButton = screen.getByRole('button', { name: /add donation/i });
+      fireEvent.click(saveButton);
+
+      await waitFor(() => {
+        expect(saveDonation).toHaveBeenCalled();
+        expect(localStorage.removeItem).toHaveBeenCalledWith('donation_form_progress_new');
+      });
+    });
   });
 });
 
