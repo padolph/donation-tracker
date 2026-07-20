@@ -27,7 +27,9 @@ export async function getOrganizations() {
   return organizations.map((org) => {
     let totalDonated = 0;
     for (const donation of org.donations) {
-      if (donation.cashAmount) {
+      if (donation.type === 'MILEAGE') {
+        totalDonated += (donation.milesDriven || 0) * (donation.mileageRate || 0.14) + (donation.parkingAndTolls || 0);
+      } else if (donation.cashAmount) {
         totalDonated += donation.cashAmount;
       }
       for (const item of donation.items) {
