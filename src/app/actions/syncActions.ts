@@ -299,6 +299,8 @@ export async function importSyncPackage(formData: FormData): Promise<ImportSyncR
         if (event.type === 'ITEMS') {
           const eventItems = (metadata.donatedItems || []).filter((di: any) => di.eventId === event.id);
           return eventItems.reduce((sum: number, di: any) => sum + (di.quantity * di.lockedValue), 0);
+        } else if (event.type === 'MILEAGE') {
+          return (event.milesDriven || 0) * (event.mileageRate || 0.14) + (event.parkingAndTolls || 0);
         }
         return event.cashAmount ?? 0;
       };
@@ -307,6 +309,8 @@ export async function importSyncPackage(formData: FormData): Promise<ImportSyncR
       const getDbEventTotalValue = (event: any) => {
         if (event.type === 'ITEMS') {
           return (event.items || []).reduce((sum: number, di: any) => sum + (di.quantity * di.lockedValue), 0);
+        } else if (event.type === 'MILEAGE') {
+          return (event.milesDriven || 0) * (event.mileageRate || 0.14) + (event.parkingAndTolls || 0);
         }
         return event.cashAmount ?? 0;
       };
@@ -358,14 +362,27 @@ export async function importSyncPackage(formData: FormData): Promise<ImportSyncR
             if (
               isSameDay(eventDate, dbEventDate) &&
               dbEvent.type === event.type &&
-              dbEvent.cashAmount === event.cashAmount &&
               dbTotalValue === exportedTotalValue
             ) {
-              // Extra check for assets
-              if (event.type === 'ASSETS') {
+              if (event.type === 'CASH') {
+                if ((dbEvent.cashAmount ?? null) === (event.cashAmount ?? null)) {
+                  isDuplicate = true;
+                  break;
+                }
+              } else if (event.type === 'ASSETS') {
                 if (
+                  (dbEvent.cashAmount ?? null) === (event.cashAmount ?? null) &&
                   dbEvent.assetTicker === event.assetTicker &&
                   dbEvent.assetShares === event.assetShares
+                ) {
+                  isDuplicate = true;
+                  break;
+                }
+              } else if (event.type === 'MILEAGE') {
+                if (
+                  dbEvent.milesDriven === event.milesDriven &&
+                  dbEvent.parkingAndTolls === event.parkingAndTolls &&
+                  dbEvent.mileageRate === event.mileageRate
                 ) {
                   isDuplicate = true;
                   break;
@@ -388,9 +405,12 @@ export async function importSyncPackage(formData: FormData): Promise<ImportSyncR
               organizationId: mappedOrgId,
               date: eventDate,
               type: event.type ?? 'ITEMS',
-              cashAmount: event.cashAmount ?? null,
+              cashAmount: event.cashAmount ?? (event.type === 'MILEAGE' ? (event.milesDriven || 0) * (event.mileageRate || 0.14) + (event.parkingAndTolls || 0) : null),
               assetTicker: event.assetTicker ?? null,
               assetShares: event.assetShares ?? null,
+              milesDriven: event.milesDriven ?? null,
+              parkingAndTolls: event.parkingAndTolls ?? null,
+              mileageRate: event.mileageRate ?? null,
               notes: event.notes ?? null,
             },
           });

@@ -535,6 +535,9 @@ describe('syncActions - importSyncPackage', () => {
         cashAmount: null,
         assetTicker: null,
         assetShares: null,
+        milesDriven: null,
+        parkingAndTolls: null,
+        mileageRate: null,
         notes: null
       }
     });
@@ -609,5 +612,108 @@ describe('syncActions - importSyncPackage', () => {
     expect(spyUnlink).toHaveBeenCalledTimes(1);
     expect(spyUnlink).toHaveBeenCalledWith(expect.stringContaining('receipt.jpg'));
   });
+
+  it('should correctly import MILEAGE donation events with milesDriven, parkingAndTolls, and mileageRate', async () => {
+    (prisma.organization.findUnique as jest.Mock).mockResolvedValue({ id: 500, name: 'Food Bank' });
+    (prisma.donationEvent.findMany as jest.Mock).mockResolvedValue([]);
+    (prisma.donationEvent.create as jest.Mock).mockResolvedValue({ id: 950 });
+
+    const metadata = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      categories: [],
+      items: [],
+      organizations: [{ id: 30, name: 'Food Bank' }],
+      donationEvents: [
+        {
+          id: 50,
+          organizationId: 30,
+          date: '2026-07-01T00:00:00.000Z',
+          type: 'MILEAGE',
+          milesDriven: 100,
+          parkingAndTolls: 10,
+          mileageRate: 0.14,
+          notes: 'Volunteer driving',
+        },
+      ],
+      donatedItems: [],
+      eventPhotos: [],
+    };
+
+    const zipBuffer = createMockZipBuffer({
+      'metadata.json': JSON.stringify(metadata),
+    });
+
+    const formData = createFormData(zipBuffer);
+    const result = await importSyncPackage(formData);
+
+    expect(result.success).toBe(true);
+    expect(prisma.donationEvent.create).toHaveBeenCalledWith({
+      data: {
+        organizationId: 500,
+        date: new Date('2026-07-01T00:00:00.000Z'),
+        type: 'MILEAGE',
+        cashAmount: 24,
+        assetTicker: null,
+        assetShares: null,
+        milesDriven: 100,
+        parkingAndTolls: 10,
+        mileageRate: 0.14,
+        notes: 'Volunteer driving',
+      },
+    });
+  });
+
+  it('should detect duplicate MILEAGE donation events correctly', async () => {
+    (prisma.organization.findUnique as jest.Mock).mockResolvedValue({ id: 500, name: 'Food Bank' });
+    // Mock DB returns existing duplicate MILEAGE event
+    (prisma.donationEvent.findMany as jest.Mock).mockResolvedValue([
+      {
+        id: 888,
+        organizationId: 500,
+        date: new Date('2026-07-01T10:00:00.000Z'),
+        type: 'MILEAGE',
+        cashAmount: null,
+        milesDriven: 100,
+        parkingAndTolls: 10,
+        mileageRate: 0.14,
+        items: [],
+      },
+    ]);
+
+    const metadata = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      categories: [],
+      items: [],
+      organizations: [{ id: 30, name: 'Food Bank' }],
+      donationEvents: [
+        {
+          id: 50,
+          organizationId: 30,
+          date: '2026-07-01T00:00:00.000Z',
+          type: 'MILEAGE',
+          milesDriven: 100,
+          parkingAndTolls: 10,
+          mileageRate: 0.14,
+          notes: 'Volunteer driving duplicate',
+        },
+      ],
+      donatedItems: [],
+      eventPhotos: [],
+    };
+
+    const zipBuffer = createMockZipBuffer({
+      'metadata.json': JSON.stringify(metadata),
+    });
+
+    const formData = createFormData(zipBuffer);
+    const result = await importSyncPackage(formData);
+
+    expect(result.success).toBe(true);
+    // Duplicate MILEAGE event should be skipped
+    expect(prisma.donationEvent.create).not.toHaveBeenCalled();
+  });
 });
+
 

@@ -79,6 +79,35 @@ describe('organizationActions', () => {
         }
       }));
     });
+
+    it('should correctly aggregate MILEAGE donations into totalDonated even if cashAmount is null', async () => {
+      const mockOrgs = [
+        {
+          id: 1,
+          name: 'Org 1',
+          address: null,
+          taxId: null,
+          donations: [
+            {
+              type: 'MILEAGE',
+              items: [],
+              cashAmount: null,
+              milesDriven: 50,
+              mileageRate: 0.14,
+              parkingAndTolls: 3,
+            },
+          ],
+        },
+      ];
+
+      (prisma.organization.findMany as jest.Mock).mockResolvedValue(mockOrgs);
+
+      const result = await getOrganizations();
+
+      expect(result).toHaveLength(1);
+      // (50 * 0.14) + 3 = 7 + 3 = 10
+      expect(result[0].totalDonated).toBe(10);
+    });
   });
 
   describe('createOrganization', () => {
