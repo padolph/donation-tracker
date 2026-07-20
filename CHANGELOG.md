@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.3](https://github.com/padolph/donation-tracker/compare/v1.9.2...v1.9.3) (2026-07-20)
+
+
+### Bug Fixes
+
+* **sync:** fix mileage donation export/import and organization totals ([#191](https://github.com/padolph/donation-tracker/issues/191)) ([3672421](https://github.com/padolph/donation-tracker/commit/3672421bef5c11be341e1564a48606c50b89201d))
+* **sync:** fix mileage donation export/import and organization totals ([#191](https://github.com/padolph/donation-tracker/issues/191)) ([1e10212](https://github.com/padolph/donation-tracker/commit/1e102121ebf4eb95085778d9aecc442d61535806))
+
 ## [1.9.2](https://github.com/padolph/donation-tracker/compare/v1.9.1...v1.9.2) (2026-07-14)
 
 
