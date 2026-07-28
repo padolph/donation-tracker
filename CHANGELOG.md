@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.4](https://github.com/padolph/donation-tracker/compare/v1.9.3...v1.9.4) (2026-07-28)
+
+
+### Bug Fixes
+
+* **deps:** override vulnerable transitive dependencies to resolve security advisories ([52c7109](https://github.com/padolph/donation-tracker/commit/52c71096ace4b7be6a1a4d98af7555113f15ddbe))
+* **deps:** override vulnerable transitive dependencies to resolve security advisories ([35f79d1](https://github.com/padolph/donation-tracker/commit/35f79d18eeb8dd8eb4318c1b99432d56a57681de))
+
 ## [1.9.3](https://github.com/padolph/donation-tracker/compare/v1.9.2...v1.9.3) (2026-07-20)
 
 
