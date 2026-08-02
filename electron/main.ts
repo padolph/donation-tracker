@@ -1,5 +1,5 @@
 /* eslint-disable security/detect-non-literal-fs-filename */
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, dialog } from 'electron';
 import path from 'path';
 import { fork, ChildProcess } from 'child_process';
 import net from 'net';
@@ -35,6 +35,12 @@ function runMigrations(
   return new Promise((resolve, reject) => {
     const prismaCliPath = path.join(unpackedPath, 'node_modules/prisma/build/index.js');
     const schemaPath = path.join(unpackedPath, 'prisma/schema.prisma');
+
+    if (!fs.existsSync(prismaCliPath)) {
+      const err = new Error(`Prisma CLI binary not found at ${prismaCliPath}`);
+      console.error(err.message);
+      return reject(err);
+    }
 
     console.log('Running database migrations...');
     const migrationProcess = fork(
@@ -218,8 +224,17 @@ async function createWindow() {
   let port = Number(process.env.PORT) || 3000;
 
   if (app.isPackaged) {
-    port = await getFreePort();
-    await startNextServer(port);
+    try {
+      port = await getFreePort();
+      await startNextServer(port);
+    } catch (error) {
+      console.error('Failed to start embedded Next.js server:', error);
+      dialog.showErrorBox(
+        'Donation Tracker Startup Error',
+        `Failed to start application backend:\n${error instanceof Error ? error.message : String(error)}`
+      );
+      return;
+    }
   }
 
   const win = new BrowserWindow({
@@ -244,11 +259,16 @@ async function createWindow() {
 }
 
 app.whenReady().then(() => {
-  createWindow();
+  createWindow().catch((err) => {
+    console.error('Error creating window:', err);
+    dialog.showErrorBox('Donation Tracker Error', String(err));
+  });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+      createWindow().catch((err) => {
+        console.error('Error recreating window:', err);
+      });
     }
   });
 });

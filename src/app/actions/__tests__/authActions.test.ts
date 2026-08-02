@@ -76,4 +76,46 @@ describe('authActions - setupPassword', () => {
       'utf8'
     );
   });
+
+  it('should generate and save AUTH_SECRET to .env.local if AUTH_SECRET is missing in dev mode', async () => {
+    delete process.env.APP_PASSWORD;
+    delete process.env.AUTH_SECRET;
+    delete process.env.CONFIG_PATH;
+
+    (fs.existsSync as jest.Mock).mockReturnValue(false);
+
+    const result = await setupPassword('my_dev_pass');
+
+    expect(result.success).toBe(true);
+    expect(process.env.AUTH_SECRET).toMatch(/^[0-9a-f]{64}$/);
+    expect(fs.writeFileSync).toHaveBeenCalledWith(
+      path.join(process.cwd(), '.env.local'),
+      expect.stringMatching(/AUTH_SECRET=[0-9a-f]{64}/),
+      'utf8'
+    );
+    expect(fs.writeFileSync).toHaveBeenCalledWith(
+      path.join(process.cwd(), '.env.local'),
+      expect.stringMatching(/APP_PASSWORD=scrypt:[0-9a-f]+:[0-9a-f]+/),
+      'utf8'
+    );
+  });
+
+  it('should generate and save AUTH_SECRET to config.json if AUTH_SECRET is missing in prod mode', async () => {
+    delete process.env.APP_PASSWORD;
+    delete process.env.AUTH_SECRET;
+    process.env.CONFIG_PATH = '/mock/user/data/config.json';
+
+    (fs.existsSync as jest.Mock).mockReturnValue(true);
+    (fs.readFileSync as jest.Mock).mockReturnValue('{}');
+
+    const result = await setupPassword('my_prod_pass');
+
+    expect(result.success).toBe(true);
+    expect(process.env.AUTH_SECRET).toMatch(/^[0-9a-f]{64}$/);
+    expect(fs.writeFileSync).toHaveBeenCalledWith(
+      '/mock/user/data/config.json',
+      expect.stringMatching(/"AUTH_SECRET": "[0-9a-f]{64}"/),
+      'utf8'
+    );
+  });
 });

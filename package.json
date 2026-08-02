@@ -58,6 +58,7 @@
     "csv-parse": "^7.0.1",
     "next": "16.2.12",
     "next-auth": "^5.0.0-beta.32",
+    "prisma": "^5.22.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "uuid": "^14.0.1"
@@ -84,7 +85,6 @@
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
     "jest-mock-extended": "^4.0.1",
-    "prisma": "^5.22.0",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.12",
     "ts-node": "^10.9.2",
