@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.9.5](https://github.com/padolph/donation-tracker/compare/v1.9.4...v1.9.5) (2026-08-02)
+
+
+### Bug Fixes
+
+* 198 desktop build break after dependency update ([1f58b1a](https://github.com/padolph/donation-tracker/commit/1f58b1a077aa0f67e16e6f998fb3cc1337bcedab))
+* **auth:** auto-generate and persist AUTH_SECRET when missing ([8f8af08](https://github.com/padolph/donation-tracker/commit/8f8af081306e2dc6c75cfdd649570d795e939943))
+* **desktop:** include prisma in dependencies for packaged desktop migrations ([ed3bffb](https://github.com/padolph/donation-tracker/commit/ed3bffb7b95b6c7fd0120aca40cbfcfd9d18b8c0))
+* **sidebar:** resolve JSON default export import warning in Sidebar ([21479fb](https://github.com/padolph/donation-tracker/commit/21479fb85be39c1e9cb7556bada581e65ee14513))
+
 ## [1.9.4](https://github.com/padolph/donation-tracker/compare/v1.9.3...v1.9.4) (2026-07-28)
 
 
