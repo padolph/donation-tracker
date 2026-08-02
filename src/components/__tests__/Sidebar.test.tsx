@@ -4,7 +4,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import Sidebar from '../Sidebar';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import { version } from '../../../package.json';
+import packageJson from '../../../package.json';
 
 jest.mock('@testing-library/react', () => {
   // Mock MessageChannel before actual @testing-library/react and scheduler are required
@@ -143,7 +143,7 @@ describe('Sidebar', () => {
 
   it('renders the application version from package.json', () => {
     render(<Sidebar />);
-    expect(screen.getByText(`v${version}`)).toBeInTheDocument();
+    expect(screen.getByText(`v${packageJson.version}`)).toBeInTheDocument();
   });
 
   it('renders the mobile menu toggle button and opens/closes the mobile menu drawer', () => {

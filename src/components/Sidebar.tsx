@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import { version } from '../../package.json';
+import packageJson from '../../package.json';
 
 const navItems = [
   { name: 'Dashboard', href: '/', icon: '📊' },
@@ -98,7 +98,7 @@ export default function Sidebar() {
             <span className="font-medium text-sm">Sign Out</span>
           </button>
           <div className="px-4 text-xs text-white/35">
-            v{version}
+            v{packageJson.version}
           </div>
         </div>
       </div>
