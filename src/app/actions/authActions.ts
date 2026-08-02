@@ -2,6 +2,7 @@
 
 /* eslint-disable security/detect-non-literal-fs-filename */
 
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { hashPassword } from '../../utils/crypto';
@@ -20,10 +21,17 @@ export async function setupPassword(password: string) {
     const trimmedPassword = password.trim();
     const hashedPassword = hashPassword(trimmedPassword);
 
+    // Ensure AUTH_SECRET exists
+    let authSecret = process.env.AUTH_SECRET;
+    if (!authSecret) {
+      authSecret = crypto.randomBytes(32).toString('hex');
+      process.env.AUTH_SECRET = authSecret;
+    }
+
     // 1. Update the environment variable for the current process immediately
     process.env.APP_PASSWORD = hashedPassword;
 
-    // 2. Persist the password
+    // 2. Persist the password and secret
     const configPath = process.env.CONFIG_PATH;
     if (configPath) {
       // Production mode - write to persistent config.json
@@ -37,6 +45,9 @@ export async function setupPassword(password: string) {
         }
       }
       config.APP_PASSWORD = hashedPassword;
+      if (!config.AUTH_SECRET) {
+        config.AUTH_SECRET = authSecret;
+      }
       fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
     } else {
       // Development mode - write to .env.local
@@ -51,6 +62,11 @@ export async function setupPassword(password: string) {
       } else {
         envContent += `\nAPP_PASSWORD=${hashedPassword}\n`;
       }
+
+      if (!envContent.includes('AUTH_SECRET=')) {
+        envContent += `AUTH_SECRET=${authSecret}\n`;
+      }
+
       fs.writeFileSync(envLocalPath, envContent, 'utf8');
     }
 
