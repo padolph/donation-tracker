@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.6](https://github.com/padolph/donation-tracker/compare/v1.9.5...v1.9.6) (2026-08-16)
+
+
+### Bug Fixes
+
+* **security:** updated js-yaml, nanoid, and brace-expansion dependencies ([f2d27e4](https://github.com/padolph/donation-tracker/commit/f2d27e483934160a07578cfe4ff4d602df474f48))
+* **security:** updated js-yaml, nanoid, and brace-expansion deps ([33567d0](https://github.com/padolph/donation-tracker/commit/33567d01b72d64b1f7ee26d8cd4778de1c2f8617))
+
 ## [1.9.5](https://github.com/padolph/donation-tracker/compare/v1.9.4...v1.9.5) (2026-08-02)
 
 
