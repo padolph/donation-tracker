@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.7](https://github.com/padolph/donation-tracker/compare/v1.9.6...v1.9.7) (2026-09-04)
+
+
+### Bug Fixes
+
+* force release to pick up dependency updates ([88d20bc](https://github.com/padolph/donation-tracker/commit/88d20bc1104096cee5b6a2185efad8c595b2141a))
+* force release to pick up dependency updates ([cdb550c](https://github.com/padolph/donation-tracker/commit/cdb550c9aa1deb8498b3c8410cd497e22c407e81))
+
 ## [1.9.6](https://github.com/padolph/donation-tracker/compare/v1.9.5...v1.9.6) (2026-08-16)
 
 
