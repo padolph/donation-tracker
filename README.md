@@ -241,6 +241,3 @@ The project uses Jest and React Testing Library for comprehensive test coverage.
 ```bash
 npm test
 ```
-
----
-*Built with ❤️ as a secure, personal tool for better giving.*
