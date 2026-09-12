@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.8](https://github.com/padolph/donation-tracker/compare/v1.9.7...v1.9.8) (2026-09-11)
+
+
+### Bug Fixes
+
+* **security:** resolve adm-zip, js-yaml, and sharp dependabot alerts ([0523163](https://github.com/padolph/donation-tracker/commit/05231639033be98c3038ee317ce540e65138a128))
+* **security:** resolve adm-zip, js-yaml, and sharp dependabot alerts ([d4b7910](https://github.com/padolph/donation-tracker/commit/d4b791023a0e2ed9988bf1d20307c0db7e73b1a5))
+
 ## [1.9.7](https://github.com/padolph/donation-tracker/compare/v1.9.6...v1.9.7) (2026-09-04)
 
 
