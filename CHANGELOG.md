@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.9](https://github.com/padolph/donation-tracker/compare/v1.9.8...v1.9.9) (2026-10-05)
+
+
+### Bug Fixes
+
+* **security:** override http-cache-semantics to 4.3.0 to resolve GHSA-ch52-4w7c-c8xp ([09ec77e](https://github.com/padolph/donation-tracker/commit/09ec77ead2e879857b75fa44ccbb07f80e47cf96))
+* **security:** override http-cache-semantics to 4.3.0 to resolve GHSA-ch52-4w7c-c8xp ([642d3a8](https://github.com/padolph/donation-tracker/commit/642d3a8ee84b1c4a6cd222d4e44807156bd03137))
+
 ## [1.9.8](https://github.com/padolph/donation-tracker/compare/v1.9.7...v1.9.8) (2026-09-11)
 
 
