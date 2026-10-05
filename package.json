@@ -92,7 +92,7 @@
     "typescript": "^6",
     "wait-on": "^9.1.0"
   },
-  "overrides-comment": "These overrides resolve vulnerabilities in undici, js-yaml, nanoid, @babel/traverse, @babel/core, ws, postcss, brace-expansion, fast-uri, sharp, shell-quote, and tar without breaking top-level pinned dependencies.",
+  "overrides-comment": "These overrides resolve vulnerabilities in undici, js-yaml, nanoid, @babel/traverse, @babel/core, ws, postcss, brace-expansion, fast-uri, sharp, shell-quote, tar, and http-cache-semantics without breaking top-level pinned dependencies.",
   "overrides": {
     "postcss": "^8.5.18",
     "nanoid": "^3.3.18",
@@ -108,7 +108,8 @@
     "shell-quote": "^1.8.5",
     "tar": "^7.5.21",
     "brace-expansion": "^5.0.12",
-    "minimatch": "^10.0.3"
+    "minimatch": "^10.0.3",
+    "http-cache-semantics": "^4.3.0"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
