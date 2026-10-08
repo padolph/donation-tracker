@@ -8,7 +8,7 @@ Donation Tracker was "vibe-coded" into existence as a personal response to ItsDe
 
 ## ✨ Features
 
-- **Item catalog:** Search more than 1,700 household items with fair market values seeded from ItsDeductible's historical data, or add your own custom items.
+- **Item catalog:** Search more than 1,700 household items with fair market values seeded from ItsDeductible's historical data, or add your own custom items. As prices change, you can [update catalog values from a CSV file](docs/catalog-updates.md).
 - **Every kind of donation:** Record physical items, cash, stocks and other assets, and volunteer mileage (including parking and tolls) in one ledger.
 - **Organizations:** Keep a directory of the charities you support, with tax IDs and addresses.
 - **Receipts and photos:** Attach JPG, PNG or PDF files (up to 10 MB each) to any donation. Files are copied into the app's private storage and cleaned up when the donation is deleted.
@@ -25,6 +25,7 @@ Donation Tracker was "vibe-coded" into existence as a personal response to ItsDe
 - **[Getting Started](docs/getting-started.md):** installation, where your data is stored, and setting up your tax profile.
 - **[Using Donation Tracker](docs/user-guide.md):** the dashboard, recording each type of donation, and managing your history.
 - **[Reports & Sync](docs/reports-and-sync.md):** annual tax reports, CSV export, and moving data between machines.
+- **[Keeping Item Values Current](docs/catalog-updates.md):** updating catalog values from a CSV file, the file format, and a prompt for building one with an AI assistant.
 
 ## 🚀 Installation
 
