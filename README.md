@@ -12,10 +12,11 @@ We have compiled a comprehensive, multi-part User Guide to help you set up and g
 1. **[Getting Started](docs/getting-started.md)**: Platform installation, database and receipt photo storage locations, tax profile setup, and understanding OBBBA regulatory calculations (0.5% AGI Floor, benefit caps, and ceilings).
 2. **[Using Donation Tracker](docs/user-guide.md)**: Navigating the dashboard states, recording physical items (catalog search & custom items), cash, stock donations, and managing history.
 3. **[Reports & Sync](docs/reports-and-sync.md)**: Generating annual tax reports (Form 8283 prep), print-friendly pages, CSV flat exports, and multi-machine sync procedures.
+4. **[Keeping Item Values Current](docs/catalog-updates.md)**: Updating catalog values from a CSV file, the file format, and a prompt for building one with an AI assistant.
 
 ## ✨ Features
 
-- **Item Catalog:** A searchable directory of over 1,700 items with Fair Market Values (FMV) pre-seeded from industry-standard data. Easily add and save your own custom items if they aren't in the default catalog.
+- **Item Catalog:** A searchable directory of over 1,700 items with Fair Market Values (FMV) pre-seeded from industry-standard data. Easily add and save your own custom items if they aren't in the default catalog, and [update catalog values from a CSV file](docs/catalog-updates.md) as prices change.
 - **Donation Ledger:** Track physical items, cash contributions, asset transfers (stocks/securities), and volunteer mileage driven in one central place.
 - **Organization Management:** Maintain a directory of your favorite charities, including Tax IDs and addresses.
 - **Receipt & Photo Attachments:** Securely attach local images and receipts to your donation events. Photos are copied to a private local storage directory, with automatic cleanup of image files when events are deleted to prevent storage leaks.
@@ -49,7 +50,7 @@ Donation Tracker is designed around a single-user, offline-first architectural m
 
 ## 📦 Data Seeding
 
-The item database is seeded using data historically provided by Intuit's ItsDeductible service, ensuring that Fair Market Value estimates for clothing, household goods, and other items are consistent with common tax preparation standards.
+The item database is seeded using data historically provided by Intuit's ItsDeductible service, ensuring that Fair Market Value estimates for clothing, household goods, and other items are consistent with common tax preparation standards. To refresh those values later, see [Keeping Item Values Current](docs/catalog-updates.md).
 
 ## 🚦 Getting Started
 

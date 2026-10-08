@@ -8,6 +8,12 @@ jest.mock('@/app/actions/settingsActions', () => ({
   updateSettings: jest.fn(),
 }));
 
+jest.mock('@/app/actions/catalogActions', () => ({
+  exportCatalog: jest.fn(),
+  previewCatalogImport: jest.fn(),
+  applyCatalogImport: jest.fn(),
+}));
+
 const mockSettings = {
   id: 1,
   marginalTaxRate: 0.32,
@@ -25,6 +31,11 @@ describe('SettingsClient', () => {
     // 0.32 is displayed as 32(%)
     expect(screen.getByLabelText(/Marginal Tax Rate/i)).toHaveValue(32);
     expect(screen.getByLabelText(/Estimated AGI/i)).toHaveValue(50000);
+  });
+
+  it('includes the item value catalog section', () => {
+    render(<SettingsClient initialSettings={mockSettings} databasePath="/mock/path/dev.db" storagePath="/mock/path/storage" />);
+    expect(screen.getByRole('heading', { name: /Item Value Catalog/i })).toBeInTheDocument();
   });
 
   it('applies correct container and form styling for left justification matching other pages', () => {
