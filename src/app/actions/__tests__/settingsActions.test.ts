@@ -3,6 +3,12 @@ import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import path from 'path';
 
+// Server actions check the session themselves; default to a logged-in user.
+let mockSession: { user: { name: string } } | null = { user: { name: 'Test User' } };
+jest.mock('@/auth', () => ({
+  auth: () => Promise.resolve(mockSession),
+}));
+
 // Mock Prisma
 jest.mock('@/lib/prisma', () => ({
   __esModule: true,
@@ -185,5 +191,27 @@ describe('settingsActions', () => {
       expect(result.success).toBe(false);
       expect(result.error).toBe('Database error');
     });
+  });
+});
+
+describe('when not logged in', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSession = null;
+  });
+
+  afterEach(() => {
+    mockSession = { user: { name: 'Test User' } };
+  });
+
+  it.each([
+    ['getSettings', () => getSettings()],
+    ['updateSettings', () => updateSettings({ marginalTaxRate: 0.3 })],
+  ])('%s returns Unauthorized without touching the database', async (_name, call) => {
+    const result = await call();
+    expect(result).toEqual({ success: false, error: expect.stringContaining('Unauthorized') });
+    expect(prisma.appSettings.findUnique).not.toHaveBeenCalled();
+    expect(prisma.appSettings.upsert).not.toHaveBeenCalled();
+    expect(revalidatePath).not.toHaveBeenCalled();
   });
 });

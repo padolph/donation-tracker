@@ -1,5 +1,6 @@
 'use server';
 
+import { requireAuth, isAuthenticated, UNAUTHORIZED_ERROR } from '@/lib/authGuard';
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 
@@ -11,6 +12,8 @@ interface OrganizationData {
 }
 
 export async function getOrganizations() {
+  await requireAuth();
+
   const organizations = await prisma.organization.findMany({
     include: {
       donations: {
@@ -49,6 +52,10 @@ export async function getOrganizations() {
 }
 
 export async function createOrganization(data: OrganizationData) {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: UNAUTHORIZED_ERROR };
+  }
+
   try {
     const organization = await prisma.organization.create({
       data: {
@@ -70,6 +77,10 @@ export async function createOrganization(data: OrganizationData) {
 }
 
 export async function updateOrganization(id: number, data: OrganizationData) {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: UNAUTHORIZED_ERROR };
+  }
+
   try {
     const organization = await prisma.organization.update({
       where: { id },
@@ -92,6 +103,10 @@ export async function updateOrganization(id: number, data: OrganizationData) {
 }
 
 export async function deleteOrganization(id: number) {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: UNAUTHORIZED_ERROR };
+  }
+
   try {
     const donationCount = await prisma.donationEvent.count({
       where: { organizationId: id },

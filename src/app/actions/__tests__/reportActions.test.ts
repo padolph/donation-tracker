@@ -1,5 +1,11 @@
 import { getReportData } from '../reportActions';
 
+// Server actions check the session themselves; default to a logged-in user.
+let mockSession: { user: { name: string } } | null = { user: { name: 'Test User' } };
+jest.mock('@/auth', () => ({
+  auth: () => Promise.resolve(mockSession),
+}));
+
 // Mock Prisma
 jest.mock('@/lib/prisma', () => ({
   __esModule: true,
@@ -181,5 +187,22 @@ describe('reportActions', () => {
       expect(item?.totalValue).toBe(24);
       expect(item?.valuationMethod).toBe('Standard Mileage Rate');
     });
+  });
+});
+
+describe('when not logged in', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSession = null;
+  });
+
+  afterEach(() => {
+    mockSession = { user: { name: 'Test User' } };
+  });
+
+  it('getReportData returns Unauthorized without querying', async () => {
+    const result = await getReportData(2026);
+    expect(result).toEqual({ success: false, error: expect.stringContaining('Unauthorized') });
+    expect(prisma.donationEvent.findMany).not.toHaveBeenCalled();
   });
 });

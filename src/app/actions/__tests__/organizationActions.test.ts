@@ -2,6 +2,12 @@ import { getOrganizations, createOrganization, updateOrganization, deleteOrganiz
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 
+// Server actions check the session themselves; default to a logged-in user.
+let mockSession: { user: { name: string } } | null = { user: { name: 'Test User' } };
+jest.mock('@/auth', () => ({
+  auth: () => Promise.resolve(mockSession),
+}));
+
 // Mock Prisma
 jest.mock('@/lib/prisma', () => ({
   __esModule: true,
@@ -174,5 +180,34 @@ describe('organizationActions', () => {
       expect(result.success).toBe(false);
       expect(result.error).toBe('Foreign key constraint');
     });
+  });
+});
+
+describe('when not logged in', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSession = null;
+  });
+
+  afterEach(() => {
+    mockSession = { user: { name: 'Test User' } };
+  });
+
+  it('getOrganizations rejects with Unauthorized without querying', async () => {
+    await expect(getOrganizations()).rejects.toThrow('Unauthorized');
+    expect(prisma.organization.findMany).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['createOrganization', () => createOrganization({ name: 'Org' })],
+    ['updateOrganization', () => updateOrganization(1, { name: 'Org' })],
+    ['deleteOrganization', () => deleteOrganization(1)],
+  ])('%s returns Unauthorized without touching the database', async (_name, call) => {
+    const result = await call();
+    expect(result).toEqual({ success: false, error: expect.stringContaining('Unauthorized') });
+    expect(prisma.organization.create).not.toHaveBeenCalled();
+    expect(prisma.organization.update).not.toHaveBeenCalled();
+    expect(prisma.organization.delete).not.toHaveBeenCalled();
+    expect(revalidatePath).not.toHaveBeenCalled();
   });
 });

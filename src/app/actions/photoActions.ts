@@ -1,6 +1,7 @@
 /* eslint-disable security/detect-non-literal-fs-filename */
 'use server';
 
+import { isAuthenticated, UNAUTHORIZED_ERROR } from '@/lib/authGuard';
 import fs from 'fs/promises';
 import path from 'path';
 import { randomUUID } from 'crypto';
@@ -31,6 +32,10 @@ function matchesSignature(buffer: Buffer, signature: number[]): boolean {
 }
 
 export async function savePhoto(file: File): Promise<{ success: boolean; filePath?: string; error?: string }> {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: UNAUTHORIZED_ERROR };
+  }
+
   try {
     if (file.size > MAX_PHOTO_SIZE_BYTES) {
       return { success: false, error: `File "${file.name}" is too large. Max size is 10MB.` };
