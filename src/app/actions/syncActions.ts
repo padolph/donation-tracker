@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
-import { auth } from '@/auth';
+import { isAuthenticated, UNAUTHORIZED_ERROR } from '@/lib/authGuard';
 import { prisma } from '@/lib/prisma';
 import AdmZip from 'adm-zip';
 import fs from 'fs/promises';
@@ -30,9 +30,8 @@ export type ImportSyncResult =
 
 export async function parseSyncPackage(formData: FormData): Promise<ParseSyncResult> {
   try {
-    const session = await auth();
-    if (!session) {
-      return { success: false, error: 'Unauthorized: Access denied.' };
+    if (!(await isAuthenticated())) {
+      return { success: false, error: UNAUTHORIZED_ERROR };
     }
 
     const file = formData.get('file') as File | null;

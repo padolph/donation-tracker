@@ -1,5 +1,6 @@
 'use server';
 
+import { isAuthenticated, UNAUTHORIZED_ERROR } from '@/lib/authGuard';
 import { prisma } from '@/lib/prisma';
 
 export interface ReportItem {
@@ -35,6 +36,10 @@ export interface YearlyReportData {
 }
 
 export async function getReportData(year: number) {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: UNAUTHORIZED_ERROR };
+  }
+
   try {
     const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
     const endDate = new Date(`${year}-12-31T23:59:59.999Z`);

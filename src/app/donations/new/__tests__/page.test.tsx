@@ -20,6 +20,11 @@ jest.mock('@/app/actions/photoActions', () => ({
   savePhoto: jest.fn(),
 }));
 
+jest.mock('@/app/actions/organizationActions', () => ({
+  createOrganization: jest.fn(),
+  updateOrganization: jest.fn(),
+}));
+
 const mockPush = jest.fn();
 const mockGet = jest.fn();
 jest.mock('next/navigation', () => ({
