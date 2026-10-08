@@ -1,6 +1,12 @@
 import { getDashboardStats } from '../dashboardActions';
 import { prisma } from '@/lib/prisma';
 
+// Server actions check the session themselves; default to a logged-in user.
+let mockSession: { user: { name: string } } | null = { user: { name: 'Test User' } };
+jest.mock('@/auth', () => ({
+  auth: () => Promise.resolve(mockSession),
+}));
+
 // Mock Prisma
 jest.mock('@/lib/prisma', () => ({
   __esModule: true,
@@ -186,5 +192,22 @@ describe('dashboardActions', () => {
       expect(result.stats?.cashTotal).toBe(24.00); // 100 * 0.14 + 10 = 24.00
       expect(result.stats?.totalDonated).toBe(24.00);
     });
+  });
+});
+
+describe('when not logged in', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSession = null;
+  });
+
+  afterEach(() => {
+    mockSession = { user: { name: 'Test User' } };
+  });
+
+  it('getDashboardStats returns Unauthorized without querying', async () => {
+    const result = await getDashboardStats(2026);
+    expect(result).toEqual({ success: false, error: expect.stringContaining('Unauthorized') });
+    expect(prisma.donationEvent.findMany).not.toHaveBeenCalled();
   });
 });

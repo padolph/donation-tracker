@@ -20,5 +20,5 @@
 ## 4. Version Control
 * **Changes on Branch** Make all changes on a branch off main latest. If not currently on a branch, spawn one off main latest. Name branches according to Conventional Commits conventions.
 * **Lint Before Committing** Run all linting scripts before committing to the branch.
-* **Never Merge to Main** Feel free to commit on the working branch, but never merge to the main branch.
+* **Push and Merge** Feel free to commit and push on the working branch. Merge a pull request to main only when the project owner asks for it and CI is green, using a merge commit. Never push directly to main.
 * **Conventional Commits** Use Conventional Commits (https://www.conventionalcommits.org/en/v1.0.0/conventions) for branch naming and commit messages.

@@ -1,8 +1,11 @@
 'use server';
 
+import { requireAuth } from '@/lib/authGuard';
 import { prisma } from '@/lib/prisma';
 
 export async function searchItems(query: string) {
+  await requireAuth();
+
   if (!query) return [];
 
   const terms = query.trim().split(/\s+/).filter(Boolean);
@@ -33,6 +36,8 @@ export async function searchItems(query: string) {
 }
 
 export async function getCategories() {
+  await requireAuth();
+
   return await prisma.category.findMany({
     orderBy: {
       name: 'asc',
@@ -41,6 +46,8 @@ export async function getCategories() {
 }
 
 export async function getItemsByCategory(categoryId: number) {
+  await requireAuth();
+
   return await prisma.item.findMany({
     where: {
       categoryId,
@@ -60,6 +67,8 @@ export async function createCustomItem(data: {
   defaultHigh: number;
   defaultMedium: number;
 }) {
+  await requireAuth();
+
   return await prisma.item.create({
     data: {
       description: data.description,

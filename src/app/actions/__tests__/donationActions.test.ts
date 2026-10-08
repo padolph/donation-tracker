@@ -1,6 +1,12 @@
 import { saveDonation, getDonations, deleteDonation, getDonationById, updateDonation } from '../donationActions';
 import fs from 'fs/promises';
 
+// Server actions check the session themselves; default to a logged-in user.
+let mockSession: { user: { name: string } } | null = { user: { name: 'Test User' } };
+jest.mock('@/auth', () => ({
+  auth: () => Promise.resolve(mockSession),
+}));
+
 jest.mock('fs/promises');
 jest.mock('next/cache', () => ({
   revalidatePath: jest.fn(),
@@ -489,5 +495,35 @@ describe('donationActions', () => {
         })
       );
     });
+  });
+});
+
+describe('when not logged in', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSession = null;
+  });
+
+  afterEach(() => {
+    mockSession = { user: { name: 'Test User' } };
+  });
+
+  const data = { organizationId: 1, date: new Date('2026-05-12'), items: [], photos: [] };
+
+  it.each([
+    ['saveDonation', () => saveDonation(data)],
+    ['getDonations', () => getDonations({})],
+    ['deleteDonation', () => deleteDonation(1)],
+    ['getDonationById', () => getDonationById(1)],
+    ['updateDonation', () => updateDonation(1, data)],
+  ])('%s returns Unauthorized without touching the database', async (_name, call) => {
+    const result = await call();
+    expect(result).toEqual({ success: false, error: expect.stringContaining('Unauthorized') });
+    expect(prisma.donationEvent.create).not.toHaveBeenCalled();
+    expect(prisma.donationEvent.findMany).not.toHaveBeenCalled();
+    expect(prisma.donationEvent.findUnique).not.toHaveBeenCalled();
+    expect(prisma.donationEvent.update).not.toHaveBeenCalled();
+    expect(prisma.donationEvent.delete).not.toHaveBeenCalled();
+    expect(fs.unlink).not.toHaveBeenCalled();
   });
 });

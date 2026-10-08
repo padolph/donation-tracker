@@ -7,6 +7,7 @@ import CustomItemForm from '@/components/CustomItemForm';
 import OrganizationForm from '@/components/OrganizationForm';
 import { saveDonation, updateDonation } from '@/app/actions/donationActions';
 import { savePhoto } from '@/app/actions/photoActions';
+import { MAX_PHOTO_SIZE_BYTES } from '@/lib/photoLimits';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { DonationEvent } from '../DonationsClient';
 
@@ -477,11 +478,10 @@ export default function DonationBuilder({
     if (e.target.files) {
       const originalFiles = Array.from(e.target.files);
       const compressedFiles: File[] = [];
-      const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
       for (const file of originalFiles) {
         const compressed = await compressImage(file);
-        if (compressed.size > MAX_SIZE) {
+        if (compressed.size > MAX_PHOTO_SIZE_BYTES) {
           alert(`File "${compressed.name}" is too large. Max size is 10MB.`);
           return;
         }
