@@ -1,11 +1,16 @@
 /* eslint-disable security/detect-non-literal-fs-filename */
 'use server';
 
+import { isAuthenticated, UNAUTHORIZED_ERROR } from '@/lib/authGuard';
 import fs from 'fs/promises';
 import path from 'path';
 import { randomUUID } from 'crypto';
 
 export async function savePhoto(file: File): Promise<{ success: boolean; filePath?: string; error?: string }> {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: UNAUTHORIZED_ERROR };
+  }
+
   try {
     const storageDir = process.env.IMAGE_STORAGE_PATH || path.join(process.cwd(), 'storage', 'donations');
     

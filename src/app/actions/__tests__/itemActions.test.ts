@@ -1,6 +1,12 @@
-import { searchItems, getCategories, getItemsByCategory } from '../itemActions';
+import { searchItems, getCategories, getItemsByCategory, createCustomItem } from '../itemActions';
 import { prisma } from '@/lib/prisma';
 import { DeepMockProxy } from 'jest-mock-extended';
+
+// Server actions check the session themselves; default to a logged-in user.
+let mockSession: { user: { name: string } } | null = { user: { name: 'Test User' } };
+jest.mock('@/auth', () => ({
+  auth: () => Promise.resolve(mockSession),
+}));
 
 jest.mock('@/lib/prisma', () => {
   const { mockDeep } = jest.requireActual('jest-mock-extended');
@@ -91,5 +97,28 @@ describe('itemActions', () => {
       });
       expect(result).toEqual(mockItems);
     });
+  });
+});
+
+describe('when not logged in', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockSession = null;
+  });
+
+  afterEach(() => {
+    mockSession = { user: { name: 'Test User' } };
+  });
+
+  it.each([
+    ['searchItems', () => searchItems('coat')],
+    ['getCategories', () => getCategories()],
+    ['getItemsByCategory', () => getItemsByCategory(1)],
+    ['createCustomItem', () => createCustomItem({ description: 'Hat', categoryName: 'Clothing', defaultHigh: 5, defaultMedium: 3 })],
+  ])('%s rejects with Unauthorized without touching the database', async (_name, call) => {
+    await expect(call()).rejects.toThrow('Unauthorized');
+    expect(prismaMock.item.findMany).not.toHaveBeenCalled();
+    expect(prismaMock.item.create).not.toHaveBeenCalled();
+    expect(prismaMock.category.findMany).not.toHaveBeenCalled();
   });
 });

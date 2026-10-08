@@ -1,10 +1,15 @@
 'use server';
 
+import { isAuthenticated, UNAUTHORIZED_ERROR } from '@/lib/authGuard';
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import path from 'path';
 
 export async function getSettings() {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: UNAUTHORIZED_ERROR };
+  }
+
   try {
     let settings = await prisma.appSettings.findUnique({
       where: { id: 1 },
@@ -46,6 +51,10 @@ interface UpdateSettingsData {
 }
 
 export async function updateSettings(data: UpdateSettingsData) {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: UNAUTHORIZED_ERROR };
+  }
+
   try {
     const settings = await prisma.appSettings.upsert({
       where: { id: 1 },

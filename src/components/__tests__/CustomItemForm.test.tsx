@@ -2,6 +2,10 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import CustomItemForm from '../CustomItemForm';
 
+jest.mock('@/app/actions/itemActions', () => ({
+  createCustomItem: jest.fn(),
+}));
+
 describe('CustomItemForm', () => {
   it('selects all text in highValue and mediumValue numeric inputs on focus', () => {
     const mockOnItemCreated = jest.fn();
