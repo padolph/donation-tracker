@@ -56,7 +56,7 @@
     "@prisma/client": "^5.22.0",
     "adm-zip": "^0.6.1",
     "csv-parse": "^7.0.3",
-    "next": "16.3.6",
+    "next": "16.3.8",
     "next-auth": "^5.0.0-beta.32",
     "prisma": "^5.22.0",
     "react": "^19.3.0",
@@ -64,7 +64,7 @@
     "uuid": "^14.0.2"
   },
   "devDependencies": {
-    "@swc/core": "^1.16.2",
+    "@swc/core": "^1.16.13",
     "@swc/jest": "^0.2.39",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.2",
@@ -72,16 +72,16 @@
     "@testing-library/react": "^16.3.3",
     "@types/adm-zip": "^0.5.8",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.20.4",
+    "@types/node": "^22.20.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^11.0.0",
     "concurrently": "^10.0.5",
-    "electron": "^44.4.5",
+    "electron": "^44.5.1",
     "electron-builder": "^26.15.3",
     "eslint": "^9.39.5",
-    "eslint-config-next": "16.3.6",
-    "eslint-plugin-security": "^4.1.0",
+    "eslint-config-next": "16.3.8",
+    "eslint-plugin-security": "^4.2.0",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
     "jest-mock-extended": "^4.0.1",
@@ -90,7 +90,7 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.23.15",
     "typescript": "^6",
-    "wait-on": "^9.1.0"
+    "wait-on": "^9.5.1"
   },
   "overrides-comment": "These overrides resolve vulnerabilities in undici, js-yaml, nanoid, @babel/traverse, @babel/core, ws, postcss, brace-expansion, fast-uri, sharp, shell-quote, tar, and http-cache-semantics without breaking top-level pinned dependencies.",
   "overrides": {
