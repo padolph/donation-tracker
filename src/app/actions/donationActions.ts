@@ -1,5 +1,6 @@
 'use server';
 
+import { isAuthenticated, UNAUTHORIZED_ERROR } from '@/lib/authGuard';
 import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 import fs from 'fs/promises';
@@ -25,6 +26,10 @@ interface DonationData {
 }
 
 export async function saveDonation(data: DonationData) {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: UNAUTHORIZED_ERROR };
+  }
+
   try {
     const donation = await prisma.donationEvent.create({
       data: {
@@ -77,6 +82,10 @@ export interface GetDonationsFilter {
 }
 
 export async function getDonations(filter: GetDonationsFilter = {}) {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: UNAUTHORIZED_ERROR };
+  }
+
   try {
     const where: Prisma.DonationEventWhereInput = {};
     
@@ -128,6 +137,10 @@ export async function getDonations(filter: GetDonationsFilter = {}) {
 import { revalidatePath } from 'next/cache';
 
 export async function deleteDonation(id: number) {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: UNAUTHORIZED_ERROR };
+  }
+
   try {
     const donation = await prisma.donationEvent.findUnique({
       where: { id },
@@ -172,6 +185,10 @@ export async function deleteDonation(id: number) {
 }
 
 export async function getDonationById(id: number) {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: UNAUTHORIZED_ERROR };
+  }
+
   try {
     const donation = await prisma.donationEvent.findUnique({
       where: { id },
@@ -213,6 +230,10 @@ export async function getDonationById(id: number) {
 }
 
 export async function updateDonation(id: number, data: DonationData) {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: UNAUTHORIZED_ERROR };
+  }
+
   try {
     const updateData: Prisma.DonationEventUpdateInput = {
       organization: { connect: { id: data.organizationId } },
