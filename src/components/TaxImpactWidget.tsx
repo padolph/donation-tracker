@@ -41,7 +41,7 @@ export default function TaxImpactWidget({
     }).format(value);
   };
 
-  const isObbba = year === 2026 && calculationState !== 'default';
+  const isObbba = year >= 2026 && calculationState !== 'default';
   const showBreakdown = isObbba && (calculationState === 'active' || calculationState === 'max_ceiling');
 
   const renderHelperText = () => {
@@ -64,7 +64,7 @@ export default function TaxImpactWidget({
         case 'max_ceiling':
           return (
             <p className="text-white/60 text-sm max-w-md">
-              You have fully maximized your allowable 2026 deductions. Remaining tracked balances will carry forward as future tax assets.
+              You have fully maximized your allowable {year} deductions. Remaining tracked balances will carry forward as future tax assets.
             </p>
           );
       }

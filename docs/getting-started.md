@@ -90,18 +90,16 @@ These values are saved securely in your local database and are used to calculate
 
 ---
 
-## Understanding OBBBA Tax Compliance (2026)
+## Understanding OBBBA Tax Compliance (2026+)
 
-Donation Tracker features a decoupled, year-specific tax calculator architecture. When the tax year dropdown is set to **2026**, calculations follow the **One Big Beautiful Bill Act (OBBBA)** rules described below. For any other year, the dashboard uses a simple estimate: total giving × your marginal tax rate, with no floor or ceilings.
+Donation Tracker features a decoupled, year-specific tax calculator architecture. When the tax year dropdown is set to **2026 or later**, calculations follow the **One Big Beautiful Bill Act (OBBBA)** rules described below. For earlier years, the dashboard uses a simple estimate: total giving × your marginal tax rate, with no floor or ceilings.
 
 ### 1. The 0.5% AGI Floor
 Under OBBBA rules, tax-deductible giving only begins *after* your cumulative contributions exceed a baseline floor of **0.5% of your AGI**:
 
 **Floor** = Estimated AGI × 0.005
 
-* *Example:* If your AGI is \$100,000, your floor is \$500. The first \$500 of your total annual giving is not tax-deductible. The tax savings are calculated only on the portion of giving that *exceeds* this floor:
-
-**Estimated Tax Savings** = (Total Giving − Floor) × Marginal Tax Rate
+* *Example:* If your AGI is \$100,000, your floor is \$500. The first \$500 of your total annual giving is not tax-deductible. The tax savings are calculated only on the portion of giving that *exceeds* this floor.
 
 ### 2. AGI Ceilings
 Annual deduction limits are based on your Estimated AGI and are applied in order, following IRS Publication 526. Each category's limit is reduced by what the earlier categories already used:
@@ -110,4 +108,8 @@ Annual deduction limits are based on your Estimated AGI and are applied in order
 2. **Physical Item Donations:** Up to **50% of AGI**, minus the stock and asset amount counted in step 1.
 3. **Cash Donations:** Up to **60% of AGI**, minus the stock, asset and item amounts counted in steps 1 and 2.
 
-The dashboard shows how much room is left in each category. When a category reaches its limit, it is marked as maximized, and any excess can carry forward for up to five years. The estimated tax savings figure is not reduced by the ceilings; it is based on your total giving above the floor.
+The dashboard shows how much room is left in each category. When a category reaches its limit, it is marked as maximized. Giving above a limit is not deductible this year and can carry forward for up to five years, so it does not count toward this year's savings:
+
+**Estimated Tax Savings** = the smaller of (Total Giving − Floor) and (Giving Within the Ceilings), × Marginal Tax Rate
+
+* *Example:* With an AGI of \$100,000 and \$70,000 of cash giving, the cash ceiling is \$60,000. Savings at a 32% rate are \$60,000 × 0.32 = \$19,200, and the remaining \$10,000 carries forward.

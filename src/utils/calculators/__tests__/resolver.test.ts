@@ -17,7 +17,13 @@ describe('Calculator Strategy Resolver', () => {
     expect(result.taxSavings).toBe(480);
   });
 
-  it('routes to default calculator for non-2026 tax year', () => {
+  it('routes to the OBBBA calculator for tax years after 2026', () => {
+    const result = calculateTaxSavings(2027, input);
+    expect(result.state).toBe('active');
+    expect(result.taxSavings).toBe(480);
+  });
+
+  it('routes to default calculator for tax years before 2026', () => {
     // Fallback: 2000 * 0.32 = 640. State should be default.
     const result = calculateTaxSavings(2025, input);
     expect(result.state).toBe('default');
@@ -28,5 +34,8 @@ describe('Calculator Strategy Resolver', () => {
     const result = calculateTaxSavings('2026', input);
     expect(result.state).toBe('active');
     expect(result.taxSavings).toBe(480);
+
+    expect(calculateTaxSavings('2030', input).state).toBe('active');
+    expect(calculateTaxSavings('2025', input).state).toBe('default');
   });
 });
