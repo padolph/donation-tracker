@@ -49,6 +49,7 @@ Item donations use the built-in valuation engine to calculate Fair Market Value 
 * **Browse Categories:** Click through the hierarchical category browser to find items manually.
 * **Select Condition:** Choose either **High** (excellent condition) or **Medium** (good condition). The default prices for that catalog item will automatically populate.
 * **Add Custom Items:** If your item is unique or not present in the catalog, click **Add Custom Item**. Enter a description, set default values for High/Medium conditions, and save it. It will be added to your database and will appear in searches going forward.
+* **Keeping Values Current:** Catalog values can be refreshed from a CSV file under **Settings → Item Value Catalog**. See [Keeping Item Values Current](catalog-updates.md).
 * **Staging List:** Enter the quantity and click **Add Item**. The item is added to the staging table. You can add multiple items to a single donation. A running total shows the cumulative donation value in real-time.
 
 #### 2. Cash Donations

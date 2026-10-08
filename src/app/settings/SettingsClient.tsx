@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { updateSettings } from '@/app/actions/settingsActions';
+import CatalogValuesCard from './CatalogValuesCard';
 
 interface Settings {
   id: number;
@@ -114,6 +115,7 @@ export default function SettingsClient({
           {isSaving ? 'Saving...' : 'Save Settings'}
         </button>
       </form>
+      <CatalogValuesCard />
       {/* System Information Card */}
       <div className="max-w-2xl mt-8 bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-8 text-white/50 text-xs space-y-3">
         <h2 className="text-sm font-bold text-white uppercase tracking-widest mb-1">System Information</h2>
