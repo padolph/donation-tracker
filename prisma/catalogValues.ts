@@ -79,8 +79,8 @@ function roundCents(n: number): number {
 function parseAmount(raw: string): number | null {
   const cleaned = raw.replace(/[$,\s]/g, '');
   if (cleaned === '') return null;
-  if (!/^\d+(\.\d+)?$/.test(cleaned)) return NaN;
-  return roundCents(parseFloat(cleaned));
+  const amount = /^[0-9.]+$/.test(cleaned) ? Number(cleaned) : NaN;
+  return Number.isNaN(amount) ? NaN : roundCents(amount);
 }
 
 function keyOf(category: string, description: string): string {
