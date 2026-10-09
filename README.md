@@ -128,7 +128,7 @@ To run inside a desktop window instead of a browser, use `npm run desktop:dev`.
 
 In development the database lives at `prisma/dev.db` (set in `.env`) and receipts are saved to `storage/donations/`, so nothing you do here touches the data in an installed copy. The password you create on first launch is saved, hashed, to `.env.local` along with a generated `AUTH_SECRET`.
 
-To package the desktop app for your current platform, run `npm run desktop:build`. The installer is written to `dist/`. The script needs a POSIX shell (on Windows, use Git Bash or WSL), and DMG packaging on macOS needs `gettext` (`brew install gettext`).
+To package the desktop app for your current platform, run `npm run desktop:build`. The installer is written to `dist/`. The script works on macOS, Linux and Windows. DMG packaging on macOS needs `gettext` (`brew install gettext`).
 
 ## 🔒 Security & Privacy
 
