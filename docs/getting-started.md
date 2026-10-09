@@ -113,3 +113,11 @@ The dashboard shows how much room is left in each category. When a category reac
 **Estimated Tax Savings** = the smaller of (Total Giving − Floor) and (Giving Within the Ceilings), × Marginal Tax Rate
 
 * *Example:* With an AGI of \$100,000 and \$70,000 of cash giving, the cash ceiling is \$60,000. Savings at a 32% rate are \$60,000 × 0.32 = \$19,200, and the remaining \$10,000 carries forward.
+
+### 3. High-Earner Benefit Cap (37% Bracket)
+OBBBA limits the tax benefit of itemized deductions for taxpayers in the top 37% bracket. Their deduction is reduced by 2/37, so each deductible dollar saves at most 35 cents. When your marginal tax rate is set to 37% or higher, the dashboard applies this reduction:
+
+**Estimated Tax Savings** = Deductible Amount × 35/37 × Marginal Tax Rate
+
+* *Example:* With an AGI of \$100,000, \$1,500 of cash giving and a 37% rate, the deductible amount is \$1,000. Savings are \$1,000 × 35/37 × 0.37 = \$350, not \$370.
+* This is an estimate. The actual reduction depends on how much of your taxable income falls in the 37% bracket, so check the final figure with your tax preparer.
