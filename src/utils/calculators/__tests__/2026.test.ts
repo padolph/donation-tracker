@@ -49,8 +49,8 @@ describe('2026 OBBBA Calculator', () => {
 
   it('applies the 35% benefit cap for 37% marginal rate earners in Active Zone', () => {
     // AGI = 100,000 => Floor = 500
-    // Giving: Cash = 1500 => Total = 1500
-    // Savings = (1500 - 500) * 0.37 = 370 (under revised rules, we use the Marginal Tax Rate directly)
+    // Giving: Cash = 1500 => Eligible = 1000
+    // IRC §68 (OBBBA) reduces the deduction by 2/37 => 1000 * 35/37 * 0.37 = 350
     const result = calculator2026.calculate({
       ...baseInput,
       marginalTaxRate: 0.37,
@@ -58,7 +58,42 @@ describe('2026 OBBBA Calculator', () => {
     });
 
     expect(result.state).toBe('active');
-    expect(result.taxSavings).toBe(370);
+    expect(result.taxSavings).toBeCloseTo(350, 6);
+    expect(result.marginalTaxRate).toBe(0.37);
+  });
+
+  it('does not apply the benefit cap below the 37% rate', () => {
+    // Eligible = 1000 at 35% => 350, no reduction
+    const result = calculator2026.calculate({
+      ...baseInput,
+      marginalTaxRate: 0.35,
+      cashTotal: 1500,
+    });
+
+    expect(result.taxSavings).toBeCloseTo(350, 6);
+  });
+
+  it('reduces the deduction by 2/37 for rates above 37%', () => {
+    // Eligible = 1000, deduction after 2/37 reduction = 945.95..., at 40% => 378.38
+    const result = calculator2026.calculate({
+      ...baseInput,
+      marginalTaxRate: 0.4,
+      cashTotal: 1500,
+    });
+
+    expect(result.taxSavings).toBeCloseTo((1000 * 35 / 37) * 0.4, 6);
+  });
+
+  it('applies the benefit cap in the Maximized Zone', () => {
+    // AGI = 100,000, Cash = 70,000 => cash ceiling 60,000 limits the deduction
+    // 60,000 * 35/37 * 0.37 = 21,000
+    const result = calculator2026.calculate({
+      ...baseInput,
+      marginalTaxRate: 0.37,
+      cashTotal: 70000,
+    });
+
+    expect(result.taxSavings).toBeCloseTo(21000, 6);
   });
 
   it('calculates State 3: Above the Ceiling (Total Giving > Ceilings)', () => {

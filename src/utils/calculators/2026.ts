@@ -1,5 +1,10 @@
 import { TaxCalculator, CalculationInput, CalculationResult } from './types';
 
+// OBBBA high-earner cap (IRC §68 as amended for tax years after 2025): taxpayers in the 37% bracket
+// have their itemized deductions reduced by 2/37, so each deducted dollar saves at most 35 cents.
+const TOP_BRACKET_RATE = 0.37;
+const TOP_BRACKET_DEDUCTION_FACTOR = 35 / 37;
+
 export const calculator2026: TaxCalculator = {
   calculate(input: CalculationInput): CalculationResult {
     const { estimatedAGI, marginalTaxRate, itemsTotal, cashTotal, assetsTotal } = input;
@@ -47,7 +52,8 @@ export const calculator2026: TaxCalculator = {
     // Giving above the ceilings is not deductible this year (it carries forward), so it earns no savings.
     const deductibleWithinCeilings = deductedStock + deductedPhysical + deductedCash;
     const eligibleAmount = Math.max(0, Math.min(totalGiving - floor, deductibleWithinCeilings));
-    const taxSavings = estimatedAGI === 0 ? 0 : eligibleAmount * marginalTaxRate;
+    const deductionFactor = marginalTaxRate >= TOP_BRACKET_RATE ? TOP_BRACKET_DEDUCTION_FACTOR : 1;
+    const taxSavings = estimatedAGI === 0 ? 0 : eligibleAmount * deductionFactor * marginalTaxRate;
 
     if (allowedContributionsRemaining === 0) {
       return {
