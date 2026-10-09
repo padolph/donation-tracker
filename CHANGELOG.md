@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.1](https://github.com/padolph/donation-tracker/compare/v1.10.0...v1.10.1) (2026-10-09)
+
+
+### Bug Fixes
+
+* **deps:** bump fast-uri override to 3.1.8 ([6c095be](https://github.com/padolph/donation-tracker/commit/6c095be4d4fcdbce6da540f7af65e986b31275b5))
+* **deps:** bump fast-uri override to 3.1.8 ([e6049e7](https://github.com/padolph/donation-tracker/commit/e6049e733e650c7a807f5573bb54179ffdce70cd))
+
 ## [1.10.0](https://github.com/padolph/donation-tracker/compare/v1.9.9...v1.10.0) (2026-10-09)
 
 
