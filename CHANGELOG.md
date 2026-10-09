@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.10.0](https://github.com/padolph/donation-tracker/compare/v1.9.9...v1.10.0) (2026-10-09)
+
+
+### Features
+
+* **catalog:** import item values from a CSV file ([215069a](https://github.com/padolph/donation-tracker/commit/215069a92ef0f2094cb4db8983672da28609f4ff))
+* **catalog:** server actions to export, preview and import item values ([4df3874](https://github.com/padolph/donation-tracker/commit/4df387494022a8a40740cdc524e538da6a4e89f6)), closes [#199](https://github.com/padolph/donation-tracker/issues/199)
+* **catalog:** shared item value CSV parser and updater; seed only adds missing items ([28524e7](https://github.com/padolph/donation-tracker/commit/28524e73ae4fea67f612f3637270aa34d279746f)), closes [#199](https://github.com/padolph/donation-tracker/issues/199)
+* **settings:** item value catalog section to download, preview and import values ([4ff5ab5](https://github.com/padolph/donation-tracker/commit/4ff5ab526986469649435490a203dd060cd58651))
+* **tax:** apply OBBBA 35% benefit cap for the 37% bracket ([acf4ad4](https://github.com/padolph/donation-tracker/commit/acf4ad4eb1cc8cf33f2b34738df07755e14c60b8))
+* **tax:** apply the OBBBA 35% benefit cap for the 37% bracket ([da54464](https://github.com/padolph/donation-tracker/commit/da544644466d000f2f2af59aa2ac36c7acfd491e))
+
+
+### Bug Fixes
+
+* **auth:** require a logged-in session in every server action ([4352240](https://github.com/padolph/donation-tracker/commit/43522404d6cd76a4a5d72eb447891ac8c18d6cb6))
+* **auth:** require a logged-in session in every server action ([211de4d](https://github.com/padolph/donation-tracker/commit/211de4da20bfd8aed0fced72c94135c7eb5475be))
+* **build:** seed desktop database at prisma/production.db on every OS ([ecfb2ae](https://github.com/padolph/donation-tracker/commit/ecfb2aef9157cc1dd71482a2a068bab2fbb4c007))
+* **build:** seed desktop database at prisma/production.db on every OS ([b89b9c6](https://github.com/padolph/donation-tracker/commit/b89b9c6545baad60888a4cb87a55b8139a9f3ed8)), closes [#241](https://github.com/padolph/donation-tracker/issues/241)
+* **photos:** limit photo uploads to 10MB JPG, PNG or PDF ([d304865](https://github.com/padolph/donation-tracker/commit/d30486596848bfb8112393a78b9b4e18d9c595b7))
+* **photos:** limit photo uploads to 10MB JPG, PNG or PDF ([18483c2](https://github.com/padolph/donation-tracker/commit/18483c282b61714d5b51a491c06c87ae0a917d31))
+* **tax:** apply OBBBA rules to 2026 and later and cap savings at the AGI ceilings ([3fae1ea](https://github.com/padolph/donation-tracker/commit/3fae1ea1982310519ed6265657465f5308137fff)), closes [#240](https://github.com/padolph/donation-tracker/issues/240)
+* **tax:** OBBBA rules for 2026+, capped savings, and getting-started guide sync ([ef27b7a](https://github.com/padolph/donation-tracker/commit/ef27b7a1c04ecc20e8066cde9cf827a44d1b0937))
+
 ## [1.9.9](https://github.com/padolph/donation-tracker/compare/v1.9.8...v1.9.9) (2026-10-05)
 
 
