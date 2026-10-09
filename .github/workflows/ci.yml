@@ -62,16 +62,8 @@ jobs:
         DATABASE_URL: "file:./prisma/empty.db"
         NEXT_PHASE: "phase-production-build"
 
-    - name: Set Production Database URL
-      run: |
-        echo "PROD_DATABASE_URL=file:$(node -p "require('path').resolve('./prisma/production.db').replace(/\\\\/g, '/')")" >> $GITHUB_ENV
-
     - name: Create and Seed Default Production Database
-      run: |
-        npx prisma migrate deploy
-        npx prisma db seed
-      env:
-        DATABASE_URL: ${{ env.PROD_DATABASE_URL }}
+      run: node scripts/prepare-desktop-db.js
 
     - name: Compile Electron TypeScript
       run: npm run electron:tsc
