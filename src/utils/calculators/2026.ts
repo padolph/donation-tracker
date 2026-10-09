@@ -23,6 +23,7 @@ export const calculator2026: TaxCalculator = {
     // 3. Tier 3 (Cash): Absolute cap of 60% of AGI, reduced by the combined total of stock and physical deducted.
     // Reference: IRS Pub 526, "Limits on Deductions" - 60% Limit Section / Worksheet 1 & 2
     const cashCap = Math.max(0, estimatedAGI * 0.6 - deductedStock - deductedPhysical);
+    const deductedCash = Math.min(cashTotal, cashCap);
     const cashRoomRemaining = Math.max(0, cashCap - cashTotal);
 
     const totalGiving = cashTotal + assetsTotal + itemsTotal;
@@ -43,7 +44,9 @@ export const calculator2026: TaxCalculator = {
       };
     }
 
-    const eligibleAmount = Math.max(0, totalGiving - floor);
+    // Giving above the ceilings is not deductible this year (it carries forward), so it earns no savings.
+    const deductibleWithinCeilings = deductedStock + deductedPhysical + deductedCash;
+    const eligibleAmount = Math.max(0, Math.min(totalGiving - floor, deductibleWithinCeilings));
     const taxSavings = estimatedAGI === 0 ? 0 : eligibleAmount * marginalTaxRate;
 
     if (allowedContributionsRemaining === 0) {
