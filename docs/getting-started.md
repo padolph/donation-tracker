@@ -63,14 +63,16 @@ The local SQLite database and configuration files are stored in the following pl
 
 | Platform | Database Location | Configuration File |
 | :--- | :--- | :--- |
-| **macOS** | `~/Library/Application Support/Donation Tracker/production.db` | `config.json` |
-| **Windows** | `%APPDATA%\Donation Tracker\production.db` | `config.json` |
-| **Linux** | `~/.config/Donation Tracker/production.db` | `config.json` |
-| **Docker** | `/app/data/production.db` (inside the container) | Managed via environment variables |
+| **macOS** | `~/Library/Application Support/Donation Tracker/production.db` | `config.json` (same folder) |
+| **Windows** | `%APPDATA%\Donation Tracker\production.db` | `config.json` (same folder) |
+| **Linux** | `~/.config/Donation Tracker/production.db` | `config.json` (same folder) |
+| **Docker** | `/app/data/production.db` (inside the container) | `/app/data/config.json` (inside the container) |
+
+The `config.json` file holds the app's generated sign-in secret and your password hash. In Docker, the `APP_PASSWORD` environment variable is hashed at startup, and a password saved in `/app/data/config.json` takes precedence over it. Because both files live under `/app/data`, the volume mount keeps them across container restarts.
 
 ### Receipt Image Directories
 When you attach receipt images or photos to your donations, the files are copied into a local directory to ensure they remain accessible if you delete the source files:
-* **Desktop App:** Copied to the `receipts` subfolder inside the platform's application support directory.
+* **Desktop App:** Copied to the `storage/donations` subfolder inside the application data folder listed above (for example, `~/Library/Application Support/Donation Tracker/storage/donations` on macOS).
 * **Docker Container:** Saved in `/app/data/donations`.
 
 ---
@@ -90,7 +92,7 @@ These values are saved securely in your local database and are used to calculate
 
 ## Understanding OBBBA Tax Compliance (2026+)
 
-Donation Tracker features a decoupled, year-specific tax calculator architecture. When the tax year dropdown is set to **2026 or later**, calculations comply with the **One Big Beautiful Bill Act (OBBBA)** core regulatory rules:
+Donation Tracker features a decoupled, year-specific tax calculator architecture. When the tax year dropdown is set to **2026 or later**, calculations follow the **One Big Beautiful Bill Act (OBBBA)** rules described below. For earlier years, the dashboard uses a simple estimate: total giving × your marginal tax rate, with no floor or ceilings.
 
 ### 1. The 0.5% AGI Floor
 Under OBBBA rules, tax-deductible giving only begins *after* your cumulative contributions exceed a baseline floor of **0.5% of your AGI**:
@@ -99,12 +101,15 @@ Under OBBBA rules, tax-deductible giving only begins *after* your cumulative con
 
 * *Example:* If your AGI is \$100,000, your floor is \$500. The first \$500 of your total annual giving is not tax-deductible. The tax savings are calculated only on the portion of giving that *exceeds* this floor.
 
-### 2. The 35% High-Earner Benefit Cap
-If your configured Marginal Tax Rate is **37%**, the OBBBA calculator automatically limits your effective deduction rate to **35%** for charitable contributions.
+### 2. AGI Ceilings
+Annual deduction limits are based on your Estimated AGI and are applied in order, following IRS Publication 526. Each category's limit is reduced by what the earlier categories already used:
 
-### 3. Asset-Specific Ceilings
-The calculator enforces strict annual limits on the amount of deductions you can claim based on your Estimated AGI:
-* **Cash & Stock/Asset Donations:** Capped at **60% of AGI**.
-* **Physical Item Donations:** Capped at **30% of AGI**.
+1. **Stock & Asset Donations:** Up to **30% of AGI**.
+2. **Physical Item Donations:** Up to **50% of AGI**, minus the stock and asset amount counted in step 1.
+3. **Cash Donations:** Up to **60% of AGI**, minus the stock, asset and item amounts counted in steps 1 and 2.
 
-*If your total giving exceeds these ceilings, the application caps your on-screen tax savings and notes that the remaining amount will carry forward.*
+The dashboard shows how much room is left in each category. When a category reaches its limit, it is marked as maximized. Giving above a limit is not deductible this year and can carry forward for up to five years, so it does not count toward this year's savings:
+
+**Estimated Tax Savings** = the smaller of (Total Giving − Floor) and (Giving Within the Ceilings), × Marginal Tax Rate
+
+* *Example:* With an AGI of \$100,000 and \$70,000 of cash giving, the cash ceiling is \$60,000. Savings at a 32% rate are \$60,000 × 0.32 = \$19,200, and the remaining \$10,000 carries forward.

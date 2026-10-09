@@ -68,6 +68,19 @@ describe('TaxImpactWidget', () => {
     expect(screen.getByText(/fully maximized your allowable 2026 deductions/i)).toBeInTheDocument();
   });
 
+  it('renders OBBBA states for tax years after 2026 using that year', () => {
+    render(
+      <TaxImpactWidget
+        taxSavings={19200}
+        marginalTaxRate={0.32}
+        year={2027}
+        calculationState="max_ceiling"
+      />
+    );
+
+    expect(screen.getByText(/fully maximized your allowable 2027 deductions/i)).toBeInTheDocument();
+  });
+
   it('renders the link to settings page with "Adjust Tax Settings" text', () => {
     render(<TaxImpactWidget taxSavings={544.16} marginalTaxRate={0.32} year={2025} calculationState="default" />);
     

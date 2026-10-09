@@ -68,7 +68,8 @@ describe('2026 OBBBA Calculator', () => {
     // Physical Cap: 50% of 100k - 30k = 20k (Deducted physical = 20k)
     // Cash Cap: 60% of 100k - 30k - 20k = 10k (Deducted cash = 10k)
     // Total Allowed: 60k
-    // Savings = (75k - 500) * 0.32 = 23,840 (based on total giving)
+    // Eligible = min(75k - 500, 60k) = 60k
+    // Savings = 60k * 0.32 = 19,200 (capped by the ceilings)
     const result = calculator2026.calculate({
       ...baseInput,
       cashTotal: 15000,
@@ -77,7 +78,7 @@ describe('2026 OBBBA Calculator', () => {
     });
 
     expect(result.state).toBe('max_ceiling');
-    expect(result.taxSavings).toBe(23840);
+    expect(result.taxSavings).toBe(19200);
     expect(result.allowedContributionsRemaining).toBe(0);
     expect(result.assetRoomRemaining).toBe(0);
     expect(result.physicalRoomRemaining).toBe(0);
@@ -90,8 +91,9 @@ describe('2026 OBBBA Calculator', () => {
     // Stock Cap: 30k (Deducted: 0, Room: 30k)
     // Physical Cap: 50k (Deducted: 10k, Room: 40k)
     // Cash Cap: 60k - 10k = 50k (Deducted: 50k, Room: 0)
-    // Total Allowed: 60k
-    // Savings = (80k - 500) * 0.32 = 25,440 (based on total giving)
+    // Total Allowed: 60k (0 stock + 10k physical + 50k cash)
+    // Eligible = min(80k - 500, 60k) = 60k
+    // Savings = 60k * 0.32 = 19,200 (excess cash carries forward)
     const result = calculator2026.calculate({
       ...baseInput,
       cashTotal: 70000,
@@ -99,11 +101,24 @@ describe('2026 OBBBA Calculator', () => {
     });
 
     expect(result.state).toBe('active');
-    expect(result.taxSavings).toBe(25440);
+    expect(result.taxSavings).toBe(19200);
     expect(result.assetRoomRemaining).toBe(30000);
     expect(result.physicalRoomRemaining).toBe(40000);
     expect(result.cashRoomRemaining).toBe(0);
     expect(result.allowedContributionsRemaining).toBe(70000);
+  });
+
+  it('applies the floor before the ceilings when giving is just over a ceiling', () => {
+    // AGI = 100,000 => Floor = 500, Cash Cap = 60k
+    // Giving: Cash = 60,200
+    // Eligible = min(60,200 - 500, 60,000) = 59,700
+    // Savings = 59,700 * 0.32 = 19,104
+    const result = calculator2026.calculate({
+      ...baseInput,
+      cashTotal: 60200,
+    });
+
+    expect(result.taxSavings).toBeCloseTo(19104, 6);
   });
 
   it('handles AGI = 0 case correctly', () => {
