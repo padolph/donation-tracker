@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.2](https://github.com/padolph/donation-tracker/compare/v1.10.1...v1.10.2) (2026-10-09)
+
+
+### Bug Fixes
+
+* **deps:** override global-agent to 4.1.3 to drop sprintf-js ([#252](https://github.com/padolph/donation-tracker/issues/252)) ([5160d78](https://github.com/padolph/donation-tracker/commit/5160d78a3654c7354cdd9a8eb5bd47ff98b04fec))
+
 ## [1.10.1](https://github.com/padolph/donation-tracker/compare/v1.10.0...v1.10.1) (2026-10-09)
 
 
