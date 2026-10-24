@@ -77,7 +77,7 @@
     "@types/react-dom": "^19",
     "@types/uuid": "^11.0.0",
     "concurrently": "^10.0.6",
-    "electron": "^44.9.0",
+    "electron": "^44.9.1",
     "electron-builder": "^26.15.3",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.4.2",
