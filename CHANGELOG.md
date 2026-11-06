@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.3](https://github.com/padolph/donation-tracker/compare/v1.10.2...v1.10.3) (2026-11-06)
+
+
+### Bug Fixes
+
+* **deps:** bump zod and joi to patched versions ([#264](https://github.com/padolph/donation-tracker/issues/264)) ([c1b5a8c](https://github.com/padolph/donation-tracker/commit/c1b5a8c74b1b2a00c80c6a072dbe6fe3b2ae7347))
+* **deps:** override minimatch to ^11.0.1 ([#266](https://github.com/padolph/donation-tracker/issues/266)) ([e0e8668](https://github.com/padolph/donation-tracker/commit/e0e8668db5eb97fc371feb3fd3dde22646efc7d5))
+
 ## [1.10.2](https://github.com/padolph/donation-tracker/compare/v1.10.1...v1.10.2) (2026-10-09)
 
 
